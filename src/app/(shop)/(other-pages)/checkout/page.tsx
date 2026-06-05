@@ -1,8 +1,8 @@
 import NcInputNumber from '@/components/NcInputNumber'
 import Prices from '@/components/Prices'
+import RazorpayButton from '@/components/RazorpayButton'
 import { TCardProduct, getCart } from '@/data/data'
 import Breadcrumb from '@/shared/Breadcrumb'
-import ButtonPrimary from '@/shared/Button/ButtonPrimary'
 import { Field, Label } from '@/shared/fieldset'
 import { Input } from '@/shared/input'
 import { Link } from '@/shared/link'
@@ -14,8 +14,8 @@ import Image from 'next/image'
 import Information from './Information'
 
 export const metadata: Metadata = {
-  title: 'Checkout Page',
-  description: 'Effective checkout page for your e-commerce website',
+  title: 'Checkout — Thread & Love',
+  description: 'Secure checkout powered by Razorpay',
 }
 
 const CheckoutPage = async () => {
@@ -25,7 +25,6 @@ const CheckoutPage = async () => {
     'use server'
     const discountCode = formData.get('discount-code')?.toString() || ''
     console.log('Discount code:', discountCode)
-    // Here you can implement the logic to apply the discount code
   }
 
   const renderProduct = (product: TCardProduct) => {
@@ -37,7 +36,7 @@ const CheckoutPage = async () => {
           {image?.src && (
             <Image
               fill
-              src={image}
+              src={image.src}
               alt={image.alt || ''}
               sizes="300px"
               className="object-contain object-center"
@@ -95,7 +94,6 @@ const CheckoutPage = async () => {
             <div className="hidden sm:block">
               <NcInputNumber className="relative z-10" />
             </div>
-
             <div className="relative z-10 mt-3 flex items-center text-sm font-medium text-primary-600 hover:text-primary-500">
               <span>Remove</span>
             </div>
@@ -136,7 +134,7 @@ const CheckoutPage = async () => {
               <Field>
                 <Label className="text-sm">Discount code</Label>
                 <div className="mt-1.5 flex gap-3">
-                  <Input className="flex-1" />
+                  <Input className="flex-1" name="discount-code" />
                   <button
                     type="submit"
                     className="flex w-24 items-center justify-center rounded-full border bg-neutral-50 font-medium text-neutral-800 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
@@ -168,9 +166,14 @@ const CheckoutPage = async () => {
               <span>${cart.cost.total.toFixed(2)}</span>
             </div>
           </div>
-          <ButtonPrimary className="mt-8 w-full" href="/order-successful">
-            Confirm order
-          </ButtonPrimary>
+
+          {/* Razorpay Payment Button */}
+          <div className="mt-8">
+            <RazorpayButton amount={cart.cost.total}>
+              Confirm order &amp; Pay ₹{Math.round(cart.cost.total * 84).toLocaleString('en-IN')}
+            </RazorpayButton>
+          </div>
+
           <div className="mt-5 flex items-center justify-center text-sm text-neutral-500 dark:text-neutral-400">
             <p className="relative block pl-5">
               <HugeiconsIcon
@@ -200,7 +203,7 @@ const CheckoutPage = async () => {
               >
                 Shipping
               </Link>
-              {` `} infomation
+              {` `} information
             </p>
           </div>
         </div>

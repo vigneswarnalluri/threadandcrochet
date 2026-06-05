@@ -8,11 +8,17 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 export const metadata: Metadata = {
-  title: 'Order Successful',
+  title: 'Order Successful — Thread & Love',
   description: 'Your order has been successfully placed.',
 }
 
-export default async function Page() {
+interface PageProps {
+  searchParams: Promise<{ payment_id?: string }>
+}
+
+export default async function Page({ searchParams }: PageProps) {
+  const params = await searchParams
+  const paymentId = params.payment_id
   // for demo purposes, you need to use the getOrder(number) function to get the order by number, example: getOrder(123456789)
   const order = (await getOrders())[0]
 
@@ -34,10 +40,17 @@ export default async function Page() {
               very soon!
             </p>
 
-            <dl className="mt-16 text-sm">
+            {paymentId && (
+              <div className="mt-6 rounded-xl bg-green-50 border border-green-200 px-5 py-4 dark:bg-green-900/20 dark:border-green-800">
+                <p className="text-xs font-medium uppercase text-green-700 dark:text-green-400">Razorpay Payment ID</p>
+                <p className="mt-1 font-mono text-sm font-semibold text-green-900 dark:text-green-300">{paymentId}</p>
+              </div>
+            )}
+
+            <dl className="mt-10 text-sm">
               <dt className="text-neutral-500">Tracking number</dt>
               <dd>
-                <Link className="mt-2 text-lg font-medium" href="/orders/123456789">
+                <Link className="mt-2 text-lg font-medium" href={'/orders/123456789'}>
                   #{order.number}
                   <span aria-hidden="true"> &rarr;</span>
                 </Link>
@@ -54,7 +67,7 @@ export default async function Page() {
                     {product.featuredImage && (
                       <Image
                         alt={product.featuredImage.alt}
-                        src={product.featuredImage}
+                        src={product.featuredImage.src}
                         fill
                         sizes="200px"
                         className="rounded-md bg-neutral-100 object-cover"
