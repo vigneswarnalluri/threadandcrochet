@@ -25,8 +25,9 @@ const PageForgotPass = async ({ searchParams }: PageProps) => {
     const email = formData.get('email') as string
     const supabase = await createClient()
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://relaxed-marigold-18353f.netlify.app'
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('supabase.co', 'vercel.app') || 'http://localhost:3000'}/account/update-password`,
+      redirectTo: `${siteUrl}/account/update-password`,
     })
 
     if (error) {
