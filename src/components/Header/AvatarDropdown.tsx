@@ -24,6 +24,19 @@ export default function AvatarDropdown({ className }: Props) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Check sessionStorage first — avoids re-fetching on every page navigation
+    const cached = sessionStorage.getItem('__tl_profile')
+    if (cached) {
+      try {
+        const data = JSON.parse(cached)
+        setProfile(data)
+        setLoading(false)
+        return
+      } catch {
+        sessionStorage.removeItem('__tl_profile')
+      }
+    }
+
     fetch('/api/profile')
       .then((res) => {
         if (!res.ok) return null
@@ -31,11 +44,14 @@ export default function AvatarDropdown({ className }: Props) {
       })
       .then((data) => {
         if (data && data.fullName) {
-          setProfile({
+          const p = {
             fullName: data.fullName,
             address: data.address || '',
             email: data.email || '',
-          })
+          }
+          setProfile(p)
+          // Cache for this session so navigating pages doesn't re-fetch
+          sessionStorage.setItem('__tl_profile', JSON.stringify(p))
         } else {
           setProfile(null)
         }
@@ -46,6 +62,7 @@ export default function AvatarDropdown({ className }: Props) {
 
   const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
+    sessionStorage.removeItem('__tl_profile') // Clear cache on logout
     await fetch('/api/logout', { method: 'POST' })
     window.location.href = '/'
   }

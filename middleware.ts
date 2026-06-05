@@ -8,12 +8,20 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico, icon.png, etc.
-     * - public folder files
+     * Only run middleware on routes that need auth:
+     * - /account and all sub-paths
+     * - /orders and all sub-paths
+     * - /account-* pages (billing, password, wishlists)
+     * - /api/profile and /api/logout (need session refresh)
+     *
+     * This avoids running a Supabase network call on every public page load.
      */
-    '/((?!_next/static|_next/image|favicon.ico|icon.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/account/:path*',
+    '/orders/:path*',
+    '/account-billing/:path*',
+    '/account-password/:path*',
+    '/account-wishlists/:path*',
+    '/api/profile',
+    '/api/logout',
   ],
 }
