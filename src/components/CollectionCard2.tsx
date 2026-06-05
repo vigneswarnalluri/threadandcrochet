@@ -21,7 +21,7 @@ const CollectionCard2: FC<Props> = ({ className, ratioClass = 'aspect-square', c
           <div className="absolute inset-5 xl:inset-14">
             <Image
               alt={collection.image?.alt}
-              src={collection.image}
+              src={collection.image.src}
               className="rounded-2xl object-cover object-center"
               sizes="(max-width: 640px) 100vw, 40vw"
               fill

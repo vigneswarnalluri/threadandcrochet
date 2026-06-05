@@ -29,7 +29,7 @@ const CollectionCard6: FC<CollectionCard6Props> = ({ className = '', bgSvgUrl, c
               <NcImage
                 alt={collection.image?.alt}
                 fill
-                src={collection.image}
+                src={collection.image.src}
                 containerClassName={`size-20 rounded-full relative overflow-hidden z-0 ${collection.color}`}
               />
             )}

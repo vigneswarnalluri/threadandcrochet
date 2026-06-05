@@ -1,9 +1,6 @@
 'use client'
 
 import backgroundLineSvg from '@/images/Moon.svg'
-import heroImage1 from '@/images/hero-right-1.png'
-import heroImage2 from '@/images/hero-right-2.png'
-import heroImage3 from '@/images/hero-right-3.png'
 import ButtonPrimary from '@/shared/Button/ButtonPrimary'
 import { Search01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -17,28 +14,28 @@ import { useInterval } from 'react-use'
 const data = [
   {
     id: 1,
-    imageUrl: heroImage1.src,
-    heading: 'Aura Handcrafted <br /> Crochet Halter Top',
-    subHeading: 'Warm, cozy, and delicately stitched with 100% organic cotton ❤️',
-    btnText: 'Shop Cami Halter Top',
-    btnHref: '/products/aura-crochet-halter-top',
+    imageUrl: '/Crochet/IMG_20260605_154246_117.jpg',
+    heading: 'Artisan Crochet <br /> Bags & Totes',
+    subHeading: 'Handcrafted granny-square totes, lovingly looped stitch by stitch 🧶',
+    btnText: 'Shop Bags & Totes',
+    btnHref: '/collections/bags',
     bgColor: 'bg-[#FAEEE2]',
   },
   {
     id: 2,
-    imageUrl: heroImage2.src,
-    heading: 'Cozy Up in Warm <br /> Hand-Stitched Sweaters',
-    subHeading: 'Lovingly crafted cardigans & wearables for all seasons 🍂',
-    btnText: 'Shop Cozy Wearables',
-    btnHref: '/collections/jackets',
+    imageUrl: '/Crochet/IMG_20260605_154009_634.jpg',
+    heading: 'Everlasting Crochet <br /> Flower Bouquets',
+    subHeading: 'Never-wilting blooms, hand-stitched with wire-reinforced stems 🌸',
+    btnText: 'Shop Flower Bouquets',
+    btnHref: '/products/crochet-flower-bouquet',
     bgColor: 'bg-[#F7ECE1]',
   },
   {
     id: 3,
-    imageUrl: heroImage3.src,
+    imageUrl: '/Crochet/IMG_20260605_154015_438.jpg',
     heading: 'Adopt a Cuddly <br /> Amigurumi Companion',
-    subHeading: 'Sweet plush toys handcrafted to bring smiles to little ones owl 🦉',
-    btnText: 'Adopt a plush friend',
+    subHeading: 'Sweet plush keychains handcrafted to bring smiles to little ones 🧸',
+    btnText: 'Shop Amigurumi Toys',
     btnHref: '/collections/t-shirts',
     bgColor: 'bg-[#EAE5DB]',
   },

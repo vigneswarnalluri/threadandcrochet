@@ -25,7 +25,7 @@ const CollectionCard3: FC<Props> = ({ className = '', collection }) => {
               <div className="absolute end-0 h-full w-full max-w-52">
                 <Image
                   alt={collection.image.alt || ''}
-                  src={collection.image}
+                  src={collection.image.src}
                   fill
                   className="object-contain object-center drop-shadow-xl"
                   sizes="300px"
