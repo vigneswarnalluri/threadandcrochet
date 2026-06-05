@@ -4,14 +4,23 @@ import Header2 from '@/components/Header/Header2'
 import AsideProductQuickView from '@/components/aside-product-quickview'
 import AsideSidebarCart from '@/components/aside-sidebar-cart'
 import AsideSidebarNavigation from '@/components/aside-sidebar-navigation'
-import React, { FC } from 'react'
+import React from 'react'
 import PageTab from './PageTab'
+import { cookies } from 'next/headers'
 
 interface Props {
   children?: React.ReactNode
 }
 
-const Layout: FC<Props> = ({ children }) => {
+const Layout = async ({ children }: Props) => {
+  const cookieStore = await cookies()
+  const profileCookie = cookieStore.get('user_profile')?.value
+  const profile = profileCookie ? JSON.parse(profileCookie) : {
+    fullName: 'Enrico Cole',
+    email: 'hello@threadandlove.com',
+    address: 'Los Angeles, CA',
+  }
+
   return (
     <>
       <Header2 />
@@ -21,8 +30,8 @@ const Layout: FC<Props> = ({ children }) => {
             <div className="max-w-2xl">
               <h2 className="text-3xl font-semibold xl:text-4xl">Account</h2>
               <span className="mt-4 block text-base text-neutral-500 sm:text-lg dark:text-neutral-400">
-                <span className="font-semibold text-neutral-900 dark:text-neutral-200">Enrico Cole,</span>{' '}
-                hello@threadandlove.com · Los Angeles, CA
+                <span className="font-semibold text-neutral-900 dark:text-neutral-200">{profile.fullName},</span>{' '}
+                {profile.email} · {profile.address}
               </span>
             </div>
 
@@ -44,3 +53,4 @@ const Layout: FC<Props> = ({ children }) => {
 }
 
 export default Layout
+

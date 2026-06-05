@@ -32,11 +32,27 @@ const loginSocials = [
   },
 ]
 
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+
 const PageLogin = () => {
   const handleSubmit = async (formData: FormData) => {
     'use server'
-    const formObject = Object.fromEntries(formData.entries())
-    console.log(formObject)
+    const email = (formData.get('email') as string) || 'hello@threadandlove.com'
+    const cookieStore = await cookies()
+    const existing = cookieStore.get('user_profile')?.value
+    const profileData = existing ? JSON.parse(existing) : {
+      fullName: 'Enrico Cole',
+      email: email,
+      dateOfBirth: '1990-07-22',
+      address: 'Los Angeles, CA',
+      gender: 'Male',
+      phoneNumber: '003 888 232',
+      aboutYou: '...',
+    }
+    profileData.email = email
+    cookieStore.set('user_profile', JSON.stringify(profileData), { path: '/' })
+    redirect('/account')
   }
 
   return (

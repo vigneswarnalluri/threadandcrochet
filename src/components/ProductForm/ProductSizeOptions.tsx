@@ -49,7 +49,7 @@ const ProductSizeOptions = ({
   }
   const sizeOptionValues = options?.find((option) => option.name === 'Size')?.optionValues
 
-  if (!sizeOptionValues?.length) {
+  if (!sizeOptionValues?.length || sizeOptionValues.length <= 1) {
     return null
   }
 

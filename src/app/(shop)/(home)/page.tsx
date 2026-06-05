@@ -59,7 +59,7 @@ async function PageHome() {
         />
         <SectionPromo2 />
         <SectionSliderLargeProduct products={carouselProducts3} />
-        <SectionGridFeatureItems data={products} />
+        <SectionGridFeatureItems data={products.slice(0, 8)} />
         <Divider />
         <SectionCollectionSlider2 collections={departmentCollections} />
         <Divider />

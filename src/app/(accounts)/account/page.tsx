@@ -15,18 +15,41 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { Metadata } from 'next'
 import Form from 'next/form'
 import Image from 'next/image'
+import { cookies } from 'next/headers'
+import { revalidatePath } from 'next/cache'
 
 export const metadata: Metadata = {
   title: 'Account',
   description: 'Account page',
 }
 
-const Page = () => {
+const Page = async () => {
+  const cookieStore = await cookies()
+  const profileCookie = cookieStore.get('user_profile')?.value
+  const profile = profileCookie ? JSON.parse(profileCookie) : {
+    fullName: 'Enrico Cole',
+    email: 'hello@threadandlove.com',
+    dateOfBirth: '1990-07-22',
+    address: 'Los Angeles, CA',
+    gender: 'Male',
+    phoneNumber: '003 888 232',
+    aboutYou: '...',
+  }
+
   const handleSubmit = async (formData: FormData) => {
     'use server'
-    const formObject = Object.fromEntries(formData.entries())
-    console.log(formObject)
-    // Update the account
+    const cookieStore = await cookies()
+    const profileData = {
+      fullName: (formData.get('full-name') as string) || 'Enrico Cole',
+      email: (formData.get('email') as string) || 'hello@threadandlove.com',
+      dateOfBirth: (formData.get('date-of-birth') as string) || '1990-07-22',
+      address: (formData.get('address') as string) || 'Los Angeles, CA',
+      gender: (formData.get('gender') as string) || 'Male',
+      phoneNumber: (formData.get('phone-number') as string) || '003 888 232',
+      aboutYou: (formData.get('about-you') as string) || '...',
+    }
+    cookieStore.set('user_profile', JSON.stringify(profileData), { path: '/' })
+    revalidatePath('/account')
   }
 
   return (
@@ -58,7 +81,7 @@ const Page = () => {
           <div className="mt-10 max-w-3xl grow space-y-7 md:mt-0 md:pl-16">
             <Field>
               <Label>Full name</Label>
-              <Input name="full-name" defaultValue="Enrico Cole" />
+              <Input name="full-name" defaultValue={profile.fullName} />
             </Field>
 
             {/* ---- */}
@@ -66,7 +89,7 @@ const Page = () => {
               <Label>Email</Label>
               <InputGroup>
                 <HugeiconsIcon data-slot="icon" icon={Mail01Icon} size={16} />
-                <Input name="email" type="email" placeholder="example@email.com" />
+                <Input name="email" type="email" placeholder="example@email.com" defaultValue={profile.email} />
               </InputGroup>
             </Field>
 
@@ -75,7 +98,7 @@ const Page = () => {
               <Label>Date of birth</Label>
               <InputGroup>
                 <HugeiconsIcon data-slot="icon" icon={Calendar01Icon} size={16} />
-                <Input name="date-of-birth" type="date" defaultValue="1990-07-22" />
+                <Input name="date-of-birth" type="date" defaultValue={profile.dateOfBirth} />
               </InputGroup>
             </Field>
             {/* ---- */}
@@ -83,14 +106,14 @@ const Page = () => {
               <Label>Addess</Label>
               <InputGroup>
                 <HugeiconsIcon data-slot="icon" icon={MapsLocation01Icon} size={16} />
-                <Input name="address" defaultValue="New york, USA" />
+                <Input name="address" defaultValue={profile.address} />
               </InputGroup>
             </Field>
 
             {/* ---- */}
             <Field>
               <Label>Gender</Label>
-              <Select name="gender" defaultValue="Male">
+              <Select name="gender" defaultValue={profile.gender}>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
@@ -102,13 +125,13 @@ const Page = () => {
               <Label>Phone number</Label>
               <InputGroup>
                 <HugeiconsIcon data-slot="icon" icon={SmartPhone01Icon} size={16} />
-                <Input name="phone-number" defaultValue="003 888 232" />
+                <Input name="phone-number" defaultValue={profile.phoneNumber} />
               </InputGroup>
             </Field>
             {/* ---- */}
             <Field>
               <Label>About you</Label>
-              <Textarea rows={4} name="about-you" defaultValue="..." />
+              <Textarea rows={4} name="about-you" defaultValue={profile.aboutYou} />
             </Field>
             <div className="pt-2">
               <ButtonPrimary type="submit">Update account</ButtonPrimary>
@@ -121,3 +144,4 @@ const Page = () => {
 }
 
 export default Page
+

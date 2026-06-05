@@ -5,7 +5,7 @@ import NcImage from '@/shared/NcImage/NcImage'
 import { Link } from '@/shared/link'
 import { ArrowsPointingOutIcon, ShoppingBagIcon } from '@heroicons/react/24/outline'
 import { StarIcon } from '@heroicons/react/24/solid'
-import { FC } from 'react'
+import { FC, useState, useEffect } from 'react'
 import AddToCardButton from './AddToCardButton'
 import LikeButton from './LikeButton'
 import Prices from './Prices'
@@ -22,6 +22,14 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
   const { title, price, status, rating, options, handle, selectedOptions, reviewNumber, images, featuredImage } = data
   const color = selectedOptions?.find((option) => option.name === 'Color')?.value
 
+  const [activeColor, setActiveColor] = useState(color)
+  const [activeImage, setActiveImage] = useState(featuredImage)
+
+  useEffect(() => {
+    setActiveColor(color)
+    setActiveImage(featuredImage)
+  }, [color, featuredImage])
+
   const { open: openAside, setProductQuickViewHandle } = useAside()
 
   const renderColorOptions = () => {
@@ -33,17 +41,38 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
 
     return (
       <div className="flex gap-2">
-        {optionColorValues.map((color) => (
-          <div key={color.name} className="relative size-4 cursor-pointer overflow-hidden rounded-full">
+        {optionColorValues.map((colorVal) => {
+          const isSelected = activeColor === colorVal.name
+          return (
             <div
-              className="absolute inset-0 z-0 rounded-full bg-cover ring-1 ring-neutral-900/20 dark:ring-white/20"
-              style={{
-                backgroundColor: color.swatch?.color,
-                backgroundImage: color.swatch?.image ? `url(${color.swatch.image})` : undefined,
+              key={colorVal.name}
+              className={`relative size-4 cursor-pointer overflow-hidden rounded-full ring-offset-1 transition-all ${
+                isSelected ? 'ring-2 ring-neutral-900 dark:ring-neutral-200' : 'hover:ring-1 hover:ring-neutral-500'
+              }`}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setActiveColor(colorVal.name)
+                if (colorVal.swatch?.image) {
+                  setActiveImage({
+                    src: colorVal.swatch.image,
+                    width: 1000,
+                    height: 1000,
+                    alt: title || '',
+                  })
+                }
               }}
-            />
-          </div>
-        ))}
+            >
+              <div
+                className="absolute inset-0 z-0 rounded-full bg-cover ring-1 ring-neutral-900/20 dark:ring-white/20"
+                style={{
+                  backgroundColor: colorVal.swatch?.color,
+                  backgroundImage: colorVal.swatch?.image ? `url(${colorVal.swatch.image})` : undefined,
+                }}
+              />
+            </div>
+          )
+        })}
       </div>
     )
   }
@@ -55,11 +84,11 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
           as={'button'}
           className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-xs/normal text-white shadow-lg hover:bg-neutral-800"
           title={title || ''}
-          imageUrl={featuredImage?.src || ''}
+          imageUrl={activeImage?.src || ''}
           price={price || 0}
           quantity={1}
           size={selectedOptions?.find((option) => option.name === 'Size')?.value}
-          color={selectedOptions?.find((option) => option.name === 'Color')?.value}
+          color={activeColor}
         >
           <ShoppingBagIcon className="-ml-1 size-3.5" />
           <span>Add to bag</span>
@@ -87,10 +116,10 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
 
         <div className="group relative z-1 shrink-0 overflow-hidden rounded-3xl bg-neutral-50 dark:bg-neutral-300">
           <Link href={'/products/' + handle} className="block">
-            {featuredImage?.src && (
+            {activeImage?.src && (
               <NcImage
                 containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0"
-                src={featuredImage}
+                src={activeImage}
                 className="h-full w-full object-cover"
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
@@ -107,7 +136,7 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
           {renderColorOptions()}
           <div>
             <h2 className="nc-ProductCard__title text-base font-semibold transition-colors">{title}</h2>
-            <p className={`mt-1 text-sm text-neutral-500 dark:text-neutral-400`}>{color}</p>
+            <p className={`mt-1 text-sm text-neutral-500 dark:text-neutral-400`}>{activeColor}</p>
           </div>
 
           <div className="flex items-end justify-between">

@@ -13,15 +13,82 @@ import { StarIcon } from '@heroicons/react/24/solid'
 import { ShoppingBag03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import Image from 'next/image'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState, useMemo } from 'react'
 import { Divider } from './Divider'
 import ProductColorOptions from './ProductForm/ProductColorOptions'
 import ProductForm from './ProductForm/ProductForm'
 import ProductSizeOptions from './ProductForm/ProductSizeOptions'
 import { useAside } from './aside'
+import { ProductColorProvider, useProductColor } from './ProductForm/ProductColorContext'
 
 interface ProductQuickViewProps {
   className?: string
+}
+
+const ProductQuickViewGallery = ({
+  images,
+  defaultImage,
+}: {
+  images: any[]
+  defaultImage: any
+}) => {
+  const { selectedColor, colorImageMap } = useProductColor()
+
+  const filteredImages = useMemo(() => {
+    if (!images) return []
+    const matches = images.filter(
+      (img) => img?.color && img.color.toLowerCase() === selectedColor.toLowerCase()
+    )
+    if (matches.length > 0) return matches
+    return images
+  }, [images, selectedColor])
+
+  // Find the image for the selected color
+  const activeImageSrc = colorImageMap[selectedColor]
+
+  // Use color image if found, otherwise default to first image
+  const displayImage = activeImageSrc
+    ? { src: activeImageSrc, alt: selectedColor }
+    : (filteredImages[0] || defaultImage)
+
+  const otherImages = useMemo(() => {
+    return filteredImages.filter((img) => img?.src !== displayImage?.src).slice(0, 2)
+  }, [filteredImages, displayImage])
+
+  return (
+    <>
+      <div className="aspect-w-16 aspect-h-16 relative">
+        {displayImage?.src && (
+          <Image
+            src={displayImage.src}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="w-full rounded-xl object-cover"
+            alt={displayImage.alt || 'product image'}
+            priority
+          />
+        )}
+      </div>
+      <div className="mt-3 hidden grid-cols-2 gap-3 sm:mt-6 sm:gap-6 lg:grid xl:mt-5 xl:gap-5">
+        {otherImages.map((image, index) => {
+          if (!image?.src) {
+            return null
+          }
+          return (
+            <div key={index} className="aspect-w-3 aspect-h-4 relative">
+              <Image
+                fill
+                src={image.src}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="w-full rounded-xl object-cover"
+                alt={image.alt || 'product thumbnail'}
+              />
+            </div>
+          )
+        })}
+      </div>
+    </>
+  )
 }
 
 const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
@@ -52,6 +119,14 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
   const { title, status, featuredImage, rating, reviewNumber, options, price, selectedOptions, images } = product
   const sizeSelected = selectedOptions?.find((option) => option.name === 'Size')?.value || ''
   const colorSelected = selectedOptions?.find((option) => option.name === 'Color')?.value || ''
+
+  // Build colorName → image URL map for context
+  const colorImageMap: Record<string, string> = {}
+  options
+    ?.find((o) => o.name === 'Color')
+    ?.optionValues?.forEach((cv) => {
+      if (cv.swatch?.image) colorImageMap[cv.name] = cv.swatch.image
+    })
 
   const renderStatus = () => {
     if (!status) {
@@ -129,8 +204,8 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
           <fieldset className="flex flex-col gap-y-10">
             {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
             <div className="flex flex-col gap-y-8">
-              <ProductColorOptions options={options} defaultColor={colorSelected} />
-              <ProductSizeOptions options={options} defaultSize={sizeSelected} />
+              <ProductColorOptions options={options || []} defaultColor={colorSelected} />
+              <ProductSizeOptions options={options || []} defaultSize={sizeSelected} />
             </div>
 
             {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
@@ -160,33 +235,21 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
           data={[
             {
               name: 'Description',
-              content:
-                'Fashion is a form of self-expression and autonomy at a particular period and place and in a specific context, of clothing, footwear, lifestyle, accessories, makeup, hairstyle, and body posture.',
+              content: product.description || 'No description available for this item.',
             },
             {
               name: 'Features',
               content: `<ul class="list-disc list-inside leading-7">
-                  <li>Material: 43% Sorona Yarn + 57% Stretch Polyester</li>
-                  <li>
-                  Casual pants waist with elastic elastic inside
-                  </li>
-                  <li>
-                    The pants are a bit tight so you always feel comfortable
-                  </li>
-                  <li>
-                    Excool technology application 4-way stretch
-                  </li>
-                </ul>`,
+                ${(product.features || []).map((f: string) => `<li>${f}</li>`).join('')}
+              </ul>`,
+            },
+            {
+              name: 'Fabric + Care',
+              content: product.careInstruction || 'Hand wash cold with like colors.',
             },
             {
               name: 'Shipping & Return',
-              content:
-                'We offer free shipping on all orders over $50. If you are not satisfied with your purchase, you can return it within 30 days for a full refund.',
-            },
-            {
-              name: 'Care Instructions',
-              content:
-                'Machine wash cold with like colors. Do not bleach. Tumble dry low. Iron low if needed. Do not dry clean.',
+              content: product.shippingAndReturn || 'We offer free shipping on all orders over $50.',
             },
           ]}
         />
@@ -204,49 +267,22 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
   }
 
   return (
-    <div className={className}>
-      <div className="lg:flex">
-        <div className="w-full lg:w-[50%]">
-          <div className="relative">
-            <div className="aspect-w-16 aspect-h-16">
-              {images?.[0] && (
-                <Image
-                  src={images[0]}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="w-full rounded-xl object-cover"
-                  alt={images[0].alt}
-                />
-              )}
+    <ProductColorProvider defaultColor={colorSelected} colorImageMap={colorImageMap}>
+      <div className={className}>
+        <div className="lg:flex">
+          <div className="w-full lg:w-[50%]">
+            <div className="relative">
+              <ProductQuickViewGallery images={images || []} defaultImage={featuredImage} />
+              {renderStatus()}
+              <LikeButton className="absolute end-3 top-3" />
             </div>
+          </div>
 
-            {renderStatus()}
-            <LikeButton className="absolute end-3 top-3" />
-          </div>
-          <div className="mt-3 hidden grid-cols-2 gap-3 sm:mt-6 sm:gap-6 lg:grid xl:mt-5 xl:gap-5">
-            {[images?.[1], images?.[2]].map((image, index) => {
-              if (!image?.src) {
-                return null
-              }
-              return (
-                <div key={index} className="aspect-w-3 aspect-h-4">
-                  <Image
-                    fill
-                    src={image}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="w-full rounded-xl object-cover"
-                    alt={image.alt}
-                  />
-                </div>
-              )
-            })}
-          </div>
+          {/* SIDEBAR */}
+          <div className="w-full pt-6 lg:w-[50%] lg:ps-7 lg:pt-0 xl:ps-8">{renderSectionContent()}</div>
         </div>
-
-        {/* SIDEBAR */}
-        <div className="w-full pt-6 lg:w-[50%] lg:ps-7 lg:pt-0 xl:ps-8">{renderSectionContent()}</div>
       </div>
-    </div>
+    </ProductColorProvider>
   )
 }
 

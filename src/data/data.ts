@@ -46,6 +46,8 @@ import avatarImage2 from '@/images/users/avatar2.jpg'
 import avatarImage3 from '@/images/users/avatar3.jpg'
 import avatarImage4 from '@/images/users/avatar4.jpg'
 import { shuffleArray } from '@/utils/shuffleArray'
+import { fetchPinterestProducts } from '@/utils/pinterest'
+import { fetchMagicNeedlesProducts } from '@/utils/magicneedles'
 
 export async function getOrder(number: string) {
   const allOrders = await getOrders()
@@ -677,14 +679,14 @@ export async function getCollections() {
       id: 'gid://1',
       title: 'Cozy Wearables',
       handle: 'jackets',
-      description: 'Lovingly hand-stitched chuny cardigans, pullovers, and seasonal sweaters to keep you warm.',
+      description: 'Lovingly hand-stitched chunky cardigans, pullovers, and seasonal sweaters to keep you warm.',
       sortDescription: 'Chunky cardigans & sweaters',
       color: 'bg-[#FAF6F0]',
       count: 24,
       image: {
-        src: collectionImage1.src,
-        width: collectionImage1.width,
-        height: collectionImage1.height,
+        src: productImage1.src,
+        width: productImage1.width,
+        height: productImage1.height,
         alt: 'Cozy Wearables',
       },
     },
@@ -695,9 +697,9 @@ export async function getCollections() {
       sortDescription: 'Sweet cuddly companions',
       description: 'Adorably handcrafted plush animals, toys, and custom creations crocheted with 100% organic cotton thread.',
       image: {
-        src: collectionImage2.src,
-        width: collectionImage2.width,
-        height: collectionImage2.height,
+        src: '/Crochet/IMG_20260605_154015_438.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Amigurumi Toys',
       },
       color: 'bg-[#FAF6F0]',
@@ -710,9 +712,9 @@ export async function getCollections() {
       sortDescription: 'Artisanal bags & purses',
       description: 'Chic granny square shoulder bags, crossbody purses, and durable textured tote bags for carrying your essentials.',
       image: {
-        src: collectionImage3.src,
-        width: collectionImage3.width,
-        height: collectionImage3.height,
+        src: '/Crochet/IMG_20260605_154047_393.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Bags & Purses',
       },
       color: 'bg-[#FAF6F0]',
@@ -725,9 +727,9 @@ export async function getCollections() {
       sortDescription: 'Cozy textured home goods',
       description: 'Beautifully textured coasters, soft plant hangers, woven table runner pieces, and handcrafted blankets to warm your home.',
       image: {
-        src: collectionImage4.src,
-        width: collectionImage4.width,
-        height: collectionImage4.height,
+        src: '/Crochet/IMG_20260605_154025_177.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Home & Living',
       },
       color: 'bg-[#FAF6F0]',
@@ -740,9 +742,9 @@ export async function getCollections() {
       sortDescription: 'Complete DIY starter kits',
       description: 'Premium curated crochet starter kits filled with gorgeous yarn, bamboo hooks, needles, and step-by-step printed patterns.',
       image: {
-        src: collectionImage5.src,
-        width: collectionImage5.width,
-        height: collectionImage5.height,
+        src: productImage8.src,
+        width: productImage8.width,
+        height: productImage8.height,
         alt: 'Artisanal Kits',
       },
       color: 'bg-[#FAF6F0]',
@@ -755,9 +757,9 @@ export async function getCollections() {
       sortDescription: 'Scarves, beanies & hairbands',
       description: 'Charming beanies, floral hairbands, and warm infinity scarves crocheted in soft pastel palettes.',
       image: {
-        src: collectionImage6.src,
-        width: collectionImage6.width,
-        height: collectionImage6.height,
+        src: '/Crochet/IMG_20260605_154008_671.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Soft Accessories',
       },
       color: 'bg-[#FAF6F0]',
@@ -770,15 +772,15 @@ export async function getCollections() {
       sortDescription: 'Intricate granny-squares',
       description: 'Add a touch of vintage artisanal charm with our beautifully detailed sunburst granny-square tote bags.',
       image: {
-        src: collectionImage7.src,
-        width: collectionImage7.width,
-        height: collectionImage7.height,
+        src: '/Crochet/IMG_20260605_154246_117.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Bags & Totes',
       },
       color: 'bg-[#FAF6F0]',
       count: 15,
     },
-
+  
     //  Featured collections 8 - 11
     {
       id: 'gid://8',
@@ -789,9 +791,9 @@ export async function getCollections() {
       color: 'bg-orange-50',
       count: 18,
       image: {
-        src: collectionImage5.src,
-        width: collectionImage5.width,
-        height: collectionImage5.height,
+        src: '/Crochet/IMG_20260605_154009_634.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Explore new creations',
       },
     },
@@ -804,9 +806,9 @@ export async function getCollections() {
       color: 'bg-green-50',
       count: 25,
       image: {
-        src: collectionImage4.src,
-        width: collectionImage4.width,
-        height: collectionImage4.height,
+        src: '/Crochet/IMG_20260605_154013_495.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Cozy Autumn Sale',
       },
     },
@@ -819,9 +821,9 @@ export async function getCollections() {
       color: 'bg-blue-50',
       count: 8,
       image: {
-        src: collectionImage3.src,
-        width: collectionImage3.width,
-        height: collectionImage3.height,
+        src: '/Crochet/IMG_20260605_154006_048.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'DIY patterns pack',
       },
     },
@@ -834,13 +836,13 @@ export async function getCollections() {
       color: 'bg-red-50',
       count: 4,
       image: {
-        src: collectionImage2.src,
-        width: collectionImage2.width,
-        height: collectionImage2.height,
+        src: '/Crochet/IMG_20260605_154046_274.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Thread & Love Gift Cards',
       },
     },
-
+  
     // Brands collections 12 - 15 (mapped for department sliders)
     {
       id: 'gid://12',
@@ -851,9 +853,9 @@ export async function getCollections() {
       color: 'bg-neutral-100',
       count: 6,
       image: {
-        src: boothImage1.src,
-        width: boothImage1.width,
-        height: boothImage1.height,
+        src: productImage8.src,
+        width: productImage8.width,
+        height: productImage8.height,
         alt: 'Beginner DIY Kits',
       },
     },
@@ -866,9 +868,9 @@ export async function getCollections() {
       description: 'Lovingly stitched animal plushies with baby-safe embroidered eyes and ultra-soft organic stuffing.',
       count: 22,
       image: {
-        src: boothImage2.src,
-        width: boothImage2.width,
-        height: boothImage2.height,
+        src: '/Crochet/IMG_20260605_154026_131.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Plush Amigurumi',
       },
     },
@@ -881,9 +883,9 @@ export async function getCollections() {
       color: 'bg-neutral-100',
       count: 14,
       image: {
-        src: boothImage3.src,
-        width: boothImage3.width,
-        height: boothImage3.height,
+        src: productImage1.src,
+        width: productImage1.width,
+        height: productImage1.height,
         alt: 'Soft Wearables',
       },
     },
@@ -896,9 +898,9 @@ export async function getCollections() {
       color: 'bg-neutral-100',
       count: 16,
       image: {
-        src: boothImage4.src,
-        width: boothImage4.width,
-        height: boothImage4.height,
+        src: '/Crochet/IMG_20260605_154023_102.jpg',
+        width: 1000,
+        height: 1000,
         alt: 'Home Decoration',
       },
     },
@@ -1021,12 +1023,766 @@ export async function getCollectionByHandle(handle: string) {
   return collection
 }
 
-export async function getProducts() {
-  return [
+export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
+  {
+    id: 'crochet-drawstring-pouch',
+    title: 'Handcrafted Crochet Drawstring Pouch',
+    handle: 'crochet-drawstring-pouch',
+    collectionHandles: ['jeans', 'bags'],
+    createdAt: '2026-06-05T12:00:00Z',
+    vendor: 'Thread & Love',
+    price: 16,
+    featuredImage: {
+      src: '/Crochet/IMG_20260605_154246_117.jpg',
+      width: 1000,
+      height: 1000,
+      alt: 'Handcrafted Crochet Drawstring Pouch Group',
+      color: 'Cherry'
+    },
+    images: [
+      {
+        src: '/Crochet/IMG_20260605_154246_117.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Drawstring Pouch Group',
+        color: 'Cherry'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154007_485.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Drawstring Pouch Cherry',
+        color: 'Cherry'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154052_809.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Drawstring Pouch Mushroom',
+        color: 'Mushroom'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154053_875.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Drawstring Pouch Flower',
+        color: 'Flower'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154055_020.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Drawstring Pouch Clover',
+        color: 'Clover'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154056_038.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Drawstring Pouch Fish',
+        color: 'Fish'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154057_159.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Drawstring Pouch Watermelon',
+        color: 'Watermelon'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154058_219.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Drawstring Pouch Evil Eye',
+        color: 'Evil Eye'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154059_250.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Drawstring Pouch Cupcake',
+        color: 'Cupcake'
+      }
+    ],
+    reviewNumber: 54,
+    rating: 4.9,
+    status: 'Popular Choice',
+    options: [
+      {
+        name: 'Color',
+        optionValues: [
+          { name: 'Cherry', swatch: { color: '#a3c1ad', image: '/Crochet/IMG_20260605_154007_485.jpg' } },
+          { name: 'Mushroom', swatch: { color: '#d62828', image: '/Crochet/IMG_20260605_154052_809.jpg' } },
+          { name: 'Flower', swatch: { color: '#fcbf49', image: '/Crochet/IMG_20260605_154053_875.jpg' } },
+          { name: 'Clover', swatch: { color: '#2a9d8f', image: '/Crochet/IMG_20260605_154055_020.jpg' } },
+          { name: 'Fish', swatch: { color: '#457b9d', image: '/Crochet/IMG_20260605_154056_038.jpg' } },
+          { name: 'Watermelon', swatch: { color: '#e63946', image: '/Crochet/IMG_20260605_154057_159.jpg' } },
+          { name: 'Evil Eye', swatch: { color: '#1d3557', image: '/Crochet/IMG_20260605_154058_219.jpg' } },
+          { name: 'Cupcake', swatch: { color: '#ffb703', image: '/Crochet/IMG_20260605_154059_250.jpg' } }
+        ]
+      },
+      {
+        name: 'Size',
+        optionValues: [{ name: 'Standard', swatch: null }]
+      }
+    ],
+    selectedOptions: [
+      { name: 'Color', value: 'Cherry' },
+      { name: 'Size', value: 'Standard' }
+    ],
+    description: 'This delightfully cute, hand-woven drawstring pouch is crafted from 100% premium soft cotton thread. Each design features a charming 3D character accent, double-knotted drawstring pull chords, and a spacious internal compartment for tiny daily treasures.',
+    features: [
+      'Material: 100% Premium Organic Combed Cotton',
+      'Intricate, durable hand-lock crochet stitching',
+      'Secure, adjustable drawstring closure with double knots',
+      'Perfect for coins, keys, cosmetics, or lip balm'
+    ],
+    careInstruction: 'Hand wash gently in cold water with mild detergent. Do not squeeze, twist, or wring. Lay flat on dry towel to air dry. Do not machine wash.',
+    shippingAndReturn: 'We offer free shipping on all orders over $50. Since each item is made to order by hand, please allow 3-5 days for crafting. Returns are welcome within 30 days.'
+  },
+  {
+    id: 'crochet-chunky-shoulder-bag',
+    title: 'Chunky Crochet Shoulder Bag',
+    handle: 'crochet-chunky-shoulder-bag',
+    collectionHandles: ['jeans', 'bags'],
+    createdAt: '2026-06-05T12:00:00Z',
+    vendor: 'Thread & Love',
+    price: 38,
+    featuredImage: {
+      src: '/Crochet/IMG_20260605_154047_393.jpg',
+      width: 1000,
+      height: 1000,
+      alt: 'Chunky Crochet Shoulder Bag Lavender',
+      color: 'Lavender'
+    },
+    images: [
+      {
+        src: '/Crochet/IMG_20260605_154047_393.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Chunky Crochet Shoulder Bag Lavender',
+        color: 'Lavender'
+      }
+    ],
+    reviewNumber: 32,
+    rating: 4.8,
+    status: 'New Arrival',
+    options: [
+      {
+        name: 'Color',
+        optionValues: [
+          { name: 'Lavender', swatch: { color: '#c8b6e2', image: '/Crochet/IMG_20260605_154047_393.jpg' } }
+        ]
+      },
+      {
+        name: 'Size',
+        optionValues: [{ name: 'Standard', swatch: null }]
+      }
+    ],
+    selectedOptions: [
+      { name: 'Color', value: 'Lavender' },
+      { name: 'Size', value: 'Standard' }
+    ],
+    description: 'Make a bold statement with our Chunky Crochet Shoulder Bag. Intricately hand-looped from thick, cushioned cotton tube yarn, it features a unique marshmallow-textured bubble stitch weave and two secure shoulder straps. Holds your daily essentials in premium, fluffy comfort.',
+    features: [
+      'Crafted from thick, cushioned premium cotton tube yarn',
+      'Distinctive chunky marshmallow-style bubble stitch weave',
+      'Reinforced double shoulder straps for durability',
+      'Generous interior space for phone, wallet, and keys'
+    ],
+    careInstruction: 'Spot clean only with cold water and mild soap. Lay flat to dry out of direct sunlight. Do not wring or machine dry.',
+    shippingAndReturn: 'Free shipping on orders over $50. Lovingly hand-knitted and shipped within 3-4 business days. Returns accepted within 30 days.'
+  },
+  {
+    id: 'crochet-daisy-coaster-set',
+    title: 'Handmade Daisy Flower Coaster Set',
+    handle: 'crochet-daisy-coaster-set',
+    collectionHandles: ['coats'],
+    createdAt: '2026-06-05T12:00:00Z',
+    vendor: 'Thread & Love',
+    price: 18,
+    featuredImage: {
+      src: '/Crochet/IMG_20260605_154025_177.jpg',
+      width: 1000,
+      height: 1000,
+      alt: 'Handmade Daisy Flower Coasters Quartet',
+      color: 'Quartet Meadow'
+    },
+    images: [
+      {
+        src: '/Crochet/IMG_20260605_154022_135.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Daisy Flower Coasters Single',
+        color: 'Single White'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154023_102.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Daisy Flower Coasters Duo',
+        color: 'Duo Blossom'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154024_068.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Daisy Flower Coasters Trio',
+        color: 'Trio Pastel'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154025_177.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Daisy Flower Coasters Quartet',
+        color: 'Quartet Meadow'
+      }
+    ],
+    reviewNumber: 41,
+    rating: 4.9,
+    status: 'Best Seller',
+    options: [
+      {
+        name: 'Color',
+        optionValues: [
+          { name: 'Single White', swatch: { color: '#faf8f5', image: '/Crochet/IMG_20260605_154022_135.jpg' } },
+          { name: 'Duo Blossom', swatch: { color: '#ffccd5', image: '/Crochet/IMG_20260605_154023_102.jpg' } },
+          { name: 'Trio Pastel', swatch: { color: '#dec0f1', image: '/Crochet/IMG_20260605_154024_068.jpg' } },
+          { name: 'Quartet Meadow', swatch: { color: '#c5e8d1', image: '/Crochet/IMG_20260605_154025_177.jpg' } }
+        ]
+      },
+      {
+        name: 'Size',
+        optionValues: [{ name: 'Standard', swatch: null }]
+      }
+    ],
+    selectedOptions: [
+      { name: 'Color', value: 'Quartet Meadow' },
+      { name: 'Size', value: 'Standard' }
+    ],
+    description: 'Brighten your morning coffee routine with our Handmade Daisy Flower Coasters. Meticulously crocheted into cute, flat sunburst flower designs, they protect your table surfaces from heat and spills while adding a gorgeous touch of cottagecore aesthetic. Available in single units or bundles of coordinating pastel shades.',
+    features: [
+      'Protective flat-laying double-threaded crochet build',
+      '100% thick organic cotton yarn for maximum absorption',
+      'Cute cottagecore daisy shape with yellow center detailing',
+      'Available in coordinating, stacked pastel sets'
+    ],
+    careInstruction: 'Hand wash cold or machine wash on ultra-gentle cycle in a mesh laundry bag. Lay flat to dry.',
+    shippingAndReturn: 'Free shipping on orders over $50. Shipped within 2 business days. Returns accepted within 30 days.'
+  },
+  {
+    id: 'crochet-amigurumi-keychain',
+    title: 'Whimsical Amigurumi Keychains',
+    handle: 'crochet-amigurumi-keychain',
+    collectionHandles: ['t-shirts', 'accessories'],
+    createdAt: '2026-06-05T12:00:00Z',
+    vendor: 'Thread & Love',
+    price: 14,
+    featuredImage: {
+      src: '/Crochet/IMG_20260605_154015_438.jpg',
+      width: 1000,
+      height: 1000,
+      alt: 'Whimsical Amigurumi Keychains Cuddly Bear',
+      color: 'Cuddly Bear'
+    },
+    images: [
+      {
+        src: '/Crochet/IMG_20260605_154015_438.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Whimsical Amigurumi Keychains Cuddly Bear',
+        color: 'Cuddly Bear'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154020_237.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Whimsical Amigurumi Keychains Web-Slinger',
+        color: 'Web-Slinger'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154026_131.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Whimsical Amigurumi Keychains Baby Piggy',
+        color: 'Baby Piggy'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154029_904.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Whimsical Amigurumi Keychains Smiley Daisy',
+        color: 'Smiley Daisy'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154030_919.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Whimsical Amigurumi Keychains Initial Heart',
+        color: 'Initial Heart'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154048_506.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Whimsical Amigurumi Keychains Peacock Feather',
+        color: 'Peacock Feather'
+      }
+    ],
+    reviewNumber: 68,
+    rating: 5.0,
+    status: 'Must Have',
+    options: [
+      {
+        name: 'Color',
+        optionValues: [
+          { name: 'Cuddly Bear', swatch: { color: '#a67c52', image: '/Crochet/IMG_20260605_154015_438.jpg' } },
+          { name: 'Web-Slinger', swatch: { color: '#d62828', image: '/Crochet/IMG_20260605_154020_237.jpg' } },
+          { name: 'Baby Piggy', swatch: { color: '#ffccd5', image: '/Crochet/IMG_20260605_154026_131.jpg' } },
+          { name: 'Smiley Daisy', swatch: { color: '#f4c430', image: '/Crochet/IMG_20260605_154029_904.jpg' } },
+          { name: 'Initial Heart', swatch: { color: '#b7094c', image: '/Crochet/IMG_20260605_154030_919.jpg' } },
+          { name: 'Peacock Feather', swatch: { color: '#0077b6', image: '/Crochet/IMG_20260605_154048_506.jpg' } }
+        ]
+      },
+      {
+        name: 'Size',
+        optionValues: [{ name: 'Standard', swatch: null }]
+      }
+    ],
+    selectedOptions: [
+      { name: 'Color', value: 'Cuddly Bear' },
+      { name: 'Size', value: 'Standard' }
+    ],
+    description: 'Add a splash of cozy charm to your bag or keys. Our Whimsical Amigurumi Keychains are hand-stitched with tight stitches to ensure durability, stuffed with organic fluff, and fitted with robust metal key rings. Choose from cute animal characters, miniature flowers, or customized initial pieces.',
+    features: [
+      '100% organic combed cotton yarn with baby-safe stuffing',
+      'Equipped with durable, polished metal keyrings',
+      'Ultra-tight stitch work prevents loose strings',
+      'Available in highly detailed custom shapes'
+    ],
+    careInstruction: 'Hand wash gently or spot clean with a damp cloth. Lay flat to dry.',
+    shippingAndReturn: 'Free shipping on orders over $50. Handmade and dispatched within 2-3 business days. Returns accepted within 30 days.'
+  },
+  {
+    id: 'crochet-evil-eye-charm',
+    title: 'Protective Evil Eye Hanging Charm',
+    handle: 'crochet-evil-eye-charm',
+    collectionHandles: ['coats', 'accessories'],
+    createdAt: '2026-06-05T12:00:00Z',
+    vendor: 'Thread & Love',
+    price: 15,
+    featuredImage: {
+      src: '/Crochet/IMG_20260605_154051_384.jpg',
+      width: 1000,
+      height: 1000,
+      alt: 'Protective Evil Eye Hanging Charm Tasseled Medallion',
+      color: 'Tasseled Medallion'
+    },
+    images: [
+      {
+        src: '/Crochet/IMG_20260605_154016_391.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Protective Evil Eye Hanging Charm Classic Flat',
+        color: 'Classic Flat'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154027_953.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Protective Evil Eye Hanging Charm Scalloped Border',
+        color: 'Scalloped Border'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154051_384.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Protective Evil Eye Hanging Charm Tasseled Medallion',
+        color: 'Tasseled Medallion'
+      }
+    ],
+    reviewNumber: 27,
+    rating: 4.8,
+    status: 'Handmade Charm',
+    options: [
+      {
+        name: 'Color',
+        optionValues: [
+          { name: 'Classic Flat', swatch: { color: '#03045e', image: '/Crochet/IMG_20260605_154016_391.jpg' } },
+          { name: 'Scalloped Border', swatch: { color: '#00b4d8', image: '/Crochet/IMG_20260605_154027_953.jpg' } },
+          { name: 'Tasseled Medallion', swatch: { color: '#0077b6', image: '/Crochet/IMG_20260605_154051_384.jpg' } }
+        ]
+      },
+      {
+        name: 'Size',
+        optionValues: [{ name: 'Standard', swatch: null }]
+      }
+    ],
+    selectedOptions: [
+      { name: 'Color', value: 'Tasseled Medallion' },
+      { name: 'Size', value: 'Standard' }
+    ],
+    description: 'Invite protection and style into your home or car. Handcrafted with traditional concentric rings of deep indigo, light blue, and crisp white, these Evil Eye charms feature gorgeous tassels and braided cords. Ideal for hanging on rearview mirrors, door knobs, or walls.',
+    features: [
+      'Concentric protective rings crocheted with bright, vivid yarn',
+      'Equipped with a sturdy braided loop hanger',
+      'Beautiful textured tassels or scalloped margins',
+      'Perfect size for rearview mirrors or home accent spaces'
+    ],
+    careInstruction: 'Dust lightly with a soft brush. Hand wash cold if needed. Do not wring or scrub.',
+    shippingAndReturn: 'Free shipping on orders over $50. Dispatched within 24-48 hours. Returns allowed within 30 days.'
+  },
+  {
+    id: 'crochet-greeting-card',
+    title: 'Handmade Greeting Card & Pocket Hug',
+    handle: 'crochet-greeting-card',
+    collectionHandles: ['accessories', 'coats'],
+    createdAt: '2026-06-05T12:00:00Z',
+    vendor: 'Thread & Love',
+    price: 8,
+    featuredImage: {
+      src: '/Crochet/IMG_20260605_154006_048.jpg',
+      width: 1000,
+      height: 1000,
+      alt: 'Handmade Greeting Card Little Pocket Hug',
+      color: 'Little Pocket Hug'
+    },
+    images: [
+      {
+        src: '/Crochet/IMG_20260605_154006_048.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Greeting Card Little Pocket Hug',
+        color: 'Little Pocket Hug'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154035_122.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Greeting Card Mom Special',
+        color: 'Mom Special'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154036_581.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Greeting Card It Was Always You',
+        color: 'It Was Always You'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154037_830.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Greeting Card Happy Birthday',
+        color: 'Happy Birthday'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154043_995.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Greeting Card Just For You',
+        color: 'Just For You'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154045_116.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Greeting Card Warmest Hugs',
+        color: 'Warmest Hugs'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154046_274.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handmade Greeting Card Keepsake Card',
+        color: 'Keepsake Card'
+      }
+    ],
+    reviewNumber: 83,
+    rating: 4.9,
+    status: 'Cute Gift',
+    options: [
+      {
+        name: 'Color',
+        optionValues: [
+          { name: 'Little Pocket Hug', swatch: { color: '#e5989b', image: '/Crochet/IMG_20260605_154006_048.jpg' } },
+          { name: 'Mom Special', swatch: { color: '#f4a460', image: '/Crochet/IMG_20260605_154035_122.jpg' } },
+          { name: 'It Was Always You', swatch: { color: '#9e2a2b', image: '/Crochet/IMG_20260605_154036_581.jpg' } },
+          { name: 'Happy Birthday', swatch: { color: '#f4c430', image: '/Crochet/IMG_20260605_154037_830.jpg' } },
+          { name: 'Just For You', swatch: { color: '#ebd9be', image: '/Crochet/IMG_20260605_154043_995.jpg' } },
+          { name: 'Warmest Hugs', swatch: { color: '#8ba88f', image: '/Crochet/IMG_20260605_154045_116.jpg' } },
+          { name: 'Keepsake Card', swatch: { color: '#faeee2', image: '/Crochet/IMG_20260605_154046_274.jpg' } }
+        ]
+      },
+      {
+        name: 'Size',
+        optionValues: [{ name: 'Standard', swatch: null }]
+      }
+    ],
+    selectedOptions: [
+      { name: 'Color', value: 'Little Pocket Hug' },
+      { name: 'Size', value: 'Standard' }
+    ],
+    description: 'Send love with our Handmade Greeting Cards. Each premium heavy-cardstock card features a sweet, printed motivational quote and holds an adorable hand-crocheted pocket hug keepsake (a heart, a smile, or a flower) that can be removed and carried in a pocket or wallet as a constant comfort.',
+    features: [
+      'Heavyweight kraft/white cardstock card with crisp printing',
+      'Removable, hand-knitted mini pocket hug token included',
+      'Includes premium envelopes for mailing',
+      'Perfect for mother\'s day, birthdays, thank yous, or sympathy'
+    ],
+    careInstruction: 'Keep card dry. The pocket hug token can be hand-washed in cold water if needed.',
+    shippingAndReturn: 'Shipped within 24 hours. Regular lettermail available. Returns accepted on unused cards within 30 days.'
+  },
+  {
+    id: 'crochet-hair-accessory-set',
+    title: 'Aura Crochet Hair Accessory Set',
+    handle: 'crochet-hair-accessory-set',
+    collectionHandles: ['accessories'],
+    createdAt: '2026-06-05T12:00:00Z',
+    vendor: 'Thread & Love',
+    price: 12,
+    featuredImage: {
+      src: '/Crochet/IMG_20260605_154008_671.jpg',
+      width: 1000,
+      height: 1000,
+      alt: 'Aura Crochet Hair Accessory Pretty Bows Clip',
+      color: 'Pretty Bows Clip'
+    },
+    images: [
+      {
+        src: '/Crochet/IMG_20260605_154008_671.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Aura Crochet Hair Accessory Pretty Bows Clip',
+        color: 'Pretty Bows Clip'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154017_348.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Aura Crochet Hair Accessory Floral Meadow Clip',
+        color: 'Floral Meadow Clip'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154018_327.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Aura Crochet Hair Accessory Sweet Cherry Ties',
+        color: 'Sweet Cherry Ties'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154042_767.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Aura Crochet Hair Accessory Mini Hearts Clip',
+        color: 'Mini Hearts Clip'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154050_342.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Aura Crochet Hair Accessory Rainbow Pastel Clip',
+        color: 'Rainbow Pastel Clip'
+      }
+    ],
+    reviewNumber: 19,
+    rating: 4.7,
+    status: 'Cute Accessory',
+    options: [
+      {
+        name: 'Color',
+        optionValues: [
+          { name: 'Pretty Bows Clip', swatch: { color: '#ffcad4', image: '/Crochet/IMG_20260605_154008_671.jpg' } },
+          { name: 'Floral Meadow Clip', swatch: { color: '#faeee2', image: '/Crochet/IMG_20260605_154017_348.jpg' } },
+          { name: 'Sweet Cherry Ties', swatch: { color: '#d00000', image: '/Crochet/IMG_20260605_154018_327.jpg' } },
+          { name: 'Mini Hearts Clip', swatch: { color: '#e5989b', image: '/Crochet/IMG_20260605_154042_767.jpg' } },
+          { name: 'Rainbow Pastel Clip', swatch: { color: '#dec0f1', image: '/Crochet/IMG_20260605_154050_342.jpg' } }
+        ]
+      },
+      {
+        name: 'Size',
+        optionValues: [{ name: 'Standard', swatch: null }]
+      }
+    ],
+    selectedOptions: [
+      { name: 'Color', value: 'Pretty Bows Clip' },
+      { name: 'Size', value: 'Standard' }
+    ],
+    description: 'Charming hair accessories crocheted in soft cotton threads. Fitted with secure non-slip metal snap clips or strong elastic ties, they add a sweet, handcrafted cottagecore touch to any hairstyle. Choose from bows, flowers, cherries, hearts, or rainbows.',
+    features: [
+      'Mounted on premium non-slip metal snap clips or soft elastic bands',
+      'Hand-woven details with no glue overflow',
+      'Cute pastel styles suitable for all ages',
+      'Lightweight and comfortable for all-day wear'
+    ],
+    careInstruction: 'Spot clean with a damp cloth. Do not soak metal clips to prevent rust.',
+    shippingAndReturn: 'Dispatched within 24 hours. Free shipping on orders over $50. Returns accepted within 30 days.'
+  },
+  {
+    id: 'crochet-specialty-holders',
+    title: 'Handcrafted Crochet Specialty Holders',
+    handle: 'crochet-specialty-holders',
+    collectionHandles: ['accessories'],
+    createdAt: '2026-06-05T12:00:00Z',
+    vendor: 'Thread & Love',
+    price: 10,
+    featuredImage: {
+      src: '/Crochet/IMG_20260605_154039_796.jpg',
+      width: 1000,
+      height: 1000,
+      alt: 'Handcrafted Crochet Specialty Holders Sunflower Spectacles',
+      color: 'Sunflower Spectacles'
+    },
+    images: [
+      {
+        src: '/Crochet/IMG_20260605_154039_796.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Specialty Holders Sunflower Spectacles',
+        color: 'Sunflower Spectacles'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154041_532.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Handcrafted Crochet Specialty Holders Snuggly Bear Balm',
+        color: 'Snuggly Bear Balm'
+      }
+    ],
+    reviewNumber: 14,
+    rating: 4.8,
+    status: 'Clever Design',
+    options: [
+      {
+        name: 'Color',
+        optionValues: [
+          { name: 'Sunflower Spectacles', swatch: { color: '#ffb703', image: '/Crochet/IMG_20260605_154039_796.jpg' } },
+          { name: 'Snuggly Bear Balm', swatch: { color: '#9c6644', image: '/Crochet/IMG_20260605_154041_532.jpg' } }
+        ]
+      },
+      {
+        name: 'Size',
+        optionValues: [{ name: 'Standard', swatch: null }]
+      }
+    ],
+    selectedOptions: [
+      { name: 'Color', value: 'Sunflower Spectacles' },
+      { name: 'Size', value: 'Standard' }
+    ],
+    description: 'Keep your small accessories safe in style. Our Sunflower Spectacles holder wraps securely around glasses templates to keep them protected from scratches, while the Snuggly Bear Balm holder hangs onto bags or keyrings, keeping your favorite lip balm close at hand.',
+    features: [
+      'Soft, scratch-resistant cotton yarn sleeves',
+      'Fitted with small keychain attachment loops',
+      'Cute designs: Sunflower and Snuggly Bear',
+      'Perfect functional gifts'
+    ],
+    careInstruction: 'Hand wash cold and lay flat to dry. Do not bleach.',
+    shippingAndReturn: 'Dispatched within 24-48 hours. Returnable within 30 days.'
+  },
+  {
+    id: 'crochet-flower-bouquet',
+    title: 'Premium Crochet Flower Bouquet',
+    handle: 'crochet-flower-bouquet',
+    collectionHandles: ['coats'],
+    createdAt: '2026-06-05T12:00:00Z',
+    vendor: 'Thread & Love',
+    price: 28,
+    featuredImage: {
+      src: '/Crochet/IMG_20260605_154009_634.jpg',
+      width: 1000,
+      height: 1000,
+      alt: 'Premium Crochet Flower Bouquet Spring Tulips',
+      color: 'Spring Tulips'
+    },
+    images: [
+      {
+        src: '/Crochet/IMG_20260605_154009_634.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Premium Crochet Flower Bouquet Spring Tulips',
+        color: 'Spring Tulips'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154010_583.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Premium Crochet Flower Bouquet Bright Lilies',
+        color: 'Bright Lilies'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154012_462.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Premium Crochet Flower Bouquet Warm Sunflowers',
+        color: 'Warm Sunflowers'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154013_495.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Premium Crochet Flower Bouquet Red Roses Bundle',
+        color: 'Red Roses Bundle'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154014_510.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Premium Crochet Flower Bouquet I Heart U Burlap',
+        color: 'I Heart U Burlap'
+      },
+      {
+        src: '/Crochet/IMG_20260605_154027_060.jpg',
+        width: 1000,
+        height: 1000,
+        alt: 'Premium Crochet Flower Bouquet Single Stem Rose',
+        color: 'Single Stem Rose'
+      }
+    ],
+    reviewNumber: 47,
+    rating: 4.9,
+    status: 'Romantic Gift',
+    options: [
+      {
+        name: 'Color',
+        optionValues: [
+          { name: 'Spring Tulips', swatch: { color: '#ffcad4', image: '/Crochet/IMG_20260605_154009_634.jpg' } },
+          { name: 'Bright Lilies', swatch: { color: '#ffe5ec', image: '/Crochet/IMG_20260605_154010_583.jpg' } },
+          { name: 'Warm Sunflowers', swatch: { color: '#fcbf49', image: '/Crochet/IMG_20260605_154012_462.jpg' } },
+          { name: 'Red Roses Bundle', swatch: { color: '#d62828', image: '/Crochet/IMG_20260605_154013_495.jpg' } },
+          { name: 'I Heart U Burlap', swatch: { color: '#ebd9be', image: '/Crochet/IMG_20260605_154014_510.jpg' } },
+          { name: 'Single Stem Rose', swatch: { color: '#9e2a2b', image: '/Crochet/IMG_20260605_154027_060.jpg' } }
+        ]
+      },
+      {
+        name: 'Size',
+        optionValues: [{ name: 'Standard', swatch: null }]
+      }
+    ],
+    selectedOptions: [
+      { name: 'Color', value: 'Spring Tulips' },
+      { name: 'Size', value: 'Standard' }
+    ],
+    description: 'Give a gift of everlasting blooms. Our Premium Crochet Flower Bouquets are handcrafted stitch by stitch, with wire-reinforced stems that allow you to pose and arrange them beautifully. Perfect for dining table decor, office desks, or as a romantic keepsake that never fades.',
+    features: [
+      'Everlasting, hypoallergenic hand-crocheted flowers',
+      'Wire-reinforced leaves and stems for poseable structure',
+      'Beautifully wrapped in tissue or rustic burlap sheets',
+      'Tulips, Lilies, Sunflowers, Roses, and customized configurations'
+    ],
+    careInstruction: 'Dust gently with a soft duster or hairdryer on cool/low setting. Do not wash in washing machine.',
+    shippingAndReturn: 'Free shipping on orders over $50. Hand-packaged securely in sturdy boxes to protect structure. Returnable in original condition within 30 days.'
+  }
+]
+
+export async function getProducts(): Promise<TProductItem[]> {
+  const liveProducts = await fetchMagicNeedlesProducts()
+
+  const localItems = [
     {
       id: 'gid://1001',
       title: 'Aura Crochet Halter Top',
-      handle: 'leather-tote-bag',
+      handle: 'aura-crochet-halter-top',
+      collectionHandles: ['jackets', 'accessories'],
       createdAt: '2025-05-06T10:00:00-04:00',
       vendor: 'Thread & Love',
       price: 48,
@@ -1124,7 +1880,8 @@ export async function getProducts() {
     {
       id: 'gid://1002',
       title: 'Amigurumi Oliver the Owl',
-      handle: 'silk-midi-dress',
+      handle: 'amigurumi-oliver-the-owl',
+      collectionHandles: ['t-shirts'],
       createdAt: '2025-05-07T09:30:00-04:00',
       vendor: 'Thread & Love',
       price: 35,
@@ -1218,7 +1975,8 @@ export async function getProducts() {
     {
       id: 'gid://1003',
       title: 'Sunburst Granny Square Tote',
-      handle: 'denim-jacket',
+      handle: 'sunburst-granny-square-tote',
+      collectionHandles: ['jeans', 'bags'],
       createdAt: '2025-05-08T11:15:00-04:00',
       vendor: 'Thread & Love',
       price: 55,
@@ -1308,7 +2066,8 @@ export async function getProducts() {
     {
       id: 'gid://1004',
       title: 'Aura Pastel Crochet Beanie',
-      handle: 'cashmere-sweater',
+      handle: 'aura-pastel-crochet-beanie',
+      collectionHandles: ['jackets', 'accessories'],
       createdAt: '2025-05-09T14:20:00-04:00',
       vendor: 'Thread & Love',
       price: 28,
@@ -1398,7 +2157,8 @@ export async function getProducts() {
     {
       id: 'gid://1005',
       title: 'Boho Plant Hanger',
-      handle: 'linen-blazer',
+      handle: 'boho-plant-hanger',
+      collectionHandles: ['coats'],
       createdAt: '2025-05-10T08:45:00-04:00',
       vendor: 'Thread & Love',
       price: 32,
@@ -1492,7 +2252,8 @@ export async function getProducts() {
     {
       id: 'gid://1006',
       title: 'Blossom Crochet Coaster Set',
-      handle: 'velvet-skirt',
+      handle: 'blossom-crochet-coaster-set',
+      collectionHandles: ['coats'],
       createdAt: '2025-05-11T12:10:00-04:00',
       vendor: 'Thread & Love',
       price: 18,
@@ -1586,7 +2347,8 @@ export async function getProducts() {
     {
       id: 'gid://1007',
       title: 'Daisy Chain Crossbody Purse',
-      handle: 'wool-trench-coat',
+      handle: 'daisy-chain-crossbody-purse',
+      collectionHandles: ['jeans', 'bags'],
       createdAt: '2025-05-12T10:25:00-04:00',
       vendor: 'Thread & Love',
       price: 45,
@@ -1676,7 +2438,8 @@ export async function getProducts() {
     {
       id: 'gid://1008',
       title: 'Artisanal Crochet Starter Kit',
-      handle: 'cotton-shirt',
+      handle: 'artisanal-crochet-starter-kit',
+      collectionHandles: ['shoes'],
       createdAt: '2025-05-13T09:00:00-04:00',
       vendor: 'Thread & Love',
       price: 65,
@@ -1764,19 +2527,100 @@ export async function getProducts() {
       ],
     },
   ]
+  if (liveProducts && liveProducts.length > 0) {
+    return [...LOCAL_CROCHET_PRODUCTS, ...localItems, ...liveProducts]
+  }
+  return [...LOCAL_CROCHET_PRODUCTS, ...localItems]
+}
+
+export const COLLECTION_PINTEREST_FEEDS: Record<string, string> = {
+  jackets: 'https://www.pinterest.com/annabooshouse/crochet-wearables.rss',
+  coats: 'https://www.pinterest.com/pinterest/home-decor.rss',
+  't-shirts': 'https://www.pinterest.com/pinterest/creative-ideas.rss',
+  jeans: 'https://www.pinterest.com/pinterest/official-news.rss',
+  bags: 'https://www.pinterest.com/pinterest/official-news.rss',
+}
+
+export async function getProductsForCollection(handle: string): Promise<TProductItem[]> {
+  const lowercaseHandle = handle.toLowerCase()
+  const allProducts = await getProducts()
+  
+  const localProducts = lowercaseHandle === 'all'
+    ? allProducts
+    : allProducts.filter((product) => product.collectionHandles?.includes(lowercaseHandle))
+
+  const pinterestFeedUrl = COLLECTION_PINTEREST_FEEDS[lowercaseHandle]
+  if (pinterestFeedUrl) {
+    const pinterestProducts = await fetchPinterestProducts(pinterestFeedUrl)
+    return [...localProducts, ...pinterestProducts]
+  }
+
+  return localProducts
 }
 
 export async function getProductByHandle(handle: string) {
   // lowercase handle
   handle = handle.toLowerCase()
 
+  if (handle.startsWith('pinterest-')) {
+    // Search in active feeds
+    for (const feedUrl of Object.values(COLLECTION_PINTEREST_FEEDS)) {
+      const pins = await fetchPinterestProducts(feedUrl)
+      const pin = pins.find((p) => p.handle === handle)
+      if (pin) return pin
+    }
+    // Fall back to a dynamically constructed Pinterest product on the fly
+    const pinId = handle.replace('pinterest-', '')
+    const pinIdNum = parseInt(pinId, 10) || 0
+    return {
+      id: handle,
+      title: `Pinterest Crochet Inspiration #${pinId.slice(0, 6)}`,
+      handle,
+      createdAt: new Date().toISOString(),
+      vendor: 'Pinterest Inspiration',
+      price: (pinIdNum % 48) + 18,
+      featuredImage: {
+        src: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=736',
+        width: 736,
+        height: 1100,
+        alt: 'Pinterest Inspiration',
+      },
+      images: [
+        {
+          src: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=736',
+          width: 736,
+          height: 1100,
+          alt: 'Pinterest Inspiration',
+        }
+      ],
+      reviewNumber: (pinIdNum % 141) + 10,
+      rating: parseFloat((4.5 + ((pinIdNum % 6) * 0.1)).toFixed(1)),
+      status: 'Pinterest Pin',
+      options: [
+        {
+          name: 'Color',
+          optionValues: [
+            { name: 'Warm Terracotta', swatch: { color: '#c07c65', image: null } },
+            { name: 'Off-White Cream', swatch: { color: '#faeee2', image: null } },
+            { name: 'Forest Green', swatch: { color: '#8ba88f', image: null } }
+          ]
+        },
+        {
+          name: 'Size',
+          optionValues: [{ name: 'S', swatch: null }, { name: 'M', swatch: null }, { name: 'L', swatch: null }]
+        }
+      ],
+      selectedOptions: [
+        { name: 'Color', value: 'Off-White Cream' },
+        { name: 'Size', value: 'M' }
+      ]
+    }
+  }
+
   const products = await getProducts()
   let product = products.find((product) => product.handle === handle)
 
   if (!product) {
-    // throw new Error(`Product with handle "${handle}" not found.`)
-
-    // for demo purposes, we are using a static product detail
     product = products[0] // fallback to the first product
   }
 
@@ -1790,47 +2634,114 @@ export async function getProductDetailByHandle(handle: string) {
 
   // for demo purposes, we are using a static product detail
   const product = await getProductByHandle(handle)
-
-  // if ( !product?.id ) {
-  //   throw new Error(`Product with handle "${handle}" not found.`)
-  // }
+  const isPinterest = handle.startsWith('pinterest-')
+  const isMagic = handle.startsWith('magic-')
 
   return {
     ...product,
-    status: 'In Stock',
+    status: isPinterest ? 'Pinterest Pin' : (product?.status || 'In Stock'),
     breadcrumbs: [
       { id: 1, name: 'Home', href: '/' },
       { id: 2, name: 'Handmade Crochet', href: '/collections/all' },
     ],
-    description:
-      'Every single piece is lovingly hand-crafted by our master artisans with the softest, premium organic cotton and ethically sourced wool. We pay careful attention to every stitch, creating durable, cozy, and highly expressive heirloom pieces designed to last a lifetime.',
+    description: isPinterest 
+      ? ((product as any).pinterestDescription || 'This gorgeous piece was discovered on Pinterest. Lovingly hand-crafted, it features high-quality premium fibers and intricate stitch detailing to bring creative crochet patterns to life.')
+      : (isMagic 
+          ? ((product as any).magicDescription || 'A beautifully designed premium handcrafted item from Magic Needles. Made with high-quality yarn and designed with meticulous attention to detail.') 
+          : ((product as any).description || 'Every single piece is lovingly hand-crafted by our master artisans with the softest, premium organic cotton and ethically sourced wool. We pay careful attention to every stitch, creating durable, cozy, and highly expressive heirloom pieces designed to last a lifetime.')),
     publishedAt: '2025-05-15T12:00:00Z',
     selectedOptions: [
       {
         name: 'Color',
-        value: product?.options.find((option) => option.name === 'Color')?.optionValues[0].name,
+        value: product?.options?.find((option) => option.name === 'Color')?.optionValues[0]?.name || 'Original',
       },
       {
         name: 'Size',
-        value: product?.options.find((option) => option.name === 'Size')?.optionValues[0].name,
+        value: product?.options?.find((option) => option.name === 'Size')?.optionValues[0]?.name || 'Standard',
       },
     ],
-    features: [
-      'Material: 100% Organic Combed Cotton & Ethically Sourced Wool',
-      'Handcrafted with extremely precise, premium lock-stitch patterns',
-      'Soft, breathable, skin-friendly, and naturally hypoallergenic',
-      'Supports and empowers independent local women artisans'
-    ],
+    features: (product as any).features || (isPinterest 
+      ? [
+          'Sourced from curated Pinterest design collection',
+          'Premium, highly expressive visual details',
+          'Handcrafted look with high-fidelity finish',
+          'Direct Pinterest reference design'
+        ]
+      : (isMagic 
+          ? [
+              `Authentic design from ${product?.vendor || 'Magic Needles'}`,
+              'Lovingly hand-knitted and crocheted premium accessories',
+              'Soft, breathable, and extremely cozy textures',
+              'Crafted by expert artisans with years of experience'
+            ]
+          : [
+              'Material: 100% Organic Combed Cotton & Ethically Sourced Wool',
+              'Handcrafted with extremely precise, premium lock-stitch patterns',
+              'Soft, breathable, skin-friendly, and naturally hypoallergenic',
+              'Supports and empowers independent local women artisans'
+            ])),
     careInstruction:
-      'Hand wash gently in cold water with a mild liquid wool detergent. Do not wring, twist, or scrub. Lay flat on a clean, dry towel to air dry. Do not tumble dry. Do not bleach.',
-    shippingAndReturn:
-      'We offer free worldwide shipping on all orders over $50. Each item is made to order with care. If you are not satisfied with your purchase, you can return it within 30 days for a full refund.',
+      (product as any).careInstruction || 'Hand wash gently in cold water with a mild liquid wool detergent. Do not wring, twist, or scrub. Lay flat on a clean, dry towel to air dry. Do not tumble dry. Do not bleach.',
+    shippingAndReturn: isPinterest
+      ? `This design is featured in our Pinterest Inspiration series. For purchasing inquiries, refer to the original pin: ${(product as any).pinterestLink || 'https://www.pinterest.com'}.`
+      : (isMagic
+          ? `This is a live premium product from Magic Needles. For more information, visit the original listing: ${(product as any).originalUrl || 'https://magicneedles.in'}.`
+          : ((product as any).shippingAndReturn || 'We offer free worldwide shipping on all orders over $50. Each item is made to order with care. If you are not satisfied with your purchase, you can return it within 30 days for a full refund.')),
   }
 }
 
-// COMMON Types ------------------------------------------------------------------------
+export interface TProductItem {
+  id: string
+  title: string
+  handle: string
+  description?: string
+  features?: string[]
+  careInstruction?: string
+  shippingAndReturn?: string
+  createdAt?: string
+  vendor?: string
+  price: number
+  featuredImage: {
+    src: any
+    width: number
+    height: number
+    alt: string
+    color?: string
+  }
+  images: Array<{
+    src: any
+    width: number
+    height: number
+    alt: string
+    color?: string
+  }>
+  reviewNumber?: number
+  rating?: number
+  status?: string
+  collectionHandles?: string[]
+  isFromPinterest?: boolean
+  isFromMagicNeedles?: boolean
+  originalUrl?: string
+  pinterestDescription?: string
+  pinterestLink?: string
+  magicDescription?: string
+  options: Array<{
+    name: string
+    optionValues: Array<{
+      name: string
+      swatch?: {
+        color: string
+        image: string | null
+      } | null
+    }>
+  }>
+  selectedOptions: Array<{
+    name: string
+    value: string
+  }>
+}
+
 export type TCollection = Partial<Awaited<ReturnType<typeof getCollections>>[number]>
-export type TProductItem = Partial<Awaited<ReturnType<typeof getProducts>>[number]>
 export type TProductDetail = Partial<Awaited<ReturnType<typeof getProductDetailByHandle>>>
 export type TCardProduct = Partial<Awaited<ReturnType<typeof getCart>['lines'][number]>>
 export type TBlogPost = Partial<Awaited<ReturnType<typeof getBlogPosts>>[number]>

@@ -21,7 +21,7 @@ const data = [
     heading: 'Aura Handcrafted <br /> Crochet Halter Top',
     subHeading: 'Warm, cozy, and delicately stitched with 100% organic cotton ❤️',
     btnText: 'Shop Cami Halter Top',
-    btnHref: '/products/leather-tote-bag',
+    btnHref: '/products/aura-crochet-halter-top',
     bgColor: 'bg-[#FAEEE2]',
   },
   {

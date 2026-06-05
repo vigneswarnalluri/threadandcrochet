@@ -12,7 +12,46 @@ interface Props {
   className?: string
 }
 
+import { useEffect, useState } from 'react'
+
 export default function AvatarDropdown({ className }: Props) {
+  const [profile, setProfile] = useState({
+    fullName: 'Enrico Cole',
+    address: 'Los Angeles, CA'
+  })
+
+  useEffect(() => {
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`
+      const parts = value.split(`; ${name}=`)
+      if (parts.length === 2) {
+        const popped = parts.pop()
+        if (popped) {
+          return decodeURIComponent(popped.split(';').shift() || '')
+        }
+      }
+      return null
+    }
+    const profileCookie = getCookie('user_profile')
+    if (profileCookie) {
+      try {
+        const data = JSON.parse(profileCookie)
+        setProfile({
+          fullName: data.fullName || 'Enrico Cole',
+          address: data.address || 'Los Angeles, CA'
+        })
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }, [])
+
+  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    document.cookie = 'user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;'
+    window.location.href = '/login'
+  }
+
   return (
     <div className={className}>
       <Popover>
@@ -30,10 +69,11 @@ export default function AvatarDropdown({ className }: Props) {
               <Avatar imgUrl={avatarImage.src} sizeClass="size-12" />
 
               <div className="grow">
-                <h4 className="font-semibold">Eden Smith</h4>
-                <p className="mt-0.5 text-xs">Los Angeles, CA</p>
+                <h4 className="font-semibold">{profile.fullName}</h4>
+                <p className="mt-0.5 text-xs">{profile.address}</p>
               </div>
             </div>
+
 
             <Divider />
 
@@ -192,7 +232,8 @@ export default function AvatarDropdown({ className }: Props) {
 
             {/* ------------------ 2 --------------------- */}
             <Link
-              href={'#'}
+              href="/login"
+              onClick={handleLogout}
               className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-neutral-100 focus:outline-hidden focus-visible:ring-3 focus-visible:ring-orange-500/50 dark:hover:bg-neutral-700"
             >
               <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">

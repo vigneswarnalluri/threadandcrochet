@@ -5,7 +5,8 @@ import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
 import { ArrangeByLettersAZIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import clsx from 'clsx'
-import { FC, Fragment, useState } from 'react'
+import { FC, Fragment, useState, useEffect, Suspense } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 const sortByOptions = [
   { name: 'Newest', value: 'newest' },
@@ -21,12 +22,39 @@ type Props = {
   filterOptions?: { name: string; value: string }[]
 }
 
-export const FilterSortByMenuListBox: FC<Props> = ({ className, filterOptions = sortByOptions }) => {
-  const [selectedOption, setSelectedOption] = useState(filterOptions[0].value)
+// Wrapper with Suspense
+export const FilterSortByMenuListBox: FC<Props> = (props) => {
+  return (
+    <Suspense fallback={<div className="text-sm text-neutral-500">Loading sort...</div>}>
+      <FilterSortByMenuListBoxContent {...props} />
+    </Suspense>
+  )
+}
+
+const FilterSortByMenuListBoxContent: FC<Props> = ({ className, filterOptions = sortByOptions }) => {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const currentSort = searchParams.get('sort') || filterOptions[0].value
+  const [selectedOption, setSelectedOption] = useState(currentSort)
+
+  useEffect(() => {
+    const sort = searchParams.get('sort') || filterOptions[0].value
+    setSelectedOption(sort)
+  }, [searchParams, filterOptions])
+
+  const handleSortChange = (value: string) => {
+    setSelectedOption(value)
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('sort', value)
+    params.set('page', '1') // Reset page on sort change
+    router.push(`${pathname}?${params.toString()}`)
+  }
 
   return (
     <div className={clsx('product-sort-by-list-box flex shrink-0', className)}>
-      <Listbox value={selectedOption} onChange={setSelectedOption}>
+      <Listbox value={selectedOption} onChange={handleSortChange}>
         <div className="relative">
           <ListboxButton
             className={clsx(

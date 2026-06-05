@@ -2,7 +2,9 @@ import AccordionInfo from '@/components/AccordionInfo'
 import { Divider } from '@/components/Divider'
 import LikeButton from '@/components/LikeButton'
 import NcInputNumber from '@/components/NcInputNumber'
+import { ProductColorProvider } from '@/components/ProductForm/ProductColorContext'
 import ProductColorOptions from '@/components/ProductForm/ProductColorOptions'
+import ProductGalleryClient from '@/components/ProductForm/ProductGalleryClient'
 import ProductForm from '@/components/ProductForm/ProductForm'
 import ProductSizeOptions from '@/components/ProductForm/ProductSizeOptions'
 import SectionSliderProductCard from '@/components/SectionSliderProductCard'
@@ -13,7 +15,6 @@ import { ShoppingBag03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import GalleryImages from '../../GalleryImages'
 import Policy from '../../Policy'
 import ProductReviews from '../../ProductReviews'
 import ProductStatus from '../../ProductStatus'
@@ -42,6 +43,16 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
   const { title, status, featuredImage, rating, reviewNumber, options, price, selectedOptions, images } = product
   const sizeSelected = selectedOptions?.find((option) => option.name === 'Size')?.value || ''
   const colorSelected = selectedOptions?.find((option) => option.name === 'Color')?.value || ''
+
+  // Build colorName → image URL map for context
+  const colorImageMap: Record<string, string> = {}
+  options
+    ?.find((o) => o.name === 'Color')
+    ?.optionValues?.forEach((cv) => {
+      if (cv.swatch?.image) colorImageMap[cv.name] = cv.swatch.image
+    })
+
+  const allGalleryImages = [featuredImage, ...(images || [])].filter(Boolean)
 
   const renderSectionSidebar = () => {
     return (
@@ -121,7 +132,29 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
         {/*  */}
         <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
         {/*  */}
-        <AccordionInfo panelClassName="p-4 pt-3.5 text-neutral-600 text-base dark:text-neutral-300 leading-7" />
+        <AccordionInfo
+          panelClassName="p-4 pt-3.5 text-neutral-600 text-base dark:text-neutral-300 leading-7"
+          data={[
+            {
+              name: 'Description',
+              content: product.description || 'No description available for this item.',
+            },
+            {
+              name: 'Features',
+              content: `<ul class="list-disc list-inside leading-7">
+                ${(product.features || []).map((f: string) => `<li>${f}</li>`).join('')}
+              </ul>`,
+            },
+            {
+              name: 'Fabric + Care',
+              content: product.careInstruction || 'Hand wash in cold water, dry flat.',
+            },
+            {
+              name: 'Shipping & Return',
+              content: product.shippingAndReturn || 'We offer free shipping on all orders over $50.',
+            },
+          ]}
+        />
       </div>
     )
   }
@@ -153,44 +186,45 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
     )
   }
 
-  const galleryImages = [featuredImage, ...(images || [])].map((item) => item?.src).filter(Boolean) as string[]
 
   return (
-    <div>
-      <div className="container mt-8 sm:mt-10">
-        <div className="relative">
-          <GalleryImages images={galleryImages} gridType="grid4" />
-          <LikeButton className="absolute top-3 left-3" />
+    <ProductColorProvider defaultColor={colorSelected} colorImageMap={colorImageMap}>
+      <div>
+        <div className="container mt-8 sm:mt-10">
+          <div className="relative">
+            <LikeButton className="absolute top-3 left-3 z-10" />
+            <ProductGalleryClient allImages={allGalleryImages} />
+          </div>
+        </div>
+
+        {/* MAIn */}
+        <main className="relative container mt-9 flex sm:mt-11">
+          {/* CONTENT */}
+          <div className="flex w-full flex-col gap-y-10 lg:w-3/5 lg:gap-y-14 lg:pr-14 xl:w-2/3">
+            {renderSection1()}
+            {renderSection2()}
+          </div>
+
+          {/* SIDEBAR */}
+          <div className="grow">
+            <div className="sticky top-10 hidden lg:block">{renderSectionSidebar()}</div>
+          </div>
+        </main>
+
+        {/* OTHER SECTION */}
+        <div className="container flex flex-col gap-y-14 pt-14 pb-24 lg:pb-28">
+          <Divider />
+          <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} />
+          <Divider />
+          <SectionSliderProductCard
+            heading="Customers also purchased"
+            subHeading=""
+            data={relatedProducts}
+            headingFontClassName="text-2xl font-semibold"
+            headingClassName="mb-10 text-neutral-900 dark:text-neutral-50"
+          />
         </div>
       </div>
-
-      {/* MAIn */}
-      <main className="relative container mt-9 flex sm:mt-11">
-        {/* CONTENT */}
-        <div className="flex w-full flex-col gap-y-10 lg:w-3/5 lg:gap-y-14 lg:pr-14 xl:w-2/3">
-          {renderSection1()}
-          {renderSection2()}
-        </div>
-
-        {/* SIDEBAR */}
-        <div className="grow">
-          <div className="sticky top-10 hidden lg:block">{renderSectionSidebar()}</div>
-        </div>
-      </main>
-
-      {/* OTHER SECTION */}
-      <div className="container flex flex-col gap-y-14 pt-14 pb-24 lg:pb-28">
-        <Divider />
-        <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} />
-        <Divider />
-        <SectionSliderProductCard
-          heading="Customers also purchased"
-          subHeading=""
-          data={relatedProducts}
-          headingFontClassName="text-2xl font-semibold"
-          headingClassName="mb-10 text-neutral-900 dark:text-neutral-50"
-        />
-      </div>
-    </div>
+    </ProductColorProvider>
   )
 }
