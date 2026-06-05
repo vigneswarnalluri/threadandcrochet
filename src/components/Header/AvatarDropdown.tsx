@@ -16,40 +16,29 @@ import { useEffect, useState } from 'react'
 
 export default function AvatarDropdown({ className }: Props) {
   const [profile, setProfile] = useState({
-    fullName: 'Enrico Cole',
-    address: 'Los Angeles, CA'
+    fullName: 'Guest',
+    address: ''
   })
 
   useEffect(() => {
-    const getCookie = (name: string) => {
-      const value = `; ${document.cookie}`
-      const parts = value.split(`; ${name}=`)
-      if (parts.length === 2) {
-        const popped = parts.pop()
-        if (popped) {
-          return decodeURIComponent(popped.split(';').shift() || '')
+    // Fetch profile from Supabase via a lightweight API call
+    fetch('/api/profile')
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (data) {
+          setProfile({
+            fullName: data.fullName || 'Guest',
+            address: data.address || ''
+          })
         }
-      }
-      return null
-    }
-    const profileCookie = getCookie('user_profile')
-    if (profileCookie) {
-      try {
-        const data = JSON.parse(profileCookie)
-        setProfile({
-          fullName: data.fullName || 'Enrico Cole',
-          address: data.address || 'Los Angeles, CA'
-        })
-      } catch (e) {
-        console.error(e)
-      }
-    }
+      })
+      .catch(() => {})
   }, [])
 
-  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
-    document.cookie = 'user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;'
-    window.location.href = '/login'
+    await fetch('/api/logout', { method: 'POST' })
+    window.location.href = '/'
   }
 
   return (

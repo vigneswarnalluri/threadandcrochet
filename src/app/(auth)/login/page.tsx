@@ -1,6 +1,7 @@
 import facebookSvg from '@/images/socials/facebook-2.svg'
 import googleSvg from '@/images/socials/google.svg'
 import twitterSvg from '@/images/socials/twitter.svg'
+import { createClient } from '@/utils/supabase/server'
 import ButtonPrimary from '@/shared/Button/ButtonPrimary'
 import { Field, FieldGroup, Fieldset, Label } from '@/shared/fieldset'
 import { Input } from '@/shared/input'
@@ -8,10 +9,11 @@ import { Metadata } from 'next'
 import Form from 'next/form'
 import Image from 'next/image'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
-  title: 'Login',
-  description: 'Login page for the application',
+  title: 'Login — Thread & Love',
+  description: 'Login to your Thread & Love account',
 }
 
 const loginSocials = [
@@ -32,27 +34,28 @@ const loginSocials = [
   },
 ]
 
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
+interface PageProps {
+  searchParams: Promise<{ error?: string; redirectedFrom?: string }>
+}
 
-const PageLogin = () => {
+const PageLogin = async ({ searchParams }: PageProps) => {
+  const params = await searchParams
+  const error = params.error
+  const redirectedFrom = params.redirectedFrom
+
   const handleSubmit = async (formData: FormData) => {
     'use server'
-    const email = (formData.get('email') as string) || 'hello@threadandlove.com'
-    const cookieStore = await cookies()
-    const existing = cookieStore.get('user_profile')?.value
-    const profileData = existing ? JSON.parse(existing) : {
-      fullName: 'Enrico Cole',
-      email: email,
-      dateOfBirth: '1990-07-22',
-      address: 'Los Angeles, CA',
-      gender: 'Male',
-      phoneNumber: '003 888 232',
-      aboutYou: '...',
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+
+    const supabase = await createClient()
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (error) {
+      redirect(`/login?error=${encodeURIComponent(error.message)}`)
     }
-    profileData.email = email
-    cookieStore.set('user_profile', JSON.stringify(profileData), { path: '/' })
-    redirect('/account')
+
+    redirect(redirectedFrom || '/account')
   }
 
   return (
@@ -76,6 +79,7 @@ const PageLogin = () => {
               </a>
             ))}
           </div>
+
           {/* OR */}
           <div className="relative text-center">
             <span className="relative z-10 inline-block bg-white px-4 text-sm font-medium dark:bg-neutral-900 dark:text-neutral-400">
@@ -83,13 +87,21 @@ const PageLogin = () => {
             </span>
             <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 transform border border-neutral-100 dark:border-neutral-800"></div>
           </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
+              {error}
+            </div>
+          )}
+
           {/* FORM */}
           <Form action={handleSubmit}>
             <Fieldset>
               <FieldGroup className="sm:space-y-6">
                 <Field>
                   <Label>Email</Label>
-                  <Input type="email" name="email" placeholder="example@example.com" />
+                  <Input type="email" name="email" placeholder="example@example.com" required />
                 </Field>
                 <Field>
                   <Label className="flex items-center justify-between gap-2">
@@ -98,7 +110,7 @@ const PageLogin = () => {
                       Forgot password?
                     </Link>
                   </Label>
-                  <Input type="password" name="password" />
+                  <Input type="password" name="password" required />
                 </Field>
                 <ButtonPrimary className="mt-2 w-full" type="submit">
                   Continue

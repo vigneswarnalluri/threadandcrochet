@@ -4,21 +4,35 @@ import Header2 from '@/components/Header/Header2'
 import AsideProductQuickView from '@/components/aside-product-quickview'
 import AsideSidebarCart from '@/components/aside-sidebar-cart'
 import AsideSidebarNavigation from '@/components/aside-sidebar-navigation'
+import { createClient } from '@/utils/supabase/server'
 import React from 'react'
 import PageTab from './PageTab'
-import { cookies } from 'next/headers'
 
 interface Props {
   children?: React.ReactNode
 }
 
 const Layout = async ({ children }: Props) => {
-  const cookieStore = await cookies()
-  const profileCookie = cookieStore.get('user_profile')?.value
-  const profile = profileCookie ? JSON.parse(profileCookie) : {
-    fullName: 'Enrico Cole',
-    email: 'hello@threadandlove.com',
-    address: 'Los Angeles, CA',
+  const supabase = await createClient()
+
+  // Get authenticated user
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Fetch their profile
+  let displayName = 'Guest'
+  let displayEmail = ''
+  let displayAddress = ''
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, email, address')
+      .eq('id', user.id)
+      .single()
+
+    displayName = profile?.full_name || user.email?.split('@')[0] || 'Guest'
+    displayEmail = profile?.email || user.email || ''
+    displayAddress = profile?.address || ''
   }
 
   return (
@@ -30,8 +44,9 @@ const Layout = async ({ children }: Props) => {
             <div className="max-w-2xl">
               <h2 className="text-3xl font-semibold xl:text-4xl">Account</h2>
               <span className="mt-4 block text-base text-neutral-500 sm:text-lg dark:text-neutral-400">
-                <span className="font-semibold text-neutral-900 dark:text-neutral-200">{profile.fullName},</span>{' '}
-                {profile.email} · {profile.address}
+                <span className="font-semibold text-neutral-900 dark:text-neutral-200">{displayName},</span>{' '}
+                {displayEmail}
+                {displayAddress && ` · ${displayAddress}`}
               </span>
             </div>
 
@@ -53,4 +68,3 @@ const Layout = async ({ children }: Props) => {
 }
 
 export default Layout
-

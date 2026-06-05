@@ -1,19 +1,39 @@
+import { createClient } from '@/utils/supabase/server'
 import ButtonPrimary from '@/shared/Button/ButtonPrimary'
 import { Field, FieldGroup, Fieldset, Label } from '@/shared/fieldset'
 import { Input } from '@/shared/input'
 import Form from 'next/form'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: 'Forgot Password',
-  description: 'Forgot password page for the application',
+  title: 'Forgot Password — Thread & Love',
+  description: 'Reset your Thread & Love account password',
 }
 
-const PageForgotPass = () => {
+interface PageProps {
+  searchParams: Promise<{ message?: string; error?: string }>
+}
+
+const PageForgotPass = async ({ searchParams }: PageProps) => {
+  const params = await searchParams
+  const message = params.message
+  const error = params.error
+
   const handleSubmit = async (formData: FormData) => {
     'use server'
-    const formObject = Object.fromEntries(formData.entries())
-    console.log(formObject)
+    const email = formData.get('email') as string
+    const supabase = await createClient()
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('supabase.co', 'vercel.app') || 'http://localhost:3000'}/account/update-password`,
+    })
+
+    if (error) {
+      redirect(`/forgot-password?error=${encodeURIComponent(error.message)}`)
+    }
+
+    redirect('/forgot-password?message=Check your email for a password reset link.')
   }
 
   return (
@@ -28,16 +48,31 @@ const PageForgotPass = () => {
       </header>
 
       <div className="mx-auto max-w-md space-y-6">
+
+        {/* Error message */}
+        {error && (
+          <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
+            {error}
+          </div>
+        )}
+
+        {/* Success message */}
+        {message && (
+          <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400">
+            {message}
+          </div>
+        )}
+
         {/* FORM */}
         <Form action={handleSubmit}>
           <Fieldset>
             <FieldGroup>
               <Field>
                 <Label>Email address</Label>
-                <Input type="email" name="email" placeholder="example@example.com" />
+                <Input type="email" name="email" placeholder="example@example.com" required />
               </Field>
               <ButtonPrimary className="w-full" type="submit">
-                Continue
+                Send reset link
               </ButtonPrimary>
             </FieldGroup>
           </Fieldset>

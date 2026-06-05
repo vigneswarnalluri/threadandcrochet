@@ -1,4 +1,5 @@
 import avatar from '@/images/users/avatar1.jpg'
+import { createClient } from '@/utils/supabase/server'
 import ButtonPrimary from '@/shared/Button/ButtonPrimary'
 import { Field, Fieldset, Label } from '@/shared/fieldset'
 import { Input, InputGroup } from '@/shared/input'
@@ -15,47 +16,69 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { Metadata } from 'next'
 import Form from 'next/form'
 import Image from 'next/image'
-import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
 export const metadata: Metadata = {
-  title: 'Account',
-  description: 'Account page',
+  title: 'Account — Thread & Love',
+  description: 'Manage your Thread & Love account',
 }
 
 const Page = async () => {
-  const cookieStore = await cookies()
-  const profileCookie = cookieStore.get('user_profile')?.value
-  const profile = profileCookie ? JSON.parse(profileCookie) : {
-    fullName: 'Enrico Cole',
-    email: 'hello@threadandlove.com',
-    dateOfBirth: '1990-07-22',
-    address: 'Los Angeles, CA',
-    gender: 'Male',
-    phoneNumber: '003 888 232',
-    aboutYou: '...',
+  const supabase = await createClient()
+
+  // Get authenticated user
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  // Fetch profile from Supabase
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  // Fallback defaults if profile not yet created
+  const displayProfile = {
+    fullName: profile?.full_name || user.email?.split('@')[0] || 'Guest',
+    email: profile?.email || user.email || '',
+    dateOfBirth: profile?.date_of_birth || '',
+    address: profile?.address || '',
+    gender: profile?.gender || 'Other',
+    phoneNumber: profile?.phone_number || '',
+    aboutYou: profile?.about_you || '',
   }
 
   const handleSubmit = async (formData: FormData) => {
     'use server'
-    const cookieStore = await cookies()
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) redirect('/login')
+
     const profileData = {
-      fullName: (formData.get('full-name') as string) || 'Enrico Cole',
-      email: (formData.get('email') as string) || 'hello@threadandlove.com',
-      dateOfBirth: (formData.get('date-of-birth') as string) || '1990-07-22',
-      address: (formData.get('address') as string) || 'Los Angeles, CA',
-      gender: (formData.get('gender') as string) || 'Male',
-      phoneNumber: (formData.get('phone-number') as string) || '003 888 232',
-      aboutYou: (formData.get('about-you') as string) || '...',
+      id: user.id,
+      full_name: (formData.get('full-name') as string) || displayProfile.fullName,
+      email: (formData.get('email') as string) || displayProfile.email,
+      date_of_birth: (formData.get('date-of-birth') as string) || null,
+      address: (formData.get('address') as string) || '',
+      gender: (formData.get('gender') as string) || 'Other',
+      phone_number: (formData.get('phone-number') as string) || '',
+      about_you: (formData.get('about-you') as string) || '',
+      updated_at: new Date().toISOString(),
     }
-    cookieStore.set('user_profile', JSON.stringify(profileData), { path: '/' })
+
+    await supabase.from('profiles').upsert(profileData)
     revalidatePath('/account')
   }
 
   return (
     <div className="flex flex-col gap-y-10 sm:gap-y-12">
       {/* HEADING */}
-      <h1 className="text-2xl font-semibold sm:text-3xl">Account infomation</h1>
+      <h1 className="text-2xl font-semibold sm:text-3xl">Account information</h1>
 
       <Form action={handleSubmit}>
         <Fieldset className="flex flex-col md:flex-row">
@@ -81,7 +104,7 @@ const Page = async () => {
           <div className="mt-10 max-w-3xl grow space-y-7 md:mt-0 md:pl-16">
             <Field>
               <Label>Full name</Label>
-              <Input name="full-name" defaultValue={profile.fullName} />
+              <Input name="full-name" defaultValue={displayProfile.fullName} />
             </Field>
 
             {/* ---- */}
@@ -89,7 +112,7 @@ const Page = async () => {
               <Label>Email</Label>
               <InputGroup>
                 <HugeiconsIcon data-slot="icon" icon={Mail01Icon} size={16} />
-                <Input name="email" type="email" placeholder="example@email.com" defaultValue={profile.email} />
+                <Input name="email" type="email" placeholder="example@email.com" defaultValue={displayProfile.email} />
               </InputGroup>
             </Field>
 
@@ -98,22 +121,22 @@ const Page = async () => {
               <Label>Date of birth</Label>
               <InputGroup>
                 <HugeiconsIcon data-slot="icon" icon={Calendar01Icon} size={16} />
-                <Input name="date-of-birth" type="date" defaultValue={profile.dateOfBirth} />
+                <Input name="date-of-birth" type="date" defaultValue={displayProfile.dateOfBirth} />
               </InputGroup>
             </Field>
             {/* ---- */}
             <Field>
-              <Label>Addess</Label>
+              <Label>Address</Label>
               <InputGroup>
                 <HugeiconsIcon data-slot="icon" icon={MapsLocation01Icon} size={16} />
-                <Input name="address" defaultValue={profile.address} />
+                <Input name="address" defaultValue={displayProfile.address} />
               </InputGroup>
             </Field>
 
             {/* ---- */}
             <Field>
               <Label>Gender</Label>
-              <Select name="gender" defaultValue={profile.gender}>
+              <Select name="gender" defaultValue={displayProfile.gender}>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
@@ -125,13 +148,13 @@ const Page = async () => {
               <Label>Phone number</Label>
               <InputGroup>
                 <HugeiconsIcon data-slot="icon" icon={SmartPhone01Icon} size={16} />
-                <Input name="phone-number" defaultValue={profile.phoneNumber} />
+                <Input name="phone-number" defaultValue={displayProfile.phoneNumber} />
               </InputGroup>
             </Field>
             {/* ---- */}
             <Field>
               <Label>About you</Label>
-              <Textarea rows={4} name="about-you" defaultValue={profile.aboutYou} />
+              <Textarea rows={4} name="about-you" defaultValue={displayProfile.aboutYou} />
             </Field>
             <div className="pt-2">
               <ButtonPrimary type="submit">Update account</ButtonPrimary>
@@ -144,4 +167,3 @@ const Page = async () => {
 }
 
 export default Page
-
