@@ -364,7 +364,6 @@ export async function getProductReviews(handle: string) {
         <p>The product quality is amazing, it looks and feel even better than I had anticipated. </p>
       `,
       author: 'S. Walkinshaw',
-      authorAvatar: avatarImage1,
       date: 'May 16, 2025',
       datetime: '2025-01-06',
     },
@@ -377,7 +376,6 @@ export async function getProductReviews(handle: string) {
         <p>I like it better than a regular hoody because it is tailored to be a slimmer fit. Perfect for going out when you want to stay comfy. The head opening is a little tight which makes it a little.</p>
       `,
       author: 'Risako M',
-      authorAvatar: avatarImage2,
       date: 'May 16, 2025',
       datetime: '2025-01-06',
     },
@@ -390,7 +388,6 @@ export async function getProductReviews(handle: string) {
         <p>The product quality is amazing!</p>
       `,
       author: 'Eden Birch',
-      authorAvatar: avatarImage3,
       date: 'May 16, 2025',
       datetime: '2025-01-06',
     },
@@ -403,7 +400,6 @@ export async function getProductReviews(handle: string) {
         <p>The product quality is amazing!</p>
       `,
       author: 'Jonathan Edwards',
-      authorAvatar: avatarImage4,
       date: 'May 16, 2025',
       datetime: '2025-01-06',
     },
@@ -2749,5 +2745,5 @@ export type TCollection = Partial<Awaited<ReturnType<typeof getCollections>>[num
 export type TProductDetail = Partial<Awaited<ReturnType<typeof getProductDetailByHandle>>>
 export type TCardProduct = Partial<Awaited<ReturnType<typeof getCart>['lines'][number]>>
 export type TBlogPost = Partial<Awaited<ReturnType<typeof getBlogPosts>>[number]>
-export type TReview = Partial<Awaited<ReturnType<typeof getProductReviews>>[number]>
+export type TReview = Partial<Awaited<ReturnType<typeof getProductReviews>>[number] & { authorAvatar?: { src?: string } }>
 export type TOrder = Partial<Awaited<ReturnType<typeof getOrders>>[number]>

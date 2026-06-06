@@ -21,6 +21,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
+    // Fetch avatars from profiles for these users
+    const userIds = Array.from(new Set((dbReviews || []).map((r: any) => r.user_id)))
+    const profileMap: Record<string, string> = {}
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', userIds)
+      
+      if (profiles) {
+        profiles.forEach((p: any) => {
+          if (p.avatar_url) {
+            profileMap[p.id] = p.avatar_url
+          }
+        })
+      }
+    }
+
     // Map database reviews to UI structure
     const reviews = (dbReviews || []).map((rev: any) => ({
       id: rev.id,
@@ -28,6 +46,7 @@ export async function GET(request: NextRequest) {
       rating: rev.rating,
       content: rev.content,
       author: rev.author_name,
+      authorAvatar: profileMap[rev.user_id] ? { src: profileMap[rev.user_id] } : undefined,
       date: new Date(rev.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
