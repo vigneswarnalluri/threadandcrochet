@@ -16,11 +16,14 @@ export interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = async ({ hasBorderBottom = true }) => {
-  const megamenu = await getNavMegaMenu()
-  const dropdownCategories = await getHeaderDropdownCategories()
-  const currencies = await getCurrencies()
-  const languages = await getLanguages()
-  const featuredCollections = (await getCollections()).slice(7, 11)
+  const [megamenu, dropdownCategories, currencies, languages, collections] = await Promise.all([
+    getNavMegaMenu(),
+    getHeaderDropdownCategories(),
+    getCurrencies(),
+    getLanguages(),
+    getCollections(),
+  ])
+  const featuredCollections = collections.slice(7, 11)
 
   return (
     <div className="relative z-10">

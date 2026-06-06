@@ -15,8 +15,10 @@ export interface Props {
 }
 
 const Header2: FC<Props> = async ({ hasBorder = true }) => {
-  const navigationMenu = await getNavigation()
-  const allCollections = await getCollections()
+  const [navigationMenu, allCollections] = await Promise.all([
+    getNavigation(),
+    getCollections(),
+  ])
 
   return (
     <div className="relative z-10 w-full bg-white">
