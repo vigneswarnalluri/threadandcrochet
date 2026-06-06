@@ -44,8 +44,12 @@ const Header: FC<HeaderProps> = async ({ hasBorderBottom = true }) => {
             </div>
             <MegaMenuPopover megamenu={megamenu} featuredCollection={featuredCollections[0]} />
             <CurrLangDropdown currencies={currencies} languages={languages} className="hidden md:block" />
-            <SearchBtnPopover />
-            <WishlistBtn />
+            <div className="hidden md:block">
+              <SearchBtnPopover />
+            </div>
+            <div className="hidden md:block">
+              <WishlistBtn />
+            </div>
             <AvatarDropdown />
             <CartBtn />
           </div>

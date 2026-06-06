@@ -41,8 +41,12 @@ const Header2: FC<Props> = async ({ hasBorder = true }) => {
           </div>
 
           <div className="flex flex-1 items-center justify-end gap-x-2.5 sm:gap-x-5">
-            <SearchBtnPopover />
-            <WishlistBtn />
+            <div className="hidden md:block">
+              <SearchBtnPopover />
+            </div>
+            <div className="hidden md:block">
+              <WishlistBtn />
+            </div>
             <AvatarDropdown />
             <CartBtn />
           </div>
