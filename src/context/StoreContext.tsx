@@ -181,9 +181,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         // We will do a lazy resolve in the client context or store metadata. Let's check how cart_items are structured:
         // cart_items schema: user_id, product_id, quantity, size, color.
         // To populate product details (name, price, image), we can fetch them using a helper.
-        // Let's import getProducts from data.ts and resolve details in the context!
-        const { getProducts } = require('@/data/data')
-        const allProducts = await getProducts()
+        // Let's fetch products via our client-safe API route
+        const res = await fetch('/api/products')
+        const allProducts = res.ok ? await res.json() : []
 
         remoteCart = cartData.map(dbItem => {
           const product = allProducts.find((p: any) => p.handle === dbItem.product_id || p.id === dbItem.product_id)

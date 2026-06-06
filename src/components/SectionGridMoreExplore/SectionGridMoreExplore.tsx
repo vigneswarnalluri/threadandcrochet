@@ -1,7 +1,7 @@
 'use client'
 
 import Heading from '@/components/Heading/Heading'
-import { TCollection, getGroupCollections } from '@/data/data'
+import type { TCollection, getGroupCollections } from '@/data/data'
 import svgs1 from '@/images/collections/explore1.svg'
 import svgs2 from '@/images/collections/explore2.svg'
 import svgs3 from '@/images/collections/explore3.svg'

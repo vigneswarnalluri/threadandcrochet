@@ -1,7 +1,7 @@
 'use client'
 
 import ProductCard from '@/components/ProductCard'
-import { getProducts, TProductItem } from '@/data/data'
+import type { TProductItem } from '@/data/data'
 import ButtonPrimary from '@/shared/Button/ButtonPrimary'
 import { useStore } from '@/context/StoreContext'
 import { useEffect, useState } from 'react'
@@ -14,8 +14,11 @@ const Page = () => {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const prodList = await getProducts()
-        setAllProducts(prodList)
+        const res = await fetch('/api/products')
+        if (res.ok) {
+          const prodList = await res.json()
+          setAllProducts(prodList)
+        }
       } catch (err) {
         console.error('Error fetching products in wishlist page', err)
       } finally {

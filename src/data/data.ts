@@ -49,6 +49,7 @@ import { shuffleArray } from '@/utils/shuffleArray'
 import { fetchPinterestProducts } from '@/utils/pinterest'
 import { fetchMagicNeedlesProducts } from '@/utils/magicneedles'
 import { createClient } from '@supabase/supabase-js'
+import { unstable_cache } from 'next/cache'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
@@ -1726,7 +1727,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
   }
 ]
 
-export async function getProducts(): Promise<TProductItem[]> {
+const _getProductsUncached = async (): Promise<TProductItem[]> => {
   const liveProducts = await fetchMagicNeedlesProducts()
 
   try {
@@ -2538,6 +2539,13 @@ export async function getProducts(): Promise<TProductItem[]> {
   }
   return [...LOCAL_CROCHET_PRODUCTS, ...localItems]
 }
+
+// Cache result server-side for 1 hour. Subsequent page navigations return instantly from cache.
+export const getProducts = unstable_cache(
+  _getProductsUncached,
+  ['all-products'],
+  { revalidate: 3600, tags: ['products'] }
+)
 
 export const COLLECTION_PINTEREST_FEEDS: Record<string, string> = {
   jackets: 'https://www.pinterest.com/annabooshouse/crochet-wearables.rss',

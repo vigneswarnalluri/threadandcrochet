@@ -5,7 +5,7 @@ import IconDiscount from '@/components/IconDiscount'
 import LikeButton from '@/components/LikeButton'
 import NcInputNumber from '@/components/NcInputNumber'
 import Prices from '@/components/Prices'
-import { TProductDetail, getProductDetailByHandle } from '@/data/data'
+import type { TProductDetail } from '@/data/data'
 import ButtonPrimary from '@/shared/Button/ButtonPrimary'
 import { Link } from '@/shared/link'
 import { ClockIcon, NoSymbolIcon, SparklesIcon } from '@heroicons/react/24/outline'
@@ -103,11 +103,15 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
     }
 
     const fetchProduct = async () => {
-      const response = await getProductDetailByHandle(handle)
-      if (!response) {
-        return
+      try {
+        const res = await fetch(`/api/products?handle=${encodeURIComponent(handle)}`)
+        if (res.ok) {
+          const data = await res.json()
+          setProduct(data)
+        }
+      } catch (err) {
+        console.error('Error fetching product detail in quick view:', err)
       }
-      setProduct(response)
     }
     fetchProduct()
   }, [handle])
