@@ -25,7 +25,10 @@ export async function GET(request: NextRequest) {
     // Fetch avatars from profiles for these users
     const userIds = Array.from(new Set((dbReviews || []).map((r: any) => r.user_id)))
     const profileMap: Record<string, string> = {}
+    const verifiedPurchasers = new Set<string>()
+
     if (userIds.length > 0) {
+      // 1. Fetch profile photos
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id, avatar_url')
@@ -35,6 +38,23 @@ export async function GET(request: NextRequest) {
         profiles.forEach((p: any) => {
           if (p.avatar_url) {
             profileMap[p.id] = p.avatar_url
+          }
+        })
+      }
+
+      // 2. Query user purchase verification from orders
+      const { data: orders } = await supabase
+        .from('orders')
+        .select('user_id, items')
+        .in('user_id', userIds)
+        .in('status', ['Paid', 'Processing', 'Shipped', 'Delivered'])
+
+      if (orders) {
+        orders.forEach((order: any) => {
+          const items = order.items || []
+          const hasPurchasedProduct = items.some((item: any) => item.productHandle === productId)
+          if (hasPurchasedProduct) {
+            verifiedPurchasers.add(order.user_id)
           }
         })
       }
@@ -48,6 +68,7 @@ export async function GET(request: NextRequest) {
       content: rev.content,
       author: rev.author_name,
       authorAvatar: profileMap[rev.user_id] ? { src: profileMap[rev.user_id] } : undefined,
+      isVerifiedBuyer: verifiedPurchasers.has(rev.user_id),
       date: new Date(rev.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',

@@ -25,7 +25,17 @@ const ReviewItem: FC<ReviewItemProps> = ({ className, data }) => {
         <div className="flex flex-1 justify-between">
           <div className="text-sm sm:text-base">
             <span className="block font-semibold">{data.author}</span>
-            <span className="mt-0.5 block text-sm text-neutral-500 dark:text-neutral-400">{data.date}</span>
+            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+              <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">{data.date}</span>
+              {data.isVerifiedBuyer && (
+                <span className="inline-flex items-center gap-1 rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-3">
+                    <path fillRule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-3.073a.75.75 0 10-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4.137-5.7z" clipRule="evenodd" />
+                  </svg>
+                  Verified Buyer
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="mt-0.5 flex text-yellow-500">

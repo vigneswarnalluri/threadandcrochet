@@ -2699,6 +2699,7 @@ export interface TReview {
   content?: string
   author?: string
   authorAvatar?: { src?: string }
+  isVerifiedBuyer?: boolean
   date?: string
   datetime?: string
 }
