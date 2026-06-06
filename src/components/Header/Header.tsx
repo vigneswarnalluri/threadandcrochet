@@ -32,24 +32,20 @@ const Header: FC<HeaderProps> = async ({ hasBorderBottom = true }) => {
             !hasBorderBottom && 'has-[.header-popover-full-panel]:border-b'
           )}
         >
-          <div className="flex items-center justify-center gap-x-3 sm:gap-x-8">
+          <div className="flex items-center justify-center gap-x-2 sm:gap-x-8">
+            <div className="block lg:hidden">
+              <HamburgerBtnMenu />
+            </div>
             <Logo />
             <div className="hidden h-9 border-l border-neutral-200 md:block dark:border-neutral-700"></div>
             <CategoriesDropdown categories={dropdownCategories} className="hidden md:block" />
           </div>
 
-          <div className="flex flex-1 items-center justify-end gap-x-2.5 sm:gap-x-5">
-            <div className="block lg:hidden">
-              <HamburgerBtnMenu />
-            </div>
+          <div className="flex flex-1 items-center justify-end gap-x-1.5 sm:gap-x-3 md:gap-x-5">
             <MegaMenuPopover megamenu={megamenu} featuredCollection={featuredCollections[0]} />
             <CurrLangDropdown currencies={currencies} languages={languages} className="hidden md:block" />
-            <div className="hidden md:block">
-              <SearchBtnPopover />
-            </div>
-            <div className="hidden md:block">
-              <WishlistBtn />
-            </div>
+            <SearchBtnPopover />
+            <WishlistBtn />
             <AvatarDropdown />
             <CartBtn />
           </div>

@@ -28,25 +28,22 @@ const Header2: FC<Props> = async ({ hasBorder = true }) => {
         )}
       >
         <div className="container flex h-20 justify-between">
-          <div className="flex flex-1 items-center lg:hidden">
-            <HamburgerBtnMenu />
-          </div>
-
-          <div className="flex items-center lg:flex-1">
-            <Logo />
+          <div className="flex flex-1 items-center">
+            <div className="flex items-center gap-x-2 sm:gap-x-3">
+              <div className="block lg:hidden">
+                <HamburgerBtnMenu />
+              </div>
+              <Logo />
+            </div>
           </div>
 
           <div className="mx-4 hidden flex-2 justify-center lg:flex">
             <Navigation menu={navigationMenu} featuredCollection={allCollections[10]} />
           </div>
 
-          <div className="flex flex-1 items-center justify-end gap-x-2.5 sm:gap-x-5">
-            <div className="hidden md:block">
-              <SearchBtnPopover />
-            </div>
-            <div className="hidden md:block">
-              <WishlistBtn />
-            </div>
+          <div className="flex flex-1 items-center justify-end gap-x-1.5 sm:gap-x-3 md:gap-x-5">
+            <SearchBtnPopover />
+            <WishlistBtn />
             <AvatarDropdown />
             <CartBtn />
           </div>
