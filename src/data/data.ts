@@ -353,61 +353,8 @@ export async function getShopData() {
   }
 }
 
-export async function getProductReviews(handle: string) {
-  const defaultMocks = [
-    {
-      id: '1',
-      title: "Can't say enough good things",
-      rating: 5,
-      content: `
-        <p>I was really pleased with the overall shopping experience. My order even included a little personal, handwritten note, which delighted me!</p>
-        <p>The product quality is amazing, it looks and feel even better than I had anticipated. </p>
-      `,
-      author: 'S. Walkinshaw',
-      date: 'May 16, 2025',
-      datetime: '2025-01-06',
-    },
-    {
-      id: '2',
-      title: 'Perfect for going out when you want to stay comfy',
-      rating: 4,
-      content: `
-        <p>The product quality is amazing, it looks and feel even better than I had anticipated.</p>
-        <p>I like it better than a regular hoody because it is tailored to be a slimmer fit. Perfect for going out when you want to stay comfy. The head opening is a little tight which makes it a little.</p>
-      `,
-      author: 'Risako M',
-      date: 'May 16, 2025',
-      datetime: '2025-01-06',
-    },
-    {
-      id: '3',
-      title: 'Very nice feeling sweater!',
-      rating: 4,
-      content: `
-        <p> I would gladly recommend this store to my friends. And, now that I think of it... I actually have, many times.</p>
-        <p>The product quality is amazing!</p>
-      `,
-      author: 'Eden Birch',
-      date: 'May 16, 2025',
-      datetime: '2025-01-06',
-    },
-    {
-      id: '4',
-      title: 'Very nice feeling sweater!',
-      rating: 5,
-      content: `
-        <p> I would gladly recommend this store to my friends. And, now that I think of it... I actually have, many times.</p>
-        <p>The product quality is amazing!</p>
-      `,
-      author: 'Jonathan Edwards',
-      date: 'May 16, 2025',
-      datetime: '2025-01-06',
-    },
-  ]
-
-  // NOTE: Live reviews are fetched client-side in ProductReviews.tsx via /api/reviews
-  // Do NOT import @/utils/supabase/server here — data.ts is required() by StoreContext (a Client Component)
-  return defaultMocks
+export async function getProductReviews(handle: string): Promise<TReview[]> {
+  return []
 }
 
 export async function getBlogPosts() {
@@ -2745,5 +2692,14 @@ export type TCollection = Partial<Awaited<ReturnType<typeof getCollections>>[num
 export type TProductDetail = Partial<Awaited<ReturnType<typeof getProductDetailByHandle>>>
 export type TCardProduct = Partial<Awaited<ReturnType<typeof getCart>['lines'][number]>>
 export type TBlogPost = Partial<Awaited<ReturnType<typeof getBlogPosts>>[number]>
-export type TReview = Partial<Awaited<ReturnType<typeof getProductReviews>>[number] & { authorAvatar?: { src?: string } }>
+export interface TReview {
+  id?: string
+  title?: string
+  rating?: number
+  content?: string
+  author?: string
+  authorAvatar?: { src?: string }
+  date?: string
+  datetime?: string
+}
 export type TOrder = Partial<Awaited<ReturnType<typeof getOrders>>[number]>
