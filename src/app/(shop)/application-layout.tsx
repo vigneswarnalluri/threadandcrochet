@@ -33,8 +33,7 @@ const ApplicationLayout: React.FC<ComponentProps> = async ({ children, header, f
     <div>
       {/* Dynamic Announcement Bar */}
       <div className="bg-neutral-900 text-neutral-100 dark:bg-neutral-950 dark:text-neutral-200 py-2.5 px-4 text-center text-[11px] font-semibold uppercase tracking-widest border-b border-neutral-800 dark:border-neutral-900 transition-colors">
-        <div className="container flex items-center justify-center gap-x-2">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+        <div className="container">
           <span>{announcementText}</span>
         </div>
       </div>
