@@ -5,6 +5,8 @@ import { Playfair_Display, Montserrat } from 'next/font/google'
 import GlobalClient from './GlobalClient'
 import { StoreProvider } from '@/context/StoreContext'
 
+import NextTopLoader from 'nextjs-toploader'
+
 const playfair = Playfair_Display({
   subsets: ['latin'],
   display: 'swap',
@@ -33,6 +35,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${playfair.variable} ${montserrat.variable} ${montserrat.className}`} suppressHydrationWarning>
       <body className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200" suppressHydrationWarning>
+        <NextTopLoader
+          color="#c07c65"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #c07c65,0 0 5px #c07c65"
+        />
         <StoreProvider>
           <Aside.Provider>
             {children}

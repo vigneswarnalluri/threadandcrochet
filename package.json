@@ -22,6 +22,7 @@
     "embla-carousel-react": "^8.6.0",
     "jspdf": "^4.2.1",
     "next": "^16.1.1",
+    "nextjs-toploader": "^3.9.17",
     "razorpay": "^2.9.6",
     "rc-slider": "^11.1.9",
     "react": "^19.2.3",
