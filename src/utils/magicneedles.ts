@@ -1,4 +1,9 @@
 import { TProductItem } from '@/data/data'
+import fs from 'fs'
+import path from 'path'
+
+const CACHE_FILE = path.join(process.cwd(), 'src/data/magicneedles-cache.json')
+const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
 
 const globalForMagicNeedles = globalThis as unknown as {
   magicNeedlesCache?: TProductItem[]
@@ -499,6 +504,24 @@ export async function fetchMagicNeedlesProducts(): Promise<TProductItem[]> {
     return globalForMagicNeedles.magicNeedlesCache
   }
 
+  // Check disk cache
+  try {
+    if (fs.existsSync(CACHE_FILE)) {
+      const stats = fs.statSync(CACHE_FILE)
+      const isFresh = Date.now() - stats.mtimeMs < CACHE_TTL_MS
+      if (isFresh) {
+        const cachedData = fs.readFileSync(CACHE_FILE, 'utf8')
+        const parsed = JSON.parse(cachedData)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          globalForMagicNeedles.magicNeedlesCache = parsed
+          return parsed
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Error reading magicneedles disk cache:', err)
+  }
+
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 12000) // 12-second timeout for 8 pages
@@ -905,6 +928,18 @@ export async function fetchMagicNeedlesProducts(): Promise<TProductItem[]> {
 
     const result = groupAndMergeProducts(mappedProducts)
     globalForMagicNeedles.magicNeedlesCache = result
+
+    // Write to disk cache asynchronously
+    try {
+      const dir = path.dirname(CACHE_FILE)
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true })
+      }
+      fs.writeFileSync(CACHE_FILE, JSON.stringify(result), 'utf8')
+    } catch (diskErr) {
+      console.warn('Failed to write magicneedles disk cache:', diskErr)
+    }
+
     return result
   } catch (error) {
     console.error('Error fetching magicneedles.in products:', error)

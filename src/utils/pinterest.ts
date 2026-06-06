@@ -1,4 +1,9 @@
 import { TProductItem } from '@/data/data'
+import fs from 'fs'
+import path from 'path'
+
+const CACHE_FILE = path.join(process.cwd(), 'src/data/pinterest-cache.json')
+const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
 
 const globalForPinterest = globalThis as unknown as {
   pinterestCache?: Record<string, TProductItem[]>
@@ -202,6 +207,21 @@ export async function fetchPinterestProducts(rssUrl: string): Promise<TProductIt
     return globalForPinterest.pinterestCache[rssUrl]
   }
 
+  // Check disk cache
+  try {
+    if (fs.existsSync(CACHE_FILE)) {
+      const cachedData = fs.readFileSync(CACHE_FILE, 'utf8')
+      const parsed = JSON.parse(cachedData)
+      const entry = parsed[rssUrl]
+      if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) {
+        globalForPinterest.pinterestCache[rssUrl] = entry.data
+        return entry.data
+      }
+    }
+  } catch (err) {
+    console.warn('Error reading pinterest disk cache:', err)
+  }
+
   try {
     // 5-second fetch timeout to maintain fast page load times
     const controller = new AbortController()
@@ -360,6 +380,31 @@ export async function fetchPinterestProducts(rssUrl: string): Promise<TProductIt
 
     const result = products.length > 0 ? products : FALLBACK_PINTEREST_PRODUCTS
     globalForPinterest.pinterestCache[rssUrl] = result
+
+    // Write to disk cache
+    try {
+      const dir = path.dirname(CACHE_FILE)
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true })
+      }
+      
+      let diskData: Record<string, { timestamp: number; data: TProductItem[] }> = {}
+      if (fs.existsSync(CACHE_FILE)) {
+        try {
+          diskData = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'))
+        } catch (e) {
+          diskData = {}
+        }
+      }
+      diskData[rssUrl] = {
+        timestamp: Date.now(),
+        data: result
+      }
+      fs.writeFileSync(CACHE_FILE, JSON.stringify(diskData), 'utf8')
+    } catch (diskErr) {
+      console.warn('Failed to write pinterest disk cache:', diskErr)
+    }
+
     return result
   } catch (error) {
     console.error(`Error fetching or parsing Pinterest RSS feed: ${rssUrl}`, error)
