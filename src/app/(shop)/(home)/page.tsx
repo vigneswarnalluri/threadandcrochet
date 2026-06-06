@@ -27,30 +27,28 @@ export const metadata: Metadata = {
 }
 
 async function PageHome() {
-  const allCollections = await getCollections()
+  const supabase = await createClient()
+
+  // Fetch all layout data, blog posts, collections and products concurrently
+  const [allCollections, groupCollections, products, blogPosts, bannerRes, layoutRes] = await Promise.all([
+    getCollections(),
+    getGroupCollections(),
+    getProducts(),
+    getBlogPosts(),
+    supabase.from('store_settings').select('value').eq('key', 'banners').single(),
+    supabase.from('store_settings').select('value').eq('key', 'homepage_layout').single(),
+  ])
+
   const departmentCollections = allCollections.slice(11, 15)
   const featuredCollections = allCollections.slice(7, 11)
-  const groupCollections = await getGroupCollections()
-  const products = await getProducts()
   const carouselProducts1 = products.slice(0, 5)
   const carouselProducts2 = products.slice(3, 10)
   const carouselProducts3 = products.slice(1, 5)
-  const blogPosts = await getBlogPosts()
 
   // Fetch banners from store_settings
   let dbBanners: any[] = []
-  try {
-    const supabase = await createClient()
-    const { data: bannerSetting } = await supabase
-      .from('store_settings')
-      .select('value')
-      .eq('key', 'banners')
-      .single()
-    if (bannerSetting?.value && Array.isArray(bannerSetting.value)) {
-      dbBanners = bannerSetting.value
-    }
-  } catch (e) {
-    console.warn('Failed to fetch home banners from database:', e)
+  if (bannerRes.data?.value && Array.isArray(bannerRes.data.value)) {
+    dbBanners = bannerRes.data.value
   }
 
   const heroBanners = dbBanners.length > 0
@@ -82,18 +80,8 @@ async function PageHome() {
     { id: 'reviews', name: 'Customer Testimonials Slider', visible: true }
   ]
 
-  try {
-    const supabase = await createClient()
-    const { data: layoutSetting } = await supabase
-      .from('store_settings')
-      .select('value')
-      .eq('key', 'homepage_layout')
-      .single()
-    if (layoutSetting?.value && Array.isArray(layoutSetting.value)) {
-      layoutConfig = layoutSetting.value
-    }
-  } catch (e) {
-    console.warn('Failed to fetch homepage layout:', e)
+  if (layoutRes.data?.value && Array.isArray(layoutRes.data.value)) {
+    layoutConfig = layoutRes.data.value
   }
 
   return (
