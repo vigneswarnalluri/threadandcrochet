@@ -23,14 +23,17 @@ create table if not exists profiles (
 alter table profiles enable row level security;
 
 -- Policies: users can only read/write their own profile
+drop policy if exists "Users can view own profile" on profiles;
 create policy "Users can view own profile"
   on profiles for select
   using (auth.uid() = id);
 
+drop policy if exists "Users can insert own profile" on profiles;
 create policy "Users can insert own profile"
   on profiles for insert
   with check (auth.uid() = id);
 
+drop policy if exists "Users can update own profile" on profiles;
 create policy "Users can update own profile"
   on profiles for update
   using (auth.uid() = id)
@@ -81,10 +84,12 @@ create table if not exists orders (
 
 alter table orders enable row level security;
 
+drop policy if exists "Users can view own orders" on orders;
 create policy "Users can view own orders"
   on orders for select
   using (auth.uid() = user_id);
 
+drop policy if exists "Users can insert own orders" on orders;
 create policy "Users can insert own orders"
   on orders for insert
   with check (auth.uid() = user_id);
@@ -114,6 +119,7 @@ create table if not exists products (
 );
 
 alter table products enable row level security;
+drop policy if exists "Anyone can view products" on products;
 create policy "Anyone can view products" on products for select using (true);
 
 -- ----------------------------------------------------------------
@@ -132,6 +138,7 @@ create table if not exists collections (
 );
 
 alter table collections enable row level security;
+drop policy if exists "Anyone can view collections" on collections;
 create policy "Anyone can view collections" on collections for select using (true);
 
 -- ----------------------------------------------------------------
@@ -147,14 +154,17 @@ create table if not exists wishlists (
 
 alter table wishlists enable row level security;
 
+drop policy if exists "Users can view own wishlists" on wishlists;
 create policy "Users can view own wishlists"
   on wishlists for select
   using (auth.uid() = user_id);
 
+drop policy if exists "Users can insert own wishlists" on wishlists;
 create policy "Users can insert own wishlists"
   on wishlists for insert
   with check (auth.uid() = user_id);
 
+drop policy if exists "Users can delete own wishlists" on wishlists;
 create policy "Users can delete own wishlists"
   on wishlists for delete
   using (auth.uid() = user_id);
@@ -175,19 +185,23 @@ create table if not exists cart_items (
 
 alter table cart_items enable row level security;
 
+drop policy if exists "Users can view own cart items" on cart_items;
 create policy "Users can view own cart items"
   on cart_items for select
   using (auth.uid() = user_id);
 
+drop policy if exists "Users can insert own cart items" on cart_items;
 create policy "Users can insert own cart items"
   on cart_items for insert
   with check (auth.uid() = user_id);
 
+drop policy if exists "Users can update own cart items" on cart_items;
 create policy "Users can update own cart items"
   on cart_items for update
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+drop policy if exists "Users can delete own cart items" on cart_items;
 create policy "Users can delete own cart items"
   on cart_items for delete
   using (auth.uid() = user_id);
@@ -208,10 +222,12 @@ create table if not exists reviews (
 
 alter table reviews enable row level security;
 
+drop policy if exists "Anyone can view reviews" on reviews;
 create policy "Anyone can view reviews"
   on reviews for select
   using (true);
 
+drop policy if exists "Authenticated users can insert reviews" on reviews;
 create policy "Authenticated users can insert reviews"
   on reviews for insert
   with check (auth.uid() = user_id);
