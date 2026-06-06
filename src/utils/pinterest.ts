@@ -1,5 +1,9 @@
 import { TProductItem } from '@/data/data'
 
+const globalForPinterest = globalThis as unknown as {
+  pinterestCache?: Record<string, TProductItem[]>
+}
+
 // Decode basic HTML/XML entities
 function decodeHtmlEntities(str: string): string {
   return str
@@ -191,6 +195,13 @@ export const FALLBACK_PINTEREST_PRODUCTS: TProductItem[] = [
  * Converted to standard e-commerce TProductItem structures.
  */
 export async function fetchPinterestProducts(rssUrl: string): Promise<TProductItem[]> {
+  if (!globalForPinterest.pinterestCache) {
+    globalForPinterest.pinterestCache = {}
+  }
+  if (globalForPinterest.pinterestCache[rssUrl]) {
+    return globalForPinterest.pinterestCache[rssUrl]
+  }
+
   try {
     // 5-second fetch timeout to maintain fast page load times
     const controller = new AbortController()
@@ -347,7 +358,9 @@ export async function fetchPinterestProducts(rssUrl: string): Promise<TProductIt
       products.push(product)
     }
 
-    return products.length > 0 ? products : FALLBACK_PINTEREST_PRODUCTS
+    const result = products.length > 0 ? products : FALLBACK_PINTEREST_PRODUCTS
+    globalForPinterest.pinterestCache[rssUrl] = result
+    return result
   } catch (error) {
     console.error(`Error fetching or parsing Pinterest RSS feed: ${rssUrl}`, error)
     return FALLBACK_PINTEREST_PRODUCTS

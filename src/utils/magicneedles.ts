@@ -1,5 +1,9 @@
 import { TProductItem } from '@/data/data'
 
+const globalForMagicNeedles = globalThis as unknown as {
+  magicNeedlesCache?: TProductItem[]
+}
+
 // Decode basic HTML entities for clean display
 function decodeHtml(html: string): string {
   if (!html) return ''
@@ -491,6 +495,10 @@ function groupAndMergeProducts(products: TProductItem[]): TProductItem[] {
  * and maps them to the store's TProductItem format, filtering out raw supplies.
  */
 export async function fetchMagicNeedlesProducts(): Promise<TProductItem[]> {
+  if (globalForMagicNeedles.magicNeedlesCache && globalForMagicNeedles.magicNeedlesCache.length > 0) {
+    return globalForMagicNeedles.magicNeedlesCache
+  }
+
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 12000) // 12-second timeout for 8 pages
@@ -895,7 +903,9 @@ export async function fetchMagicNeedlesProducts(): Promise<TProductItem[]> {
       return item
     })
 
-    return groupAndMergeProducts(mappedProducts)
+    const result = groupAndMergeProducts(mappedProducts)
+    globalForMagicNeedles.magicNeedlesCache = result
+    return result
   } catch (error) {
     console.error('Error fetching magicneedles.in products:', error)
     return []
