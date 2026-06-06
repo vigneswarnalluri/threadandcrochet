@@ -1,6 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { getProductReviews } from '@/data/data'
+import { createAdminClient } from '@/utils/supabase/admin'
+
 
 export async function GET(request: NextRequest) {
   try {
@@ -128,6 +130,18 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
+    try {
+      const adminClient = createAdminClient()
+      await adminClient
+        .from('notifications')
+        .insert({
+          type: 'new_review',
+          message: `New review by ${authorName} (${rating}⭐): "${title || content.substring(0, 30)}..."`
+        })
+    } catch (e) {
+      console.error('Failed to trigger notification for review:', e)
     }
 
     return NextResponse.json({

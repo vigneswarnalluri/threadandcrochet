@@ -27,6 +27,9 @@ const CheckoutPage = () => {
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; amount: number; description: string } | null>(null)
   const [discountError, setDiscountError] = useState('')
   const [discountLoading, setDiscountLoading] = useState(false)
+  const [rates, setRates] = useState({ tax: 8, shipping: 840 }) // default tax 8%, flat shipping 840 INR ($10)
+  const [useStoreCredit, setUseStoreCredit] = useState(false)
+  const [storeCreditBalance, setStoreCreditBalance] = useState(0)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -44,6 +47,7 @@ const CheckoutPage = () => {
         .then((data) => {
           if (data) {
             setProfile(data)
+            setStoreCreditBalance(Number(data.store_credit || 0))
             if (!data.address || !data.phoneNumber) {
               setProfileIncomplete(true)
             } else {
@@ -55,12 +59,31 @@ const CheckoutPage = () => {
     }
   }, [user])
 
-  // Calculate order totals
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.settings) {
+          const ratesSetting = data.settings.find((s: any) => s.key === 'rates')?.value
+          if (ratesSetting) {
+            setRates({
+              tax: Number(ratesSetting.tax ?? 8),
+              shipping: Number(ratesSetting.shipping ?? 840)
+            })
+          }
+        }
+      })
+      .catch((err) => console.error('Failed to load store settings:', err))
+  }, [])
+
+  // Calculate order totals using settings from DB
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = subtotal > 150 || subtotal === 0 ? 0 : 10
-  const tax = subtotal * 0.08
+  const shipping = subtotal === 0 ? 0 : (rates.shipping / 84)
+  const tax = subtotal * (rates.tax / 100)
   const discountAmount = appliedDiscount?.amount || 0
-  const total = subtotal + shipping + tax - discountAmount
+  const maxApplicableStoreCredit = subtotal + shipping + tax - discountAmount
+  const appliedStoreCredit = useStoreCredit ? Math.min(storeCreditBalance, maxApplicableStoreCredit) : 0
+  const total = subtotal + shipping + tax - discountAmount - appliedStoreCredit
 
   if (loading) {
     return (
@@ -269,6 +292,28 @@ const CheckoutPage = () => {
                 </Field>
               </form>
 
+              {storeCreditBalance > 0 && (
+                <div className="mt-4 p-3.5 rounded-2xl border border-neutral-200 bg-neutral-50/50 dark:border-neutral-700 dark:bg-neutral-800/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <input
+                      type="checkbox"
+                      id="apply-store-credit"
+                      checked={useStoreCredit}
+                      onChange={(e) => setUseStoreCredit(e.target.checked)}
+                      className="h-4.5 w-4.5 rounded border-neutral-300 text-primary-600 focus:ring-primary-500 dark:border-neutral-700 dark:bg-neutral-800 cursor-pointer"
+                    />
+                    <label htmlFor="apply-store-credit" className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 cursor-pointer selection:bg-transparent">
+                      Apply Store Credit (Available: ₹{Math.round(storeCreditBalance * 84).toLocaleString('en-IN')})
+                    </label>
+                  </div>
+                  {useStoreCredit && (
+                    <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                      - ₹{Math.round(appliedStoreCredit * 84).toLocaleString('en-IN')}
+                    </span>
+                  )}
+                </div>
+              )}
+
               <div className="mt-4 flex justify-between py-2.5">
                 <span>Subtotal</span>
                 <span className="font-semibold text-neutral-900 dark:text-neutral-200">
@@ -276,13 +321,13 @@ const CheckoutPage = () => {
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
-                <span>Shipping estimate</span>
+                <span>Shipping Flat Fee</span>
                 <span className="font-semibold text-neutral-900 dark:text-neutral-200">
                   <Prices price={shipping} plainText />
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
-                <span>Tax estimate</span>
+                <span>Tax ({rates.tax}%)</span>
                 <span className="font-semibold text-neutral-900 dark:text-neutral-200">
                   <Prices price={tax} plainText />
                 </span>
@@ -291,6 +336,12 @@ const CheckoutPage = () => {
                 <div className="flex justify-between py-2.5 text-green-600 dark:text-green-400">
                   <span>Discount ({appliedDiscount.code})</span>
                   <span className="font-semibold">- <Prices price={discountAmount} plainText /></span>
+                </div>
+              )}
+              {useStoreCredit && appliedStoreCredit > 0 && (
+                <div className="flex justify-between py-2.5 text-green-600 dark:text-green-400">
+                  <span>Store Credit Applied</span>
+                  <span className="font-semibold">- <Prices price={appliedStoreCredit} plainText /></span>
                 </div>
               )}
               <div className="flex justify-between pt-4 text-base font-semibold text-neutral-900 dark:text-neutral-200">
@@ -329,6 +380,9 @@ const CheckoutPage = () => {
                   }
                   cartItems={cart}
                   costs={{ subtotal, shipping, tax, total, discount: discountAmount }}
+                  useStoreCredit={useStoreCredit}
+                  storeCreditAmount={appliedStoreCredit}
+                  discountCode={appliedDiscount?.code || ''}
                 >
                   Confirm order &amp; Pay {
                     currency === 'INR'

@@ -23,12 +23,28 @@ import ProductStatus from '../../ProductStatus'
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params
   const product = await getProductDetailByHandle(handle)
-  const title = product?.title || 'product detail'
-  const description = product?.description || 'product detail page'
-  return {
+  const title = (product as any)?.metaTitle || product?.title || 'product detail'
+  const description = (product as any)?.metaDescription || product?.description || 'product detail page'
+  const keywordsStr = (product as any)?.metaKeywords || ''
+  const keywords = keywordsStr ? keywordsStr.split(',').map((k: string) => k.trim()) : []
+  const ogImage = (product as any)?.ogImage || product?.featuredImage?.src
+
+  const meta: Metadata = {
     title,
     description,
   }
+
+  if (keywords.length > 0) {
+    meta.keywords = keywords
+  }
+
+  if (ogImage) {
+    meta.openGraph = {
+      images: [{ url: ogImage }]
+    }
+  }
+
+  return meta
 }
 
 export default async function Page({ params }: { params: Promise<{ handle: string }> }) {
@@ -77,6 +93,25 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
               </span>
             </a>
           </div>
+
+          {/* Low Stock / Out of Stock Warning */}
+          {product.stock != null && (
+            product.stock === 0 ? (
+              <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-3 mt-4 dark:bg-red-950/30 dark:border-red-800">
+                <span className="inline-block h-2 w-2 rounded-full bg-red-500 shrink-0"></span>
+                <span className="text-sm font-semibold text-red-700 dark:text-red-400">
+                  Out of Stock — this item is currently unavailable
+                </span>
+              </div>
+            ) : product.stock <= 4 ? (
+              <div className="flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 mt-4 dark:bg-amber-950/30 dark:border-amber-800">
+                <span className="inline-block h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+                <span className="text-sm font-semibold text-amber-700 dark:text-amber-400">
+                  Only {product.stock} left — order soon before it runs out!
+                </span>
+              </div>
+            ) : null
+          )}
 
           <ProductForm product={product} className="mt-6">
             <fieldset>

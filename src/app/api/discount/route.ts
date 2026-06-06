@@ -38,8 +38,29 @@ export async function POST(request: NextRequest) {
         description: dbCode.description || `${dbCode.discount}${dbCode.type === 'percent' ? '%' : '₹'} off`,
       }
     } else {
-      // Fall back to hardcoded codes
-      discountInfo = FALLBACK_CODES[normalizedCode] || null
+      // Try fetching from gift_cards table
+      const { data: dbGiftCard, error: gcError } = await supabase
+        .from('gift_cards')
+        .select('*')
+        .eq('code', normalizedCode)
+        .eq('active', true)
+        .single()
+
+      if (!gcError && dbGiftCard) {
+        const expired = dbGiftCard.expires_at && new Date(dbGiftCard.expires_at).getTime() < Date.now()
+        if (!expired && Number(dbGiftCard.balance) > 0) {
+          discountInfo = {
+            discount: Number(dbGiftCard.balance),
+            type: 'fixed',
+            description: `Gift Card Balance: ₹${Math.round(Number(dbGiftCard.balance) * 84).toLocaleString('en-IN')}`,
+          }
+        }
+      }
+
+      if (!discountInfo) {
+        // Fall back to hardcoded codes
+        discountInfo = FALLBACK_CODES[normalizedCode] || null
+      }
     }
 
     if (!discountInfo) {

@@ -22,6 +22,9 @@ interface RazorpayButtonProps {
     total: number
     discount: number
   }
+  useStoreCredit?: boolean
+  storeCreditAmount?: number
+  discountCode?: string
 }
 
 declare global {
@@ -67,6 +70,9 @@ export default function RazorpayButton({
   children,
   cartItems,
   costs,
+  useStoreCredit = false,
+  storeCreditAmount = 0,
+  discountCode = '',
 }: RazorpayButtonProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -120,6 +126,9 @@ export default function RazorpayButton({
               razorpay_signature: response.razorpay_signature,
               cartItems,
               costs,
+              useStoreCredit,
+              storeCreditAmount,
+              discountCode,
             }),
           })
 

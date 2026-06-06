@@ -1,5 +1,6 @@
 import Razorpay from 'razorpay'
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/utils/supabase/server'
 
 const razorpay = new Razorpay({
   key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
@@ -8,6 +9,25 @@ const razorpay = new Razorpay({
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if customer profile is blocked
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('blocked')
+        .eq('id', user.id)
+        .single()
+
+      if (profile?.blocked) {
+        return NextResponse.json(
+          { error: 'Your account has been blocked from placing orders. Please contact support.' },
+          { status: 403 }
+        )
+      }
+    }
+
     const body = await request.json()
     const { amount, currency = 'INR', receipt } = body
 

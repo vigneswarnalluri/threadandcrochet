@@ -48,6 +48,11 @@ import avatarImage4 from '@/images/users/avatar4.jpg'
 import { shuffleArray } from '@/utils/shuffleArray'
 import { fetchPinterestProducts } from '@/utils/pinterest'
 import { fetchMagicNeedlesProducts } from '@/utils/magicneedles'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const globalSupabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export async function getOrder(number: string) {
   const allOrders = await getOrders()
@@ -1724,6 +1729,60 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
 export async function getProducts(): Promise<TProductItem[]> {
   const liveProducts = await fetchMagicNeedlesProducts()
 
+  try {
+    const { data: dbProducts, error } = await globalSupabase
+      .from('products')
+      .select('*')
+
+    if (!error && dbProducts && dbProducts.length > 0) {
+      const mappedDbProducts: TProductItem[] = dbProducts.map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        handle: p.handle,
+        createdAt: p.created_at,
+        vendor: p.vendor || 'Thread & Love',
+        price: Number(p.price || 0),
+        featuredImage: p.featured_image || {
+          src: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=736',
+          width: 1000,
+          height: 1000,
+          alt: p.title
+        },
+        images: p.images || [],
+        reviewNumber: p.review_number || 0,
+        rating: Number(p.rating || 5.0),
+        status: p.status || 'New in',
+        options: p.options || [
+          {
+            name: 'Color',
+            optionValues: [{ name: 'Original', swatch: { color: '#ebd9be', image: null } }]
+          },
+          {
+            name: 'Size',
+            optionValues: [{ name: 'Standard', swatch: null }]
+          }
+        ],
+        selectedOptions: p.selected_options || [
+          { name: 'Color', value: 'Original' },
+          { name: 'Size', value: 'Standard' }
+        ],
+        description: p.description || '',
+        features: p.features || [],
+        careInstruction: p.care_instruction || '',
+        shippingAndReturn: p.shipping_and_return || '',
+        stock: p.stock != null ? Number(p.stock) : undefined,
+        metaTitle: p.meta_title || '',
+        metaDescription: p.meta_description || '',
+        metaKeywords: p.meta_keywords || '',
+        ogImage: p.og_image || ''
+      }))
+
+      return [...mappedDbProducts, ...liveProducts]
+    }
+  } catch (err) {
+    console.error('Error fetching custom products from Supabase:', err)
+  }
+
   const localItems = [
     {
       id: 'gid://1001',
@@ -2665,6 +2724,7 @@ export interface TProductItem {
   reviewNumber?: number
   rating?: number
   status?: string
+  stock?: number
   collectionHandles?: string[]
   isFromPinterest?: boolean
   isFromMagicNeedles?: boolean

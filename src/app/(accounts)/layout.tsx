@@ -6,6 +6,7 @@ import AsideSidebarCart from '@/components/aside-sidebar-cart'
 import AsideSidebarNavigation from '@/components/aside-sidebar-navigation'
 import { createClient } from '@/utils/supabase/server'
 import React from 'react'
+import { redirect } from 'next/navigation'
 import PageTab from './PageTab'
 
 interface Props {
@@ -26,9 +27,14 @@ const Layout = async ({ children }: Props) => {
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, email, address')
+      .select('full_name, email, address, role')
       .eq('id', user.id)
       .single()
+
+    // Admins go straight to the admin dashboard — no customer account pages needed
+    if (profile?.role === 'admin') {
+      redirect('/admin')
+    }
 
     displayName = profile?.full_name || user.email?.split('@')[0] || 'Guest'
     displayEmail = profile?.email || user.email || ''

@@ -6,6 +6,7 @@ import { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import EditShippingUpdates from './EditShippingUpdates'
 
 export async function generateMetadata({ params }: { params: Promise<{ number: string }> }): Promise<Metadata> {
@@ -32,28 +33,72 @@ const Page = async ({ params }: { params: Promise<{ number: string }> }) => {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  const getTrackingUrl = (cName?: string, tNo?: string) => {
+    if (!cName || !tNo) return ''
+    const c = cName.toLowerCase()
+    if (c.includes('delhivery')) return `https://www.delhivery.com/track/package/${tNo}`
+    if (c.includes('fedex')) return `https://www.fedex.com/apps/fedextrack/?tracknumbers=${tNo}`
+    if (c.includes('dhl')) return `https://www.dhl.com/en/express/tracking.html?AWB=${tNo}`
+    if (c.includes('blue dart') || c.includes('bluedart')) return `https://www.bluedart.com/`
+    if (c.includes('dtdc')) return `https://www.dtdc.in/`
+    return ''
+  }
+
   if (!user) {
     redirect('/login')
   }
 
-  // Fetch the order for this number and check owner user_id
-  const { data: dbOrder } = await supabase
-    .from('orders')
-    .select('*')
-    .eq('number', number)
-    .eq('user_id', user.id)
+  // Fetch user role
+  const { data: userProfile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
     .single()
+
+  const isAdmin = userProfile?.role === 'admin'
+
+  // Fetch the order
+  let dbOrder = null
+  if (isAdmin) {
+    const adminClient = createAdminClient()
+    const { data } = await adminClient
+      .from('orders')
+      .select('*')
+      .eq('number', number)
+      .single()
+    dbOrder = data
+  } else {
+    const { data } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('number', number)
+      .eq('user_id', user.id)
+      .single()
+    dbOrder = data
+  }
 
   if (!dbOrder) {
     return notFound()
   }
 
   // Fetch customer profile to get addresses & contact details
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, address, email, phone_number')
-    .eq('id', user.id)
-    .single()
+  let profile = null
+  if (isAdmin) {
+    const adminClient = createAdminClient()
+    const { data } = await adminClient
+      .from('profiles')
+      .select('full_name, address, email, phone_number')
+      .eq('id', dbOrder.user_id)
+      .single()
+    profile = data
+  } else {
+    const { data } = await supabase
+      .from('profiles')
+      .select('full_name, address, email, phone_number')
+      .eq('id', user.id)
+      .single()
+    profile = data
+  }
 
   // Status → tracking step mapping (0=placed, 1=processing, 2=shipped, 3=delivered)
   const STATUS_STEP_MAP: Record<string, number> = {
@@ -179,6 +224,35 @@ const Page = async ({ params }: { params: Promise<{ number: string }> }) => {
                 <p className="text-sm font-medium">
                   {product.status} on <time dateTime={product.datetime}>{product.date}</time>
                 </p>
+
+                {dbOrder.carrier && dbOrder.tracking_number && (
+                  <div className="mt-4 max-w-sm p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl text-xs space-y-1.5 dark:bg-neutral-800/40 dark:border-neutral-750">
+                    <div className="font-bold text-neutral-850 dark:text-neutral-200">📦 Shipment Tracking Details</div>
+                    <div className="flex justify-between">
+                      <span className="text-neutral-500">Carrier Partner:</span>
+                      <span className="font-semibold">{dbOrder.carrier}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-neutral-500">Tracking Code:</span>
+                      <span className="font-semibold font-mono">{dbOrder.tracking_number}</span>
+                    </div>
+                    {(() => {
+                      const url = getTrackingUrl(dbOrder.carrier, dbOrder.tracking_number);
+                      return url ? (
+                        <div className="pt-2 text-center">
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex rounded-xl bg-neutral-900 text-white px-4 py-2 font-bold hover:bg-neutral-850 dark:bg-primary-600 transition"
+                          >
+                            Track Package Status
+                          </a>
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                )}
                 <div aria-hidden="true" className="mt-6">
                   <div className="overflow-hidden rounded-full bg-neutral-200">
                     <div

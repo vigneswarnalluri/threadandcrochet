@@ -11,7 +11,7 @@ import { useSwipeable } from 'react-swipeable'
 import { useInterval } from 'react-use'
 
 // DEMO DATA
-const data = [
+const DEMO_SLIDES = [
   {
     id: 1,
     imageUrl: '/Crochet/IMG_20260605_154246_117.jpg',
@@ -41,13 +41,26 @@ const data = [
   },
 ]
 
+export interface HeroSlide {
+  id: number
+  imageUrl: string
+  heading: string
+  subHeading: string
+  btnText: string
+  btnHref: string
+  bgColor: string
+}
+
 interface Props {
   className?: string
+  data?: HeroSlide[]
 }
 
 let TIME_OUT: NodeJS.Timeout | null = null
-const SectionHero2: FC<Props> = ({ className = '' }) => {
+const SectionHero2: FC<Props> = ({ className = '', data: customData }) => {
   // =================
+
+  const slides = customData && customData.length > 0 ? customData : DEMO_SLIDES
 
   const [isSlided, setIsSlided] = useState(false)
   const [indexActive, setIndexActive] = useState(0)
@@ -79,7 +92,7 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
 
   const handleAutoNext = () => {
     setIndexActive((state) => {
-      if (state >= data.length - 1) {
+      if (state >= slides.length - 1) {
         return 0
       }
       return state + 1
@@ -88,7 +101,7 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
 
   const handleClickNext = () => {
     setIndexActive((state) => {
-      if (state >= data.length - 1) {
+      if (state >= slides.length - 1) {
         return 0
       }
       return state + 1
@@ -99,7 +112,7 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
   const handleClickPrev = () => {
     setIndexActive((state) => {
       if (state === 0) {
-        return data.length - 1
+        return slides.length - 1
       }
       return state - 1
     })
@@ -120,7 +133,7 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
 
   const renderItem = (index: number) => {
     const isActive = indexActive === index
-    const item = data[index]
+    const item = slides[index]
 
     return (
       <div
@@ -143,7 +156,7 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
 
         {/* DOTS */}
         <div className="absolute start-1/2 bottom-4 flex -translate-x-1/2 justify-center rtl:translate-x-1/2">
-          {data.map((_, index) => {
+          {slides.map((_, index) => {
             const isActive = indexActive === index
             return (
               <div
@@ -194,7 +207,7 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
 
   return (
     <div className={clsx('relative z-[1]', className)} {...handlers}>
-      {data.map((_, index) => renderItem(index))}
+      {slides.map((_, index) => renderItem(index))}
 
       <button
         type="button"

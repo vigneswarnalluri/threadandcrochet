@@ -12,7 +12,7 @@ export async function GET() {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, address, email, phone_number, avatar_url')
+      .select('full_name, address, email, phone_number, avatar_url, store_credit')
       .eq('id', user.id)
       .single()
 
@@ -22,6 +22,7 @@ export async function GET() {
       email: profile?.email || user.email || '',
       phoneNumber: profile?.phone_number || '',
       avatarUrl: profile?.avatar_url || null,
+      store_credit: Number(profile?.store_credit || 0),
     })
   } catch {
     return NextResponse.json({ error: 'Server error' }, { status: 500 })

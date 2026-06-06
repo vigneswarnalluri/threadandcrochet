@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { sendOrderConfirmationEmail } from '@/lib/sendEmail'
+import { createAdminClient } from '@/utils/supabase/admin'
 
 // Generates a short unique order number like TL-A3F9K2 without needing a DB sequence
 function generateOrderNumber(): string {
@@ -16,7 +17,7 @@ function generateOrderNumber(): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, cartItems, costs } = body
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, cartItems, costs, useStoreCredit, storeCreditAmount, discountCode } = body
 
     // Validate all required fields are present
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -52,12 +53,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fetch profile for email + address
+    // Fetch profile for email + address + blocked status
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, email, phone_number, address')
+      .select('full_name, email, phone_number, address, blocked')
       .eq('id', user.id)
       .single()
+
+    if (profile?.blocked) {
+      return NextResponse.json(
+        { error: 'Your account has been blocked from placing orders. Please contact support.' },
+        { status: 403 }
+      )
+    }
 
     const customerName = profile?.full_name || user.email?.split('@')[0] || 'Customer'
     const customerEmail = profile?.email || user.email || ''
@@ -124,6 +132,96 @@ export async function POST(request: NextRequest) {
           error: insertError.message,
         }, { status: 500 })
       }
+    }
+
+    // Deduct applied store credit and devalue applied gift cards
+    try {
+      const adminClient = createAdminClient()
+      if (useStoreCredit && storeCreditAmount > 0) {
+        const { data: prof } = await adminClient
+          .from('profiles')
+          .select('store_credit')
+          .eq('id', user.id)
+          .single()
+        if (prof) {
+          const currentCredit = Number(prof.store_credit || 0)
+          const newCredit = Math.max(0, currentCredit - Number(storeCreditAmount))
+          await adminClient
+            .from('profiles')
+            .update({ store_credit: newCredit })
+            .eq('id', user.id)
+        }
+      }
+
+      if (discountCode) {
+        const normalizedGC = discountCode.trim().toUpperCase()
+        const { data: gc } = await adminClient
+          .from('gift_cards')
+          .select('balance')
+          .eq('code', normalizedGC)
+          .single()
+        if (gc) {
+          const currentBalance = Number(gc.balance || 0)
+          const newBalance = Math.max(0, currentBalance - (costs?.discount || 0))
+          await adminClient
+            .from('gift_cards')
+            .update({ balance: newBalance, active: newBalance > 0 })
+            .eq('code', normalizedGC)
+        }
+      }
+    } catch (deductionErr) {
+      console.error('Failed to deduct store credit or gift card balance:', deductionErr)
+    }
+
+    // Decrement stock levels and log stock movements for purchased items
+    try {
+      const adminClient = createAdminClient()
+      for (const item of (cartItems || [])) {
+        const productId = item.productId || item.id
+        if (productId) {
+          const { data: prod } = await adminClient
+            .from('products')
+            .select('stock')
+            .eq('id', productId)
+            .single()
+          
+          if (prod) {
+            const currentStock = prod.stock || 0
+            const purchasedQty = Number(item.quantity || 1)
+            const newStock = Math.max(0, currentStock - purchasedQty)
+            
+            await adminClient
+              .from('products')
+              .update({ stock: newStock })
+              .eq('id', productId)
+            
+            // Insert stock log
+            await adminClient
+              .from('stock_logs')
+              .insert({
+                product_id: productId,
+                change: -purchasedQty,
+                reason: `Customer Purchase (Order #${orderNumber})`
+              })
+          }
+        }
+      }
+    } catch (stockErr) {
+      console.error('Failed to update stock levels on order placement:', stockErr)
+    }
+
+    // Insert admin notification for the new order
+    try {
+      const adminClient = createAdminClient()
+      const formattedTotal = costs ? `₹${Math.round(costs.total * 84).toLocaleString('en-IN')}` : '₹0'
+      await adminClient
+        .from('notifications')
+        .insert({
+          type: 'new_order',
+          message: `New Order ${orderNumber} placed by ${customerName} (${formattedTotal})`
+        })
+    } catch (e) {
+      console.error('Failed to trigger notification for order:', e)
     }
 
     // Send order confirmation email — fully non-blocking, never kills the response

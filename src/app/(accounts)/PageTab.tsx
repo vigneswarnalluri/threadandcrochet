@@ -3,30 +3,12 @@
 import { Link } from '@/components/Link'
 import { usePathname } from 'next/navigation'
 
-const pages: {
-  name: string
-  link: string
-}[] = [
-  {
-    name: 'Settings',
-    link: '/account',
-  },
-  {
-    name: 'Wishlists',
-    link: '/account-wishlists',
-  },
-  {
-    name: 'Orders history',
-    link: '/orders',
-  },
-  {
-    name: 'Change password',
-    link: '/account-password',
-  },
-  {
-    name: 'Billing',
-    link: '/account-billing',
-  },
+const pages = [
+  { name: 'Settings',         link: '/account' },
+  { name: 'Wishlists',        link: '/account-wishlists' },
+  { name: 'Orders history',   link: '/orders' },
+  { name: 'Change password',  link: '/account-password' },
+  { name: 'Billing',          link: '/account-billing' },
 ]
 
 const PageTab = () => {
