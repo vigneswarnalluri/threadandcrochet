@@ -274,7 +274,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
             <div className="relative">
               <ProductQuickViewGallery images={images || []} defaultImage={featuredImage} />
               {renderStatus()}
-              <LikeButton className="absolute end-3 top-3" />
+              <LikeButton productHandle={handle} className="absolute end-3 top-3" />
             </div>
           </div>
 

@@ -1,19 +1,24 @@
-import ButtonPrimary from '@/shared/Button/ButtonPrimary'
-import { Field, FieldGroup, Fieldset, Label } from '@/shared/fieldset'
-import { Input } from '@/shared/input'
-import Form from 'next/form'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/utils/supabase/server'
+import PasswordForm from './PasswordForm'
 
 export const metadata = {
   title: 'Account - Password',
   description: 'Account - Password page',
 }
 
-const Page = () => {
-  const handleSubmit = async (formData: FormData) => {
-    'use server'
-    const formObject = Object.fromEntries(formData.entries())
-    console.log(formObject)
+const Page = async () => {
+  const supabase = await createClient()
+
+  // Get authenticated user
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
   }
+
+  const providers = user.app_metadata.providers || []
+  const hasPassword = providers.includes('email')
 
   return (
     <div className="flex flex-col gap-y-10 sm:gap-y-12">
@@ -23,27 +28,7 @@ const Page = () => {
         <p className="mt-4 text-neutral-500 dark:text-neutral-400">Update your password to keep your account secure.</p>
       </div>
 
-      <Form action={handleSubmit}>
-        <Fieldset>
-          <FieldGroup className="max-w-xl">
-            <Field>
-              <Label>Current password</Label>
-              <Input type="password" name="current-password" />
-            </Field>
-            <Field>
-              <Label>New password</Label>
-              <Input type="password" name="new-password" />
-            </Field>
-            <Field>
-              <Label>Confirm password</Label>
-              <Input type="password" name="confirm-password" />
-            </Field>
-            <div className="pt-2">
-              <ButtonPrimary>Update password</ButtonPrimary>
-            </div>
-          </FieldGroup>
-        </Fieldset>
-      </Form>
+      <PasswordForm hasPassword={hasPassword} />
     </div>
   )
 }

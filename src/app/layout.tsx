@@ -3,6 +3,7 @@ import '@/styles/tailwind.css'
 import { Metadata } from 'next'
 import { Playfair_Display, Montserrat } from 'next/font/google'
 import GlobalClient from './GlobalClient'
+import { StoreProvider } from '@/context/StoreContext'
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -32,14 +33,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${playfair.variable} ${montserrat.variable} ${montserrat.className}`}>
       <body className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200">
-        <Aside.Provider>
-          {children}
+        <StoreProvider>
+          <Aside.Provider>
+            {children}
 
-          {/* Client component: Toaster, ... */}
-          <GlobalClient />
+            {/* Client component: Toaster, ... */}
+            <GlobalClient />
 
-        </Aside.Provider>
+          </Aside.Provider>
+        </StoreProvider>
       </body>
     </html>
   )
 }
+

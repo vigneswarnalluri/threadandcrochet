@@ -133,3 +133,87 @@ create table if not exists collections (
 
 alter table collections enable row level security;
 create policy "Anyone can view collections" on collections for select using (true);
+
+-- ----------------------------------------------------------------
+
+-- 5. WISHLISTS TABLE
+create table if not exists wishlists (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  product_id text not null,
+  created_at timestamptz default now(),
+  unique(user_id, product_id)
+);
+
+alter table wishlists enable row level security;
+
+create policy "Users can view own wishlists"
+  on wishlists for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert own wishlists"
+  on wishlists for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can delete own wishlists"
+  on wishlists for delete
+  using (auth.uid() = user_id);
+
+-- ----------------------------------------------------------------
+
+-- 6. CART_ITEMS TABLE
+create table if not exists cart_items (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  product_id text not null,
+  quantity int default 1 check (quantity > 0),
+  size text,
+  color text,
+  created_at timestamptz default now(),
+  unique(user_id, product_id, size, color)
+);
+
+alter table cart_items enable row level security;
+
+create policy "Users can view own cart items"
+  on cart_items for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert own cart items"
+  on cart_items for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update own cart items"
+  on cart_items for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create policy "Users can delete own cart items"
+  on cart_items for delete
+  using (auth.uid() = user_id);
+
+-- ----------------------------------------------------------------
+
+-- 7. REVIEWS TABLE
+create table if not exists reviews (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  product_id text not null,
+  rating int check (rating >= 1 and rating <= 5) not null,
+  title text,
+  content text not null,
+  author_name text not null,
+  created_at timestamptz default now()
+);
+
+alter table reviews enable row level security;
+
+create policy "Anyone can view reviews"
+  on reviews for select
+  using (true);
+
+create policy "Authenticated users can insert reviews"
+  on reviews for insert
+  with check (auth.uid() = user_id);
+
+

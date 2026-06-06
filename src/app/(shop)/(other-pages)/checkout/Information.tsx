@@ -9,6 +9,7 @@ import { Subheading } from '@/shared/heading'
 import { Input } from '@/shared/input'
 import { Radio, RadioField, RadioGroup } from '@/shared/radio'
 import { Select } from '@/shared/select'
+import { QrCodeIcon } from '@heroicons/react/24/outline'
 import {
   CreditCardIcon,
   CreditCardPosIcon,
@@ -21,12 +22,18 @@ import {
 import { HugeiconsIcon, IconSvgElement } from '@hugeicons/react'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-type Tab = 'ContactInfo' | 'ShippingAddress' | 'PaymentMethod'
+type Tab = 'ContactInfo' | 'ShippingAddress' | 'PaymentMethod' | null
 
-const Information = () => {
+interface InformationProps {
+  methodActive: 'Credit-Card' | 'UPI' | 'Internet-banking' | 'Wallet'
+  setMethodActive: (method: 'Credit-Card' | 'UPI' | 'Internet-banking' | 'Wallet') => void
+}
+
+const Information = ({ methodActive, setMethodActive }: InformationProps) => {
   const [tabActive, setTabActive] = useState<Tab>('ShippingAddress')
+  const [profile, setProfile] = useState<any>(null)
 
   const handleScrollToEl = (id: string) => {
     const element = document.getElementById(id)
@@ -35,13 +42,31 @@ const Information = () => {
     }, 80)
   }
 
+  const refreshProfile = () => {
+    fetch('/api/profile')
+      .then((res) => {
+        if (!res.ok) return null
+        return res.json()
+      })
+      .then((data) => {
+        if (data) {
+          setProfile(data)
+        }
+      })
+      .catch(() => {})
+  }
+
+  useEffect(() => {
+    refreshProfile()
+  }, [])
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <div id="ContactInfo" className="scroll-mt-5 rounded-xl border">
         <TabHeader
           title="Contact information"
           icon={UserCircle02Icon}
-          value="Enrico Smith / +855-666-7744"
+          value={profile ? `${profile.fullName} / ${profile.phoneNumber || 'No phone number'}` : 'Loading...'}
           onClickChange={() => {
             setTabActive('ContactInfo')
             handleScrollToEl('ContactInfo')
@@ -49,6 +74,8 @@ const Information = () => {
         />
         <div className={clsx('border-t px-4 py-7 sm:px-6', tabActive !== 'ContactInfo' && 'invisible hidden')}>
           <ContactInfo
+            profile={profile}
+            refreshProfile={refreshProfile}
             onClose={() => {
               setTabActive('ShippingAddress')
               handleScrollToEl('ShippingAddress')
@@ -61,7 +88,7 @@ const Information = () => {
         <TabHeader
           title="Shipping address"
           icon={Route02Icon}
-          value="St. Paul's Road, Norris, SD 57560, Dakota, USA"
+          value={profile ? (profile.address || 'No address provided') : 'Loading...'}
           onClickChange={() => {
             setTabActive('ShippingAddress')
             handleScrollToEl('ShippingAddress')
@@ -69,6 +96,8 @@ const Information = () => {
         />
         <div className={clsx('border-t px-4 py-7 sm:px-6', tabActive !== 'ShippingAddress' && 'invisible hidden')}>
           <ShippingAddress
+            profile={profile}
+            refreshProfile={refreshProfile}
             onClose={() => {
               setTabActive('PaymentMethod')
               handleScrollToEl('PaymentMethod')
@@ -81,7 +110,15 @@ const Information = () => {
         <TabHeader
           title="Payment method"
           icon={CreditCardPosIcon}
-          value="Credit Card / xxx-xxx-xx55"
+          value={
+            methodActive === 'Credit-Card'
+              ? 'Debit / Credit Card'
+              : methodActive === 'UPI'
+              ? 'UPI / QR Code (Google Pay, PhonePe, Paytm)'
+              : methodActive === 'Internet-banking'
+              ? 'Internet banking'
+              : 'Wallets (PhonePe, Paytm, etc.)'
+          }
           onClickChange={() => {
             setTabActive('PaymentMethod')
             handleScrollToEl('PaymentMethod')
@@ -89,6 +126,11 @@ const Information = () => {
         />
         <div className={clsx('border-t px-4 py-7 sm:px-6', tabActive !== 'PaymentMethod' && 'invisible hidden')}>
           <PaymentMethod
+            methodActive={methodActive}
+            setMethodActive={setMethodActive}
+            onConfirm={() => {
+              setTabActive(null)
+            }}
             onClose={() => {
               setTabActive('ShippingAddress')
               handleScrollToEl('ShippingAddress')
@@ -132,15 +174,39 @@ const TabHeader = ({
   )
 }
 
-const ContactInfo = ({ onClose }: { onClose: () => void }) => {
+const ContactInfo = ({
+  profile,
+  refreshProfile,
+  onClose,
+}: {
+  profile: any
+  refreshProfile: () => void
+  onClose: () => void
+}) => {
   return (
     <form
       action="#"
       method="POST"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault()
-        const formValues = Object.fromEntries(new FormData(e.target as HTMLFormElement))
-        console.log(formValues)
+        const formData = new FormData(e.target as HTMLFormElement)
+        const email = formData.get('email') as string
+        const phoneNumber = formData.get('phone') as string
+
+        try {
+          const res = await fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, phoneNumber }),
+          })
+          if (res.ok) {
+            refreshProfile()
+          } else {
+            console.error('Failed to update contact info in Supabase')
+          }
+        } catch (err) {
+          console.error('Error updating contact info:', err)
+        }
         onClose()
       }}
     >
@@ -148,20 +214,14 @@ const ContactInfo = ({ onClose }: { onClose: () => void }) => {
         <FieldGroup className="mt-0!">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="text-lg font-semibold">Contact infomation</h3>
-            <p className="text-sm">
-              Do not have an account?{` `}
-              <Link href="/login" className="font-medium underline">
-                Log in
-              </Link>
-            </p>
           </div>
           <Field className="max-w-lg">
-            <Label>Your phone number</Label>
-            <Input defaultValue={'+808 xxx'} type="tel" name="phone" />
+            <Label>Your phone number *</Label>
+            <Input defaultValue={profile?.phoneNumber || ''} type="tel" name="phone" placeholder="+91" required />
           </Field>
           <Field className="max-w-lg">
-            <Label>Email address</Label>
-            <Input type="email" name="email" />
+            <Label>Email address *</Label>
+            <Input defaultValue={profile?.email || ''} type="email" name="email" placeholder="example@example.com" required />
           </Field>
           <Field>
             <CheckboxField>
@@ -183,15 +243,52 @@ const ContactInfo = ({ onClose }: { onClose: () => void }) => {
   )
 }
 
-const ShippingAddress = ({ onClose }: { onClose: () => void }) => {
+const ShippingAddress = ({
+  profile,
+  refreshProfile,
+  onClose,
+}: {
+  profile: any
+  refreshProfile: () => void
+  onClose: () => void
+}) => {
+  const firstName = profile?.fullName?.split(' ')[0] || ''
+  const lastName = profile?.fullName?.split(' ').slice(1).join(' ') || ''
+
   return (
     <form
       action="#"
       method="POST"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault()
-        const formValues = Object.fromEntries(new FormData(e.target as HTMLFormElement))
-        console.log(formValues)
+        const formData = new FormData(e.target as HTMLFormElement)
+        const fName = formData.get('first-name') as string
+        const lName = formData.get('last-name') as string
+        const fullName = `${fName} ${lName}`.trim()
+
+        const street = formData.get('address') as string
+        const aptSuite = formData.get('apt-suite') as string
+        const city = formData.get('city') as string
+        const country = formData.get('country') as string
+        const state = formData.get('state-province') as string
+        const zip = formData.get('postal-code') as string
+
+        const fullAddress = `${street}${aptSuite ? ', ' + aptSuite : ''}, ${city}, ${state} ${zip}, ${country}`
+
+        try {
+          const res = await fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fullName, address: fullAddress }),
+          })
+          if (res.ok) {
+            refreshProfile()
+          } else {
+            console.error('Failed to update shipping address in Supabase')
+          }
+        } catch (err) {
+          console.error('Error updating shipping address:', err)
+        }
         onClose()
       }}
     >
@@ -199,53 +296,54 @@ const ShippingAddress = ({ onClose }: { onClose: () => void }) => {
         <FieldGroup className="mt-0!">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
             <Field>
-              <Label>First name</Label>
-              <Input defaultValue="Cole" name="first-name" />
+              <Label>First name *</Label>
+              <Input defaultValue={firstName} name="first-name" placeholder="First Name" required />
             </Field>
             <Field>
-              <Label>Last name</Label>
-              <Input defaultValue="Enrico" name="last-name" />
+              <Label>Last name *</Label>
+              <Input defaultValue={lastName} name="last-name" placeholder="Last Name" required />
             </Field>
           </div>
 
           {/* ============ */}
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-4">
             <Field className="sm:col-span-2">
-              <Label>Address</Label>
-              <Input placeholder="" defaultValue={'123, Dream Avenue, USA'} type={'text'} name="address" />
+              <Label>Address *</Label>
+              <Input placeholder="Enter your full street address" defaultValue={profile?.address || ''} type={'text'} name="address" required />
             </Field>
             <Field>
-              <Label>Apt, Suite *</Label>
-              <Input defaultValue="55U - DD5 " name="apt-suite" />
+              <Label>Apt, Suite</Label>
+              <Input defaultValue="" placeholder="Apt, Suite" name="apt-suite" />
             </Field>
           </div>
 
           {/* ============ */}
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
             <Field>
-              <Label>City</Label>
-              <Input defaultValue="Norris" name="city" />
+              <Label>City *</Label>
+              <Input defaultValue="" placeholder="City" name="city" required />
             </Field>
             <Field>
-              <Label>Country</Label>
-              <Select defaultValue="United States " name="country">
+              <Label>Country *</Label>
+              <Select defaultValue="India" name="country" required>
+                <option value="India">India</option>
                 <option value="United States">United States</option>
-                <option value="United States">Canada</option>
-                <option value="United States">Mexico</option>
-                <option value="United States">Israel</option>
-                <option value="United States">France</option>
-                <option value="United States">England</option>
-                <option value="United States">Laos</option>
-                <option value="United States">China</option>
+                <option value="Canada">Canada</option>
+                <option value="Mexico">Mexico</option>
+                <option value="Israel">Israel</option>
+                <option value="France">France</option>
+                <option value="England">England</option>
+                <option value="Laos">Laos</option>
+                <option value="China">China</option>
               </Select>
             </Field>
             <Field>
-              <Label>State/Province</Label>
-              <Input defaultValue="Texas" name="state-province" />
+              <Label>State/Province *</Label>
+              <Input defaultValue="" placeholder="State/Province" name="state-province" required />
             </Field>
             <Field>
-              <Label>Postal code</Label>
-              <Input defaultValue="2500" name="postal-code" />
+              <Label>Postal code *</Label>
+              <Input defaultValue="" placeholder="Postal Code" name="postal-code" required />
             </Field>
           </div>
 
@@ -293,18 +391,26 @@ const ShippingAddress = ({ onClose }: { onClose: () => void }) => {
   )
 }
 
-const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
-  const [mothodActive, setMethodActive] = useState<'Credit-Card' | 'Internet-banking' | 'Wallet'>('Credit-Card')
-
+const PaymentMethod = ({
+  methodActive,
+  setMethodActive,
+  onConfirm,
+  onClose,
+}: {
+  methodActive: 'Credit-Card' | 'UPI' | 'Internet-banking' | 'Wallet'
+  setMethodActive: (method: 'Credit-Card' | 'UPI' | 'Internet-banking' | 'Wallet') => void
+  onConfirm: () => void
+  onClose: () => void
+}) => {
   const renderDebitCredit = () => {
-    const active = mothodActive === 'Credit-Card'
+    const active = methodActive === 'Credit-Card'
     return (
       <div>
         <RadioGroup
           name="payment-method"
           aria-label="Payment method"
           onChange={(e) => setMethodActive(e as any)}
-          value={mothodActive}
+          value={methodActive}
         >
           <RadioField className="sm:gap-x-6">
             <Radio className="pt-3" value="Credit-Card" defaultChecked={active} />
@@ -322,39 +428,59 @@ const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
           </RadioField>
         </RadioGroup>
 
-        <div className={clsx('space-y-5 py-6 sm:pl-10', active ? 'block' : 'hidden')}>
-          <Field className="max-w-lg">
-            <Label>Card number</Label>
-            <Input autoComplete="off" name="card-number" />
-          </Field>
-          <Field className="max-w-lg">
-            <Label>Name on Card</Label>
-            <Input autoComplete="off" name="name-on-card" />
-          </Field>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Field className="flex-2/3">
-              <Label>Expiration date (MM/YY)</Label>
-              <Input autoComplete="off" placeholder="MM/YY" name="expiration-date" />
-            </Field>
-            <Field className="flex-1/3">
-              <Label>CVC</Label>
-              <Input autoComplete="off" placeholder="CVC" name="cvc" />
-            </Field>
-          </div>
+        <div className={clsx('py-6 sm:pl-10', active ? 'block' : 'hidden')}>
+          <p className="leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Pay securely using Visa, Mastercard, RuPay, Maestro, or American Express cards via Razorpay.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const renderUPI = () => {
+    const active = methodActive === 'UPI'
+    return (
+      <div>
+        <RadioGroup
+          name="payment-method"
+          aria-label="Payment method"
+          value={methodActive}
+          onChange={(e) => setMethodActive(e as any)}
+        >
+          <RadioField className="sm:gap-x-6">
+            <Radio className="pt-3" value="UPI" defaultChecked={active} />
+            <Label className="flex items-center gap-x-4 sm:gap-x-6">
+              <div
+                className={clsx(
+                  'rounded-xl border-2 border-neutral-600 p-2.5 dark:border-neutral-300',
+                  active ? 'opacity-100' : 'opacity-25'
+                )}
+              >
+                <QrCodeIcon className="h-6 w-6 text-neutral-800 dark:text-neutral-200" strokeWidth={1.5} />
+              </div>
+              <p className="font-medium sm:text-base">UPI (Google Pay, PhonePe, Paytm, BHIM)</p>
+            </Label>
+          </RadioField>
+        </RadioGroup>
+
+        <div className={clsx('py-6 sm:pl-10', active ? 'block' : 'hidden')}>
+          <p className="leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Pay instantly using your preferred UPI app (Google Pay, PhonePe, Paytm, BHIM) or by scanning a QR code.
+          </p>
         </div>
       </div>
     )
   }
 
   const renderInterNetBanking = () => {
-    const active = mothodActive === 'Internet-banking'
+    const active = methodActive === 'Internet-banking'
     return (
       <div>
         <RadioGroup
           name="payment-method"
           aria-label="Payment method"
           onChange={(e) => setMethodActive(e as any)}
-          value={mothodActive}
+          value={methodActive}
         >
           <RadioField className="sm:gap-x-6">
             <Radio className="pt-3" value="Internet-banking" defaultChecked={active} />
@@ -373,39 +499,22 @@ const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
         </RadioGroup>
 
         <div className={clsx('py-6 sm:pl-10', active ? 'block' : 'hidden')}>
-          <Subheading>Your order will be delivered to you after you transfer to</Subheading>
-          <DescriptionList className="mt-3.5">
-            <DescriptionTerm>Customer</DescriptionTerm>
-            <DescriptionDetails>BooliiTheme</DescriptionDetails>
-
-            <DescriptionTerm>Bank name</DescriptionTerm>
-            <DescriptionDetails>Example Bank Name</DescriptionDetails>
-
-            <DescriptionTerm>Account number</DescriptionTerm>
-            <DescriptionDetails>555 888 777</DescriptionDetails>
-
-            <DescriptionTerm>Sort code</DescriptionTerm>
-            <DescriptionDetails>999</DescriptionDetails>
-
-            <DescriptionTerm>IBAN</DescriptionTerm>
-            <DescriptionDetails>IBAN</DescriptionDetails>
-
-            <DescriptionTerm>BIC</DescriptionTerm>
-            <DescriptionDetails>BIC/Swift</DescriptionDetails>
-          </DescriptionList>
+          <p className="leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Pay securely using Netbanking from HDFC, SBI, ICICI, Axis, or any other major bank.
+          </p>
         </div>
       </div>
     )
   }
 
   const renderWallet = () => {
-    const active = mothodActive === 'Wallet'
+    const active = methodActive === 'Wallet'
     return (
       <div>
         <RadioGroup
           name="payment-method"
           aria-label="Payment method"
-          value={mothodActive}
+          value={methodActive}
           onChange={(e) => setMethodActive(e as any)}
         >
           <RadioField className="sm:gap-x-6">
@@ -419,15 +528,14 @@ const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
               >
                 <HugeiconsIcon icon={Wallet03Icon} size={24} />
               </div>
-              <p className="font-medium sm:text-base">Google / Apple Wallet</p>
+              <p className="font-medium sm:text-base">Wallets (PhonePe, Paytm, Amazon Pay, Mobikwik, etc.)</p>
             </Label>
           </RadioField>
         </RadioGroup>
 
         <div className={clsx('py-6 sm:pl-10', active ? 'block' : 'hidden')}>
           <p className="leading-relaxed text-neutral-600 dark:text-neutral-400">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque dolore quod quas fugit perspiciatis
-            architecto, temporibus quos ducimus libero explicabo?
+            Pay using major digital wallets like Paytm, PhonePe, Amazon Pay, Mobikwik, Airtel Money, or JioMoney.
           </p>
         </div>
       </div>
@@ -442,12 +550,13 @@ const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
         e.preventDefault()
         const formValues = Object.fromEntries(new FormData(e.target as HTMLFormElement))
         console.log(formValues)
-        onClose()
+        onConfirm()
       }}
     >
       <Fieldset>
         <FieldGroup className="mt-0!">
           {renderDebitCredit()}
+          {renderUPI()}
           {renderInterNetBanking()}
           {renderWallet()}
 

@@ -2,7 +2,6 @@ import { createClient } from '@/utils/supabase/server'
 import ButtonPrimary from '@/shared/Button/ButtonPrimary'
 import { Field, FieldGroup, Fieldset, Label } from '@/shared/fieldset'
 import { Input } from '@/shared/input'
-import Form from 'next/form'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
@@ -65,7 +64,7 @@ const PageForgotPass = async ({ searchParams }: PageProps) => {
         )}
 
         {/* FORM */}
-        <Form action={handleSubmit}>
+        <form action={handleSubmit}>
           <Fieldset>
             <FieldGroup>
               <Field>
@@ -77,7 +76,7 @@ const PageForgotPass = async ({ searchParams }: PageProps) => {
               </ButtonPrimary>
             </FieldGroup>
           </Fieldset>
-        </Form>
+        </form>
 
         {/* ==== */}
         <span className="block text-center text-sm text-neutral-700 dark:text-neutral-300">

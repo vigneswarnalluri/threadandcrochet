@@ -1,6 +1,7 @@
 import AccordionInfo from '@/components/AccordionInfo'
 import { Divider } from '@/components/Divider'
 import LikeButton from '@/components/LikeButton'
+import Prices from '@/components/Prices'
 import NcInputNumber from '@/components/NcInputNumber'
 import { ProductColorProvider } from '@/components/ProductForm/ProductColorContext'
 import ProductColorOptions from '@/components/ProductForm/ProductColorOptions'
@@ -60,7 +61,10 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
         <div className="flex flex-col">
           {/* ----------  HEADING ----------  */}
           <div className="flex items-center justify-between gap-x-5">
-            <div className="flex text-2xl font-semibold">${price?.toFixed(2)}</div>
+            <Prices
+              price={price || 0}
+              contentClass="text-2xl font-semibold border-0 p-0 text-neutral-900 dark:text-neutral-100"
+            />
 
             <a href="#reviews" className="flex items-center text-sm font-medium">
               <div>
@@ -192,7 +196,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
       <div>
         <div className="container mt-8 sm:mt-10">
           <div className="relative">
-            <LikeButton className="absolute top-3 left-3 z-10" />
+            <LikeButton productHandle={handle} className="absolute top-3 left-3 z-10" />
             <ProductGalleryClient allImages={allGalleryImages} />
           </div>
         </div>
@@ -214,7 +218,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
         {/* OTHER SECTION */}
         <div className="container flex flex-col gap-y-14 pt-14 pb-24 lg:pb-28">
           <Divider />
-          <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} />
+          <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} productHandle={handle} />
           <Divider />
           <SectionSliderProductCard
             heading="Customers also purchased"

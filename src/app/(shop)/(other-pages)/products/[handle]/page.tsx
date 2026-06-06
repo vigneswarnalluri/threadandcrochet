@@ -90,7 +90,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
           {/* ── LEFT – Gallery (reacts to context color) ── */}
           <div className="w-full lg:w-[55%]">
             <div className="relative">
-              <LikeButton className="absolute top-3 left-3 z-10" />
+              <LikeButton productHandle={handle} className="absolute top-3 left-3 z-10" />
               <ProductGalleryClient allImages={allGalleryImages} />
             </div>
           </div>
@@ -190,7 +190,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
           </div>
           {renderDetailSection()}
           <Divider />
-          <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} />
+          <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} productHandle={handle} />
           <Divider />
           <SectionSliderProductCard
             data={relatedProducts}

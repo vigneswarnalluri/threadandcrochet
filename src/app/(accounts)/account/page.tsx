@@ -1,23 +1,22 @@
-import avatar from '@/images/users/avatar1.jpg'
+import avatarFallback from '@/images/users/avatar1.jpg'
 import { createClient } from '@/utils/supabase/server'
-import ButtonPrimary from '@/shared/Button/ButtonPrimary'
 import { Field, Fieldset, Label } from '@/shared/fieldset'
 import { Input, InputGroup } from '@/shared/input'
 import { Select } from '@/shared/select'
 import { Textarea } from '@/shared/textarea'
 import {
   Calendar01Icon,
-  ImageAdd02Icon,
   Mail01Icon,
   MapsLocation01Icon,
   SmartPhone01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Metadata } from 'next'
-import Form from 'next/form'
-import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { Suspense } from 'react'
+import AvatarUploadSection, { SubmitButton } from './AvatarUploadSection'
+import AccountSuccessToast from './AccountSuccessToast'
 
 export const metadata: Metadata = {
   title: 'Account — Thread & Love',
@@ -59,6 +58,32 @@ const Page = async () => {
 
     if (!user) redirect('/login')
 
+    // Handle avatar upload to Supabase Storage
+    let avatarUrl = profile?.avatar_url || null
+    const avatarFile = formData.get('avatar') as File | null
+
+    if (avatarFile && avatarFile.size > 0) {
+      const fileExt = avatarFile.name.split('.').pop() || 'jpg'
+      const filePath = `${user.id}/avatar.${fileExt}`
+      const fileBuffer = await avatarFile.arrayBuffer()
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, fileBuffer, {
+          contentType: avatarFile.type,
+          upsert: true,
+        })
+
+      if (!uploadError) {
+        const { data: publicUrlData } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath)
+        avatarUrl = publicUrlData.publicUrl
+      } else {
+        console.error('Avatar upload error:', uploadError.message)
+      }
+    }
+
     const profileData = {
       id: user.id,
       full_name: (formData.get('full-name') as string) || displayProfile.fullName,
@@ -68,38 +93,33 @@ const Page = async () => {
       gender: (formData.get('gender') as string) || 'Other',
       phone_number: (formData.get('phone-number') as string) || '',
       about_you: (formData.get('about-you') as string) || '',
+      avatar_url: avatarUrl,
       updated_at: new Date().toISOString(),
     }
 
     await supabase.from('profiles').upsert(profileData)
     revalidatePath('/account')
+    redirect('/account?updated=1')
   }
 
   return (
     <div className="flex flex-col gap-y-10 sm:gap-y-12">
+      {/* Success Toast — zero-render client component */}
+      <Suspense fallback={null}>
+        <AccountSuccessToast />
+      </Suspense>
+
       {/* HEADING */}
       <h1 className="text-2xl font-semibold sm:text-3xl">Account information</h1>
 
-      <Form action={handleSubmit}>
+      <form action={handleSubmit}>
         <Fieldset className="flex flex-col md:flex-row">
           <div className="flex shrink-0 items-start">
-            {/* AVATAR */}
-            <div className="relative flex overflow-hidden rounded-full">
-              <Image
-                src={avatar}
-                alt={'avatar'}
-                width={avatar.width}
-                height={avatar.height}
-                sizes="132px"
-                priority
-                className="z-0 size-32 rounded-full object-cover"
-              />
-              <div className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-black/60 text-neutral-50">
-                <HugeiconsIcon icon={ImageAdd02Icon} size={30} color="currentColor" strokeWidth={1.5} />
-                <span className="mt-1 text-xs">Change Image</span>
-              </div>
-              <input type="file" name="avatar" className="absolute inset-0 cursor-pointer opacity-0" />
-            </div>
+            {/* AVATAR — interactive client component */}
+            <AvatarUploadSection
+              currentAvatarUrl={profile?.avatar_url || null}
+              fallbackAvatarSrc={avatarFallback.src}
+            />
           </div>
           <div className="mt-10 max-w-3xl grow space-y-7 md:mt-0 md:pl-16">
             <Field>
@@ -148,7 +168,7 @@ const Page = async () => {
               <Label>Phone number</Label>
               <InputGroup>
                 <HugeiconsIcon data-slot="icon" icon={SmartPhone01Icon} size={16} />
-                <Input name="phone-number" defaultValue={displayProfile.phoneNumber} />
+                <Input name="phone-number" placeholder="+91" defaultValue={displayProfile.phoneNumber} />
               </InputGroup>
             </Field>
             {/* ---- */}
@@ -157,11 +177,11 @@ const Page = async () => {
               <Textarea rows={4} name="about-you" defaultValue={displayProfile.aboutYou} />
             </Field>
             <div className="pt-2">
-              <ButtonPrimary type="submit">Update account</ButtonPrimary>
+              <SubmitButton />
             </div>
           </div>
         </Fieldset>
-      </Form>
+      </form>
     </div>
   )
 }

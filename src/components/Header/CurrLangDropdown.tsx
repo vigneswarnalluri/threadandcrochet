@@ -1,6 +1,7 @@
 'use client'
 
 import { getCurrencies, getLanguages } from '@/data/navigation'
+import { useStore } from '@/context/StoreContext'
 import {
   Popover,
   PopoverButton,
@@ -18,21 +19,30 @@ import clsx from 'clsx'
 import { FC } from 'react'
 import { Link } from '../Link'
 
-const Currencies = ({ currencies }: { currencies: Awaited<ReturnType<typeof getCurrencies>> }) => {
+const Currencies = ({
+  currencies,
+  currentCurrency,
+  onChangeCurrency,
+}: {
+  currencies: Awaited<ReturnType<typeof getCurrencies>>
+  currentCurrency: 'INR' | 'USD'
+  onChangeCurrency: (currency: 'INR' | 'USD') => void
+}) => {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       {currencies.map((item, index) => (
-        <Link
+        <button
           key={index}
-          href={item.href}
+          type="button"
+          onClick={() => onChangeCurrency(item.id as 'INR' | 'USD')}
           className={clsx(
-            '-m-2.5 flex items-center rounded-lg p-2.5 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-hidden dark:hover:bg-gray-700',
-            item.active ? 'bg-gray-100 dark:bg-gray-700' : 'opacity-80'
+            '-m-2.5 flex items-center rounded-lg p-2.5 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-hidden dark:hover:bg-gray-700 w-full text-left cursor-pointer',
+            item.id === currentCurrency ? 'bg-gray-100 dark:bg-gray-700 font-semibold' : 'opacity-80'
           )}
         >
           <div dangerouslySetInnerHTML={{ __html: item.icon }} />
           <p className="ml-2 text-sm font-medium">{item.name}</p>
-        </Link>
+        </button>
       ))}
     </div>
   )
@@ -76,12 +86,14 @@ const CurrLangDropdown: FC<Props> = ({
   currencies,
   panelClassName = 'mt-4 w-80',
 }) => {
+  const { currency, setCurrency } = useStore()
+
   return (
     <div className={className}>
       <Popover>
         <PopoverButton className="-m-2.5 flex items-center p-2.5 text-sm font-medium text-gray-800 focus:outline-hidden focus-visible:outline-hidden dark:text-neutral-200">
           <GlobeAltIcon className="size-[18px] opacity-80" />
-          <span className="ms-2">Language</span>
+          <span className="ms-2">{currency}</span>
           <ChevronDownIcon className="ms-1 size-4 group-data-open:rotate-180" aria-hidden="true" />
         </PopoverButton>
 
@@ -116,7 +128,11 @@ const CurrLangDropdown: FC<Props> = ({
                 <Languages languages={languages} />
               </TabPanel>
               <TabPanel className="rounded-xl p-3 focus:ring-0 focus:outline-hidden">
-                <Currencies currencies={currencies} />
+                <Currencies
+                  currencies={currencies}
+                  currentCurrency={currency}
+                  onChangeCurrency={setCurrency}
+                />
               </TabPanel>
             </TabPanels>
           </TabGroup>

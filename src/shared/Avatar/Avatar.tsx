@@ -1,5 +1,4 @@
 import VerifyIcon from '@/components/VerifyIcon'
-import avatarImage from '@/images/users/avatar4.jpg'
 import Image, { StaticImageData } from 'next/image'
 import { FC } from 'react'
 
@@ -17,7 +16,7 @@ const Avatar: FC<AvatarProps> = ({
   containerClassName = 'ring-1 ring-white dark:ring-neutral-900',
   sizeClass = 'size-6 text-sm',
   radius = 'rounded-full',
-  imgUrl = avatarImage.src,
+  imgUrl,
   userName,
   hasChecked,
   hasCheckedClass = 'size-4 bottom-1 -right-0.5',

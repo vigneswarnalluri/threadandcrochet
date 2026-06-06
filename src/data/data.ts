@@ -354,7 +354,7 @@ export async function getShopData() {
 }
 
 export async function getProductReviews(handle: string) {
-  return [
+  const defaultMocks = [
     {
       id: '1',
       title: "Can't say enough good things",
@@ -408,6 +408,10 @@ export async function getProductReviews(handle: string) {
       datetime: '2025-01-06',
     },
   ]
+
+  // NOTE: Live reviews are fetched client-side in ProductReviews.tsx via /api/reviews
+  // Do NOT import @/utils/supabase/server here — data.ts is required() by StoreContext (a Client Component)
+  return defaultMocks
 }
 
 export async function getBlogPosts() {

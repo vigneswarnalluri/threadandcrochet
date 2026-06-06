@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { FC } from 'react'
 import AvatarDropdown from './AvatarDropdown'
 import CartBtn from './CartBtn'
+import WishlistBtn from './WishlistBtn'
 import CategoriesDropdown from './CategoriesDropdown'
 import CurrLangDropdown from './CurrLangDropdown'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
@@ -44,6 +45,7 @@ const Header: FC<HeaderProps> = async ({ hasBorderBottom = true }) => {
             <MegaMenuPopover megamenu={megamenu} featuredCollection={featuredCollections[0]} />
             <CurrLangDropdown currencies={currencies} languages={languages} className="hidden md:block" />
             <SearchBtnPopover />
+            <WishlistBtn />
             <AvatarDropdown />
             <CartBtn />
           </div>

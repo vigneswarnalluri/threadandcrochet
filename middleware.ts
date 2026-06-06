@@ -21,6 +21,7 @@ export const config = {
     '/account-billing/:path*',
     '/account-password/:path*',
     '/account-wishlists/:path*',
+    '/checkout',
     '/api/profile',
     '/api/logout',
   ],

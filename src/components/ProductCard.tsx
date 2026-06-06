@@ -89,6 +89,7 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
           quantity={1}
           size={selectedOptions?.find((option) => option.name === 'Size')?.value}
           color={activeColor}
+          productHandle={handle}
         >
           <ShoppingBagIcon className="-ml-1 size-3.5" />
           <span>Add to bag</span>
@@ -128,7 +129,7 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
             )}
           </Link>
           <ProductStatus status={status} />
-          <LikeButton liked={isLiked} className="absolute end-3 top-3 z-10" />
+          <LikeButton productHandle={handle} className="absolute end-3 top-3 z-10" />
           {renderGroupButtons()}
         </div>
 

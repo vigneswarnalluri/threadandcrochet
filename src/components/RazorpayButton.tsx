@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import Script from 'next/script'
 import { useState } from 'react'
+import { CartItem } from '@/context/StoreContext'
 
 interface RazorpayButtonProps {
   amount: number          // in USD dollars (will convert to paise for INR)
@@ -10,8 +11,17 @@ interface RazorpayButtonProps {
   name?: string           // order description / customer name
   email?: string
   contact?: string
+  prefillMethod?: string
   className?: string
   children?: React.ReactNode
+  cartItems: CartItem[]
+  costs: {
+    subtotal: number
+    shipping: number
+    tax: number
+    total: number
+    discount: number
+  }
 }
 
 declare global {
@@ -27,7 +37,7 @@ interface RazorpayOptions {
   name: string
   description: string
   order_id: string
-  prefill?: { name?: string; email?: string; contact?: string }
+  prefill?: { name?: string; email?: string; contact?: string; method?: string }
   theme?: { color?: string }
   handler: (response: RazorpayResponse) => void
   modal?: {
@@ -52,8 +62,11 @@ export default function RazorpayButton({
   name = '',
   email = '',
   contact = '',
+  prefillMethod = '',
   className = '',
   children,
+  cartItems,
+  costs,
 }: RazorpayButtonProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -94,7 +107,7 @@ export default function RazorpayButton({
         name: 'Thread & Love',
         description: 'Handcrafted Crochet Products',
         order_id,
-        prefill: { name, email, contact },
+        prefill: { name, email, contact, method: prefillMethod },
         theme: { color: '#b5836e' }, // brand warm terracotta colour
         handler: async (response: RazorpayResponse) => {
           // Step 3: Verify payment on backend
@@ -105,14 +118,17 @@ export default function RazorpayButton({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
+              cartItems,
+              costs,
             }),
           })
 
           const verifyData = await verifyRes.json()
 
           if (verifyData.verified) {
-            // Payment successful — redirect to order-successful page
-            router.push(`/order-successful?payment_id=${response.razorpay_payment_id}`)
+            // Payment successful — redirect with clean order number + payment ref separately
+            const orderNum = verifyData.order_number || response.razorpay_payment_id
+            router.push(`/order-successful?order_number=${orderNum}&payment_id=${response.razorpay_payment_id}`)
           } else {
             setError('Payment verification failed. Please contact support.')
             setLoading(false)

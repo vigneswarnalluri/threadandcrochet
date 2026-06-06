@@ -6,6 +6,7 @@ import { Transition } from '@headlessui/react'
 import Image from 'next/image'
 import React, { ComponentType, ElementType, FC } from 'react'
 import toast from 'react-hot-toast'
+import { useStore } from '@/context/StoreContext'
 
 interface NotifyAddToCartProps extends AddToCardButtonProps {
   show: boolean
@@ -70,6 +71,7 @@ interface AddToCardButtonProps {
   size?: string
   color?: string
   price: number
+  productHandle?: string
   as?: ElementType | ComponentType<any>
   [key: string]: any // Cho phép bất kỳ props tùy chỉnh nào
 }
@@ -83,9 +85,12 @@ const AddToCardButton = ({
   quantity,
   size,
   title,
+  productHandle,
   as,
   ...props
 }: AddToCardButtonProps) => {
+  const { addToCart } = useStore()
+
   const notifyAddTocart = () => {
     toast.custom(
       (t) => (
@@ -103,13 +108,33 @@ const AddToCardButton = ({
     )
   }
 
+  const handleAddToCartClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    addToCart(
+      {
+        title,
+        price,
+        handle: productHandle || '',
+        featuredImage: { src: imageUrl, width: 200, height: 200 },
+      },
+      quantity,
+      size,
+      color
+    )
+
+    notifyAddTocart()
+  }
+
   const Component = as || 'button'
 
   return (
-    <Component className={className} onClick={notifyAddTocart} {...props}>
+    <Component className={className} onClick={handleAddToCartClick} {...props}>
       {children}
     </Component>
   )
 }
+
 
 export default AddToCardButton

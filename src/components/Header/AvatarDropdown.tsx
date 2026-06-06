@@ -1,12 +1,12 @@
 'use client'
 
-import avatarImage from '@/images/users/avatar4.jpg'
 import Avatar from '@/shared/Avatar/Avatar'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { UserCircle02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useStore } from '@/context/StoreContext'
 import { Divider } from '../Divider'
 
 interface Props {
@@ -17,21 +17,38 @@ interface Profile {
   fullName: string
   address: string
   email: string
+  avatarUrl: string | null
 }
 
 export default function AvatarDropdown({ className }: Props) {
+  const { user } = useStore()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check sessionStorage first — avoids re-fetching on every page navigation
+    if (!user) {
+      setProfile(null)
+      sessionStorage.removeItem('__tl_profile')
+      setLoading(false)
+      return
+    }
+
+    // If the page just had a profile update, clear the cache to force a re-fetch
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('updated') === '1') {
+      sessionStorage.removeItem('__tl_profile')
+    }
+
+    // Check sessionStorage first, validating against the active user's email
     const cached = sessionStorage.getItem('__tl_profile')
     if (cached) {
       try {
         const data = JSON.parse(cached)
-        setProfile(data)
-        setLoading(false)
-        return
+        if (data.email === user.email) {
+          setProfile(data)
+          setLoading(false)
+          return
+        }
       } catch {
         sessionStorage.removeItem('__tl_profile')
       }
@@ -44,10 +61,11 @@ export default function AvatarDropdown({ className }: Props) {
       })
       .then((data) => {
         if (data && data.fullName) {
-          const p = {
+          const p: Profile = {
             fullName: data.fullName,
             address: data.address || '',
             email: data.email || '',
+            avatarUrl: data.avatarUrl || null,
           }
           setProfile(p)
           // Cache for this session so navigating pages doesn't re-fetch
@@ -58,7 +76,7 @@ export default function AvatarDropdown({ className }: Props) {
       })
       .catch(() => setProfile(null))
       .finally(() => setLoading(false))
-  }, [])
+  }, [user])
 
   const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
@@ -98,7 +116,11 @@ export default function AvatarDropdown({ className }: Props) {
     <div className={className}>
       <Popover>
         <PopoverButton className="-m-2.5 flex cursor-pointer items-center justify-center rounded-full p-2.5 hover:bg-neutral-100 focus-visible:outline-hidden dark:hover:bg-neutral-800">
-          <HugeiconsIcon icon={UserCircle02Icon} size={24} color="currentColor" strokeWidth={1.5} />
+          {profile.avatarUrl ? (
+            <Avatar imgUrl={profile.avatarUrl} userName={profile.fullName} sizeClass="size-7" containerClassName="" />
+          ) : (
+            <HugeiconsIcon icon={UserCircle02Icon} size={24} color="currentColor" strokeWidth={1.5} />
+          )}
         </PopoverButton>
 
         <PopoverPanel
@@ -108,7 +130,7 @@ export default function AvatarDropdown({ className }: Props) {
         >
           <div className="relative grid grid-cols-1 gap-6 bg-white px-6 py-7 dark:bg-neutral-800">
             <div className="flex items-center space-x-3">
-              <Avatar imgUrl={avatarImage.src} sizeClass="size-12" />
+              <Avatar imgUrl={profile.avatarUrl || undefined} userName={profile.fullName} sizeClass="size-12" />
               <div className="grow">
                 <h4 className="font-semibold">{profile.fullName}</h4>
                 <p className="mt-0.5 text-xs text-neutral-500">{profile.email || profile.address}</p>
