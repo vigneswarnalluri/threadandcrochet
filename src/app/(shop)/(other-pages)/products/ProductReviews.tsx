@@ -39,10 +39,8 @@ const ProductReviews = ({
   const [localReviewNumber, setLocalReviewNumber] = useState(reviewNumber)
 
   useEffect(() => {
-    setLocalReviews(reviews)
-    setLocalRating(rating)
-    setLocalReviewNumber(reviewNumber)
-  }, [reviews, rating, reviewNumber])
+    fetchReviews()
+  }, [productHandle])
 
   const fetchReviews = async () => {
     try {

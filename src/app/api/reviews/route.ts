@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { getProductReviews } from '@/data/data'
 
 export async function GET(request: NextRequest) {
   try {
@@ -55,7 +56,10 @@ export async function GET(request: NextRequest) {
       datetime: rev.created_at,
     }))
 
-    return NextResponse.json({ reviews })
+    const mockReviews = await getProductReviews(productId)
+    const mergedReviews = [...reviews, ...mockReviews]
+
+    return NextResponse.json({ reviews: mergedReviews })
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 })
   }
