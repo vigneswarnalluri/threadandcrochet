@@ -1266,8 +1266,8 @@ export default function AdminDashboardClient({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
         {/* Left Side Navigation Panel */}
         {!sidebarCollapsed && (
-          <div className="lg:col-span-1 print:hidden">
-            <nav className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-3 lg:pb-0 scrollbar-none sticky top-6 bg-neutral-50 dark:bg-neutral-900/30 p-2.5 lg:p-4 rounded-2xl lg:rounded-3xl border border-neutral-200 dark:border-neutral-800">
+          <div className="lg:col-span-1 print:hidden w-full max-w-full">
+            <nav className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-3 lg:pb-0 hidden-scrollbar sticky top-6 bg-neutral-50 dark:bg-neutral-900/30 p-2.5 lg:p-4 rounded-2xl lg:rounded-3xl border border-neutral-200 dark:border-neutral-800 w-full max-w-full">
               <div className="flex items-center justify-between pb-2 mb-2 border-b border-neutral-200 dark:border-neutral-800 lg:flex hidden">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-450 dark:text-neutral-500">Navigation</span>
                 <button

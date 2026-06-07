@@ -360,7 +360,37 @@ export async function getShopData() {
 }
 
 export async function getProductReviews(handle: string): Promise<TReview[]> {
-  return []
+  try {
+    const { data: dbReviews, error } = await globalSupabase
+      .from('reviews')
+      .select('*')
+      .eq('product_id', handle)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching reviews:', error)
+      return []
+    }
+
+    if (!dbReviews) return []
+
+    return dbReviews.map((rev: any) => ({
+      id: rev.id,
+      title: rev.title || '',
+      rating: rev.rating,
+      content: rev.content,
+      author: rev.author_name,
+      date: new Date(rev.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+      datetime: rev.created_at,
+    }))
+  } catch (err) {
+    console.error('Error in getProductReviews:', err)
+    return []
+  }
 }
 
 export async function getBlogPosts() {
@@ -1730,6 +1760,43 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
 const _getProductsUncached = async (): Promise<TProductItem[]> => {
   const liveProducts = await fetchMagicNeedlesProducts()
 
+  const reviewsMap: Record<string, { count: number; sum: number }> = {}
+  try {
+    const { data: dbReviews } = await globalSupabase
+      .from('reviews')
+      .select('product_id, rating')
+    
+    if (dbReviews) {
+      dbReviews.forEach((r: any) => {
+        const pid = r.product_id?.toLowerCase()
+        if (pid) {
+          if (!reviewsMap[pid]) {
+            reviewsMap[pid] = { count: 0, sum: 0 }
+          }
+          reviewsMap[pid].count += 1
+          reviewsMap[pid].sum += Number(r.rating || 0)
+        }
+      })
+    }
+  } catch (err) {
+    console.error('Error fetching reviews map:', err)
+  }
+
+  const applyRealReviews = (products: TProductItem[]): TProductItem[] => {
+    return products.map((product) => {
+      const key = product.handle?.toLowerCase()
+      const stats = reviewsMap[key]
+      if (stats && stats.count > 0) {
+        product.reviewNumber = stats.count
+        product.rating = parseFloat((stats.sum / stats.count).toFixed(1))
+      } else {
+        product.reviewNumber = 0
+        product.rating = 0
+      }
+      return product
+    })
+  }
+
   try {
     const { data: dbProducts, error } = await globalSupabase
       .from('products')
@@ -1778,7 +1845,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
         ogImage: p.og_image || ''
       }))
 
-      return [...mappedDbProducts, ...liveProducts]
+      return applyRealReviews([...mappedDbProducts, ...liveProducts])
     }
   } catch (err) {
     console.error('Error fetching custom products from Supabase:', err)
@@ -2535,9 +2602,9 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
     },
   ]
   if (liveProducts && liveProducts.length > 0) {
-    return [...LOCAL_CROCHET_PRODUCTS, ...localItems, ...liveProducts]
+    return applyRealReviews([...LOCAL_CROCHET_PRODUCTS, ...localItems, ...liveProducts])
   }
-  return [...LOCAL_CROCHET_PRODUCTS, ...localItems]
+  return applyRealReviews([...LOCAL_CROCHET_PRODUCTS, ...localItems])
 }
 
 // Cache result server-side for 1 hour. Subsequent page navigations return instantly from cache.

@@ -59,8 +59,13 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
     return notFound()
   }
 
-  const { title, status, featuredImage, rating, reviewNumber, options, price, selectedOptions, images, breadcrumbs } =
+  const { title, status, featuredImage, options, price, selectedOptions, images, breadcrumbs } =
     product
+
+  const actualReviewNumber = reviews.length
+  const actualRating = actualReviewNumber > 0
+    ? parseFloat((reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / actualReviewNumber).toFixed(1))
+    : 0
   const sizeSelected = selectedOptions?.find((option) => option.name === 'Size')?.value || ''
   const colorSelected = selectedOptions?.find((option) => option.name === 'Color')?.value || ''
 
@@ -125,9 +130,9 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
                     <a href="#reviews" className="flex items-center text-sm font-medium">
                       <StarIcon className="size-5 pb-px text-yellow-400" />
                       <div className="ms-1.5 flex">
-                        <span>{rating}</span>
+                        <span>{actualRating}</span>
                         <span className="mx-2 block">·</span>
-                        <span className="text-neutral-600 underline dark:text-neutral-400">{reviewNumber} reviews</span>
+                        <span className="text-neutral-600 underline dark:text-neutral-400">{actualReviewNumber} reviews</span>
                       </div>
                     </a>
                     <span>·</span>
@@ -225,7 +230,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
           </div>
           {renderDetailSection()}
           <Divider />
-          <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} productHandle={handle} />
+          <ProductReviews reviewNumber={actualReviewNumber} rating={actualRating} reviews={reviews} productHandle={handle} />
           <Divider />
           <SectionSliderProductCard
             data={relatedProducts}

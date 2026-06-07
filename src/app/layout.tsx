@@ -1,6 +1,6 @@
 import Aside from '@/components/aside'
 import '@/styles/tailwind.css'
-import { Metadata } from 'next'
+import { Metadata, Viewport } from 'next'
 import { Playfair_Display, Montserrat } from 'next/font/google'
 import GlobalClient from './GlobalClient'
 import { StoreProvider } from '@/context/StoreContext'
@@ -20,6 +20,11 @@ const montserrat = Montserrat({
   variable: '--font-montserrat',
   weight: ['300', '400', '500', '600', '700'],
 })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
 
 export const metadata: Metadata = {
   title: {

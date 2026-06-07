@@ -57,7 +57,12 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
     return notFound()
   }
 
-  const { title, status, featuredImage, rating, reviewNumber, options, price, selectedOptions, images } = product
+  const { title, status, featuredImage, options, price, selectedOptions, images } = product
+
+  const actualReviewNumber = reviews.length
+  const actualRating = actualReviewNumber > 0
+    ? parseFloat((reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / actualReviewNumber).toFixed(1))
+    : 0
   const sizeSelected = selectedOptions?.find((option) => option.name === 'Size')?.value || ''
   const colorSelected = selectedOptions?.find((option) => option.name === 'Color')?.value || ''
 
@@ -87,9 +92,9 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
                 <StarIcon className="size-5 pb-px text-orange-400" />
               </div>
               <span className="ms-1.5 flex">
-                <span>{rating}</span>
+                <span>{actualRating}</span>
                 <span className="mx-1.5">·</span>
-                <span className="text-neutral-700 underline dark:text-neutral-400">{reviewNumber} reviews</span>
+                <span className="text-neutral-700 underline dark:text-neutral-400">{actualReviewNumber} reviews</span>
               </span>
             </a>
           </div>
@@ -156,9 +161,9 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
                 <StarIcon className="h-5 w-5 pb-px text-neutral-800 dark:text-neutral-200" />
               </div>
               <span className="ml-1.5">
-                <span>{rating}</span>
+                <span>{actualRating}</span>
                 <span className="mx-1.5">·</span>
-                <span className="text-neutral-700 underline dark:text-neutral-400">{reviewNumber} reviews</span>
+                <span className="text-neutral-700 underline dark:text-neutral-400">{actualReviewNumber} reviews</span>
               </span>
             </a>
             <span className="mx-2.5 hidden sm:block">·</span>
@@ -253,7 +258,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
         {/* OTHER SECTION */}
         <div className="container flex flex-col gap-y-14 pt-14 pb-24 lg:pb-28">
           <Divider />
-          <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} productHandle={handle} />
+          <ProductReviews reviewNumber={actualReviewNumber} rating={actualRating} reviews={reviews} productHandle={handle} />
           <Divider />
           <SectionSliderProductCard
             heading="Customers also purchased"
