@@ -4,6 +4,8 @@ import { Metadata, Viewport } from 'next'
 import { Playfair_Display, Montserrat } from 'next/font/google'
 import GlobalClient from './GlobalClient'
 import { StoreProvider } from '@/context/StoreContext'
+import ScrollToTop from '@/components/ScrollToTop'
+import PageTransition from '@/components/PageTransition'
 
 import NextTopLoader from 'nextjs-toploader'
 
@@ -87,6 +89,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             {/* Client component: Toaster, ... */}
             <GlobalClient />
+            <ScrollToTop />
+            <PageTransition />
 
           </Aside.Provider>
         </StoreProvider>
