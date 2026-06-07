@@ -6,7 +6,6 @@ import { Field, FieldGroup, Fieldset, Label } from '@/shared/fieldset'
 import { Input } from '@/shared/input'
 import { Textarea } from '@/shared/textarea'
 import { Metadata } from 'next'
-import Form from 'next/form'
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -59,7 +58,7 @@ const PageContact = async () => {
           </div>
 
           <div>
-            <Form action={handleSubmit}>
+            <form action={handleSubmit}>
               <Fieldset>
                 <FieldGroup>
                   <Field>
@@ -77,7 +76,7 @@ const PageContact = async () => {
                   <ButtonPrimary type="submit">Send Message</ButtonPrimary>
                 </FieldGroup>
               </Fieldset>
-            </Form>
+            </form>
           </div>
         </div>
 

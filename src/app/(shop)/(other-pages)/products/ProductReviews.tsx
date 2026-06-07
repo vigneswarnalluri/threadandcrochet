@@ -11,7 +11,6 @@ import { StarIcon } from '@heroicons/react/24/solid'
 import { MessageAdd01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import clsx from 'clsx'
-import Form from 'next/form'
 import React, { useState, useEffect } from 'react'
 import { useStore } from '@/context/StoreContext'
 import { useRouter } from 'next/navigation'
@@ -151,7 +150,7 @@ const ProductReviews = ({
             Your email address will not be published. Required fields are marked with an asterisk (*).
           </DialogDescription>
           <DialogBody>
-            <Form action={handleSubmit} id="review-form">
+            <form action={handleSubmit} id="review-form">
               <Fieldset>
                 <StarReview />
                 <Field className="mt-5">
@@ -159,7 +158,7 @@ const ProductReviews = ({
                   <Textarea name="review" placeholder="" rows={6} required />
                 </Field>
               </Fieldset>
-            </Form>
+            </form>
           </DialogBody>
           <DialogActions>
             <Button size="smaller" plain onClick={() => setIsOpen(false)}>

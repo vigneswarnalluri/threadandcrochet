@@ -2,7 +2,6 @@
 
 import { NotifyAddToCart } from '@/components/AddToCardButton'
 import { TProductDetail } from '@/data/data'
-import Form from 'next/form'
 import React from 'react'
 import toast from 'react-hot-toast'
 import { useStore } from '@/context/StoreContext'
@@ -36,7 +35,9 @@ const ProductForm = ({
     )
   }
 
-  const onFormSubmit = async (formData: FormData) => {
+  const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
     const formObjectEntries = Object.fromEntries(formData.entries())
     const quantity = formData.get('quantity') ? Number(formData.get('quantity')) : 1
     const size = formData.get('size') ? String(formData.get('size')) : ''
@@ -44,8 +45,6 @@ const ProductForm = ({
 
     await addToCart(product, quantity, size, color)
     notifyAddTocart(quantity, size, color)
-    // Here you can handle the form submission, such as adding the product to the cart
-    // For example, you might call an API endpoint to add the product to the cart
 
     console.log('Form submitted with data:', {
       productId: product.id,
@@ -57,9 +56,9 @@ const ProductForm = ({
   }
 
   return (
-    <Form action={onFormSubmit} className={className}>
+    <form onSubmit={onFormSubmit} className={className}>
       {children}
-    </Form>
+    </form>
   )
 }
 

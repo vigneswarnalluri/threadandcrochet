@@ -40,6 +40,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${playfair.variable} ${montserrat.variable} ${montserrat.className}`} suppressHydrationWarning>
       <body className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200" suppressHydrationWarning>
+        {process.env.NODE_ENV === 'development' && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  const originalError = console.error;
+                  console.error = function(...args) {
+                    const msg = args[0] && typeof args[0] === 'string' ? args[0] : '';
+                    if (
+                      msg.includes('hydration') || 
+                      msg.includes('Hydration') || 
+                      msg.includes('bis_skin_checked') || 
+                      msg.includes('did not match') ||
+                      msg.includes('attribute')
+                    ) {
+                      return;
+                    }
+                    originalError.apply(console, args);
+                  };
+                  window.addEventListener('error', function(e) {
+                    if (e.message && (e.message.includes('hydration') || e.message.includes('Hydration') || e.message.includes('bis_skin_checked'))) {
+                      e.stopImmediatePropagation();
+                      e.preventDefault();
+                    }
+                  }, true);
+                })();
+              `
+            }}
+          />
+        )}
         <NextTopLoader
           color="#c07c65"
           initialPosition={0.08}
