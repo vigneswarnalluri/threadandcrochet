@@ -10,11 +10,12 @@ const Logo: React.FC<LogoProps> = ({ className = 'shrink-0' }) => {
   return (
     <Link href="/" className={`flex items-center shrink-0 select-none ${className}`}>
       <Image
-        src="/logo-v2.png"
+        src="/logo-final-v3.png"
         alt="Thread & Crochet Logo"
         width={420}
         height={112}
-        className="h-28 w-auto object-contain"
+        className="h-12 lg:h-28 w-auto object-contain"
+        style={{ width: 'auto', height: 'auto' }}
         priority
       />
     </Link>
