@@ -36,7 +36,9 @@ const PageTransitionContent: React.FC = () => {
           !targetHref.startsWith('#') &&
           !url.hash
         ) {
-          setIsLoading(true)
+          setTimeout(() => {
+            setIsLoading(true)
+          }, 0)
         }
       } catch (err) {
         // Safe fallback
