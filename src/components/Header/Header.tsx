@@ -35,7 +35,7 @@ const Header: FC<HeaderProps> = async ({ hasBorderBottom = true }) => {
             !hasBorderBottom && 'has-[.header-popover-full-panel]:border-b'
           )}
         >
-          <div className="flex grow md:flex-none items-center justify-start gap-x-2 sm:gap-x-8">
+          <div className="flex grow md:flex-none items-center justify-start gap-x-1 sm:gap-x-8">
             <div className="block lg:hidden">
               <HamburgerBtnMenu />
             </div>
