@@ -217,7 +217,7 @@ export default function AdminDashboardClient({
       const res = await fetch('/api/logout', { method: 'POST' })
       if (res.ok) {
         toast.success('Logged out successfully')
-        window.location.href = '/admin/login'
+        window.location.href = '/login'
       } else {
         toast.error('Failed to log out')
       }

@@ -17,7 +17,7 @@ export default async function AdminDashboardPage(props: {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/admin/login')
+    redirect('/login?redirectedFrom=/admin')
   }
 
   // Fetch the role
@@ -28,7 +28,7 @@ export default async function AdminDashboardPage(props: {
     .single()
 
   if (!profile || profile.role !== 'admin') {
-    redirect('/admin/login?error=Access+Denied')
+    redirect('/login?error=Access+Denied:+Admin+privileges+required.&redirectedFrom=/admin')
   }
 
   const { search, status } = await props.searchParams
