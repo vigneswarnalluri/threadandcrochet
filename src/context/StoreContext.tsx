@@ -38,6 +38,18 @@ interface StoreContextProps {
 
 const StoreContext = createContext<StoreContextProps | undefined>(undefined)
 
+const deduplicateCart = (cartItems: CartItem[]): CartItem[] => {
+  const map: { [key: string]: CartItem } = {}
+  cartItems.forEach(item => {
+    if (map[item.id]) {
+      map[item.id].quantity += item.quantity
+    } else {
+      map[item.id] = { ...item }
+    }
+  })
+  return Object.values(map)
+}
+
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([])
   const [wishlist, setWishlist] = useState<string[]>([])
@@ -56,7 +68,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     if (localCart) {
       try {
-        setCart(JSON.parse(localCart))
+        setCart(deduplicateCart(JSON.parse(localCart)))
       } catch (e) {
         console.error('Error parsing cart from localStorage', e)
       }
@@ -102,7 +114,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         // Logged out: reset to local storage only
         const localCart = localStorage.getItem('__tl_cart')
         const localWishlist = localStorage.getItem('__tl_wishlist')
-        setCart(localCart ? JSON.parse(localCart) : [])
+        setCart(localCart ? deduplicateCart(JSON.parse(localCart)) : [])
         setWishlist(localWishlist ? JSON.parse(localWishlist) : [])
         setLoading(false)
       }
@@ -128,7 +140,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Read local storage in case we had items before logging in
     const localCartStr = localStorage.getItem('__tl_cart')
     const localWishlistStr = localStorage.getItem('__tl_wishlist')
-    const localCart: CartItem[] = localCartStr ? JSON.parse(localCartStr) : []
+    const localCart: CartItem[] = localCartStr ? deduplicateCart(JSON.parse(localCartStr)) : []
     const localWishlist: string[] = localWishlistStr ? JSON.parse(localWishlistStr) : []
 
     // A. Sync Wishlist
@@ -185,7 +197,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const res = await fetch('/api/products')
         const allProducts = res.ok ? await res.json() : []
 
-        remoteCart = cartData.map(dbItem => {
+        const rawRemoteCart = cartData.map(dbItem => {
           const product = allProducts.find((p: any) => p.handle === dbItem.product_id || p.id === dbItem.product_id)
           const name = product?.title || dbItem.product_id
           const price = product?.price || 0
@@ -203,6 +215,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             image
           }
         })
+        remoteCart = deduplicateCart(rawRemoteCart)
       }
     } catch (err) {
       console.warn('Error fetching cart_items from Supabase. Falling back to localStorage.', err)
@@ -241,13 +254,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         mergedCart.push(localItem)
       }
     })
-    setCart(mergedCart)
+    const finalMergedCart = deduplicateCart(mergedCart)
+    setCart(finalMergedCart)
 
     // Write merged cart back to Supabase if DB ok and missing items
     if (cartDbOk) {
       try {
         // Upsert all merged cart items
-        for (const item of mergedCart) {
+        for (const item of finalMergedCart) {
           await supabase.from('cart_items').upsert({
             user_id: currUser.id,
             product_id: item.productHandle,
@@ -264,7 +278,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     // Update local storage representation
-    saveToLocal(mergedCart, mergedWishlist)
+    saveToLocal(finalMergedCart, mergedWishlist)
     setLoading(false)
   }
 
