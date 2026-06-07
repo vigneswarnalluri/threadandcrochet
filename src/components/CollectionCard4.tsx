@@ -18,7 +18,7 @@ const CollectionCard4: FC<CollectionCard4Props> = ({ className, bgSvgUrl, collec
   return (
     <div
       className={clsx(
-        'group relative overflow-hidden rounded-3xl bg-white p-5 transition-shadow hover:nc-shadow-lg sm:p-8 dark:bg-neutral-900',
+        'group relative overflow-hidden rounded-3xl bg-white p-5 hover-pop sm:p-8 dark:bg-neutral-900',
         className
       )}
     >

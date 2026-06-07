@@ -112,7 +112,7 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
 
   return (
     <>
-      <div className={`product-card relative flex flex-col bg-transparent ${className}`}>
+      <div className={`product-card relative flex flex-col bg-transparent hover-pop ${className}`}>
         <Link href={'/products/' + handle} className="absolute inset-0"></Link>
 
         <div className="group relative z-1 shrink-0 overflow-hidden rounded-3xl bg-neutral-50 dark:bg-neutral-300">
@@ -121,7 +121,7 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
               <NcImage
                 containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0"
                 src={activeImage}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover hover-scale-img"
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
                 alt={handle}

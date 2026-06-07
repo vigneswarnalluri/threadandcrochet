@@ -2,6 +2,8 @@ import Logo from '@/components/Logo'
 import { CustomLink } from '@/data/types'
 import SocialsList1 from '@/shared/SocialsList1/SocialsList1'
 import React from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 interface WidgetFooterMenu {
   id: string
@@ -81,7 +83,17 @@ const Footer: React.FC = () => {
       <div className="container grid grid-cols-2 gap-x-5 gap-y-10 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-10">
         <div className="col-span-2 grid grid-cols-4 gap-5 md:col-span-4 lg:flex lg:flex-col lg:md:col-span-1">
           <div className="col-span-2 md:col-span-1">
-            <Logo />
+            <Link href="/" className="flex items-center shrink-0 select-none">
+              <Image
+                src="/logo-footer.png"
+                alt="Thread & Crochet Logo"
+                width={120}
+                height={120}
+                className="h-24 w-auto object-contain"
+                style={{ width: 'auto', height: 'auto' }}
+                priority
+              />
+            </Link>
           </div>
           <div className="col-span-2 flex items-center md:col-span-3">
             <SocialsList1 />

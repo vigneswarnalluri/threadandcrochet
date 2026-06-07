@@ -18,7 +18,7 @@ const CollectionCard6: FC<CollectionCard6Props> = ({ className = '', bgSvgUrl, c
 
   return (
     <div
-      className={`group aspect-w-1 relative h-0 w-full overflow-hidden rounded-3xl bg-white transition-shadow aspect-h-1 hover:nc-shadow-lg dark:bg-neutral-900 ${className}`}
+      className={`group aspect-w-1 relative h-0 w-full overflow-hidden rounded-3xl bg-white aspect-h-1 hover-pop dark:bg-neutral-900 ${className}`}
     >
       <div>
         <div className="absolute inset-0 opacity-10">{bgSvgUrl && <Image src={bgSvgUrl} alt="svgbg" fill />}</div>

@@ -43,12 +43,31 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   *,
   ::after,
   ::before,
   ::backdrop,
   ::file-selector-button {
     @apply border-neutral-200 dark:border-neutral-700;
+  }
+
+  /* Smooth transition default for interactable elements (buttons, links, form inputs, SVGs) */
+  a, button, select, input, textarea, svg, img {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 250ms;
+  }
+
+  /* Focus ring outline */
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
   }
 
   [type='button'] {
@@ -255,4 +274,51 @@
   color: #fff;
   font-size: 10px;
   margin-left: 6px;
+}
+
+/* Premium Micro-Animations & Hover Effects */
+@utility hover-pop {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+}
+
+@utility hover-scale-img {
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  &:hover {
+    transform: scale(1.06);
+  }
+}
+
+@utility hover-underline-slide {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--color-primary-500);
+    transform-origin: bottom right;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  &:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+}
+
+@utility glassmorphism {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  .dark & {
+    background: rgba(28, 26, 24, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
 }

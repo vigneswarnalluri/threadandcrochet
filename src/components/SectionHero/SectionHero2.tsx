@@ -138,7 +138,7 @@ const SectionHero2: FC<Props> = ({ className = '', data: customData }) => {
     return (
       <div
         className={clsx(
-          'fade--animation relative flex h-full flex-col gap-6 overflow-hidden py-10 pl-container sm:py-12 lg:flex-row lg:items-center',
+          'fade--animation relative flex h-full flex-col gap-6 overflow-hidden py-10 lg:py-0 pl-container lg:flex-row lg:items-center',
           isActive ? 'flex' : 'hidden'
         )}
         key={index}
@@ -175,7 +175,7 @@ const SectionHero2: FC<Props> = ({ className = '', data: customData }) => {
           })}
         </div>
 
-        <div className="relative flex max-w-5xl flex-1/2 flex-col items-start fade--animation__left">
+        <div className="relative flex max-w-5xl lg:flex-1/2 flex-none flex-col items-start fade--animation__left">
           <span className="block text-base font-medium text-neutral-700 fade--animation__subheading md:text-xl">
             {item.subHeading}
           </span>
@@ -190,10 +190,10 @@ const SectionHero2: FC<Props> = ({ className = '', data: customData }) => {
           </ButtonPrimary>
         </div>
 
-        <div className="relative -z-10 flex flex-1/2 items-center justify-center lg:pr-10">
+        <div className="relative -z-10 flex lg:flex-1/2 flex-1 items-center justify-center lg:pr-10">
           <Image
             sizes="(max-width: 768px) 100vw, 60vw"
-            className="h-auto w-full max-w-[40rem] max-h-[60vh] object-contain fade--animation__image select-none"
+            className="h-full w-auto max-w-[40rem] max-h-[45vh] lg:max-h-[60vh] object-contain fade--animation__image select-none"
             src={item.imageUrl}
             alt={item.heading}
             width={790}
@@ -206,7 +206,7 @@ const SectionHero2: FC<Props> = ({ className = '', data: customData }) => {
   }
 
   return (
-    <div className={clsx('relative z-[1] h-screen', className)} suppressHydrationWarning {...handlers}>
+    <div className={clsx('relative z-[1] lg:h-screen h-[75vh]', className)} suppressHydrationWarning {...handlers}>
       {slides.map((_, index) => renderItem(index))}
 
       <button
