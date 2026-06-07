@@ -76,17 +76,10 @@ const PageTransitionContent: React.FC = () => {
       return originalPushState.apply(this, args)
     }
 
-    // 3. Listen to back/forward popstate events
-    const handlePopState = () => {
-      setIsLoading(true)
-    }
-
     document.addEventListener('click', handleAnchorClick)
-    window.addEventListener('popstate', handlePopState)
 
     return () => {
       document.removeEventListener('click', handleAnchorClick)
-      window.removeEventListener('popstate', handlePopState)
       window.history.pushState = originalPushState
     }
   }, [])
