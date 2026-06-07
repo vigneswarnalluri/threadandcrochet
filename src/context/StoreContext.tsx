@@ -41,9 +41,13 @@ const StoreContext = createContext<StoreContextProps | undefined>(undefined)
 const deduplicateCart = (cartItems: CartItem[]): CartItem[] => {
   const map: { [key: string]: CartItem } = {}
   cartItems.forEach(item => {
-    const qty = Number(item.quantity) || 1
+    // Convert to number and reset to 1 if the quantity is corrupted/ridiculously large
+    let qty = Number(item.quantity) || 1
+    if (qty > 10) {
+      qty = 1
+    }
     if (map[item.id]) {
-      map[item.id].quantity += qty
+      map[item.id].quantity = Math.min(10, map[item.id].quantity + qty)
     } else {
       map[item.id] = { ...item, quantity: qty }
     }
