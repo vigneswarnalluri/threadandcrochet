@@ -138,7 +138,7 @@ const SectionHero2: FC<Props> = ({ className = '', data: customData }) => {
     return (
       <div
         className={clsx(
-          'fade--animation relative flex flex-col gap-10 overflow-hidden py-14 pl-container sm:py-20 lg:flex-row lg:items-center',
+          'fade--animation relative flex h-full flex-col gap-6 overflow-hidden py-10 pl-container sm:py-12 lg:flex-row lg:items-center',
           isActive ? 'flex' : 'hidden'
         )}
         key={index}
@@ -184,16 +184,16 @@ const SectionHero2: FC<Props> = ({ className = '', data: customData }) => {
             dangerouslySetInnerHTML={{ __html: item.heading }}
           />
 
-          <ButtonPrimary className="mt-10 fade--animation__button sm:mt-20" href={item.btnHref || '#'}>
+          <ButtonPrimary className="mt-8 fade--animation__button sm:mt-10" href={item.btnHref || '#'}>
             <span className="me-2">{item.btnText}</span>
             <HugeiconsIcon icon={Search01Icon} size={20} />
           </ButtonPrimary>
         </div>
 
-        <div className="relative -z-10 flex-1/2 lg:pr-10">
+        <div className="relative -z-10 flex flex-1/2 items-center justify-center lg:pr-10">
           <Image
             sizes="(max-width: 768px) 100vw, 60vw"
-            className="h-auto w-full max-w-[40rem] object-contain fade--animation__image select-none"
+            className="h-auto w-full max-w-[40rem] max-h-[60vh] object-contain fade--animation__image select-none"
             src={item.imageUrl}
             alt={item.heading}
             width={790}
@@ -206,7 +206,7 @@ const SectionHero2: FC<Props> = ({ className = '', data: customData }) => {
   }
 
   return (
-    <div className={clsx('relative z-[1]', className)} {...handlers}>
+    <div className={clsx('relative z-[1] h-screen', className)} suppressHydrationWarning {...handlers}>
       {slides.map((_, index) => renderItem(index))}
 
       <button
