@@ -41,10 +41,11 @@ const StoreContext = createContext<StoreContextProps | undefined>(undefined)
 const deduplicateCart = (cartItems: CartItem[]): CartItem[] => {
   const map: { [key: string]: CartItem } = {}
   cartItems.forEach(item => {
+    const qty = Number(item.quantity) || 1
     if (map[item.id]) {
-      map[item.id].quantity += item.quantity
+      map[item.id].quantity += qty
     } else {
-      map[item.id] = { ...item }
+      map[item.id] = { ...item, quantity: qty }
     }
   })
   return Object.values(map)
@@ -260,16 +261,24 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Write merged cart back to Supabase if DB ok and missing items
     if (cartDbOk) {
       try {
-        // Upsert all merged cart items
+        // Delete and re-insert to avoid Postgres unique index NULL issues and prevent duplicate rows
         for (const item of finalMergedCart) {
-          await supabase.from('cart_items').upsert({
+          await supabase
+            .from('cart_items')
+            .delete()
+            .match({
+              user_id: currUser.id,
+              product_id: item.productHandle,
+              size: item.size || null,
+              color: item.color || null
+            })
+
+          await supabase.from('cart_items').insert({
             user_id: currUser.id,
             product_id: item.productHandle,
             quantity: item.quantity,
             size: item.size || null,
             color: item.color || null
-          }, {
-            onConflict: 'user_id,product_id,size,color'
           })
         }
       } catch (err) {
@@ -323,18 +332,27 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Sync database outside state update
     if (user && dbAvailable.cart_items) {
       try {
+        // Delete all matching records first to avoid Postgres unique index NULL limitations
+        await supabase
+          .from('cart_items')
+          .delete()
+          .match({
+            user_id: user.id,
+            product_id: productHandle,
+            size: sizeVal || null,
+            color: colorVal || null
+          })
+
         const { error } = await supabase
           .from('cart_items')
-          .upsert({
+          .insert({
             user_id: user.id,
             product_id: productHandle,
             quantity: newQty,
             size: sizeVal || null,
             color: colorVal || null
-          }, {
-            onConflict: 'user_id,product_id,size,color'
           })
-        if (error) console.error('Error upserting cart item to Supabase', error)
+        if (error) console.error('Error inserting cart item to Supabase', error)
       } catch (err) {
         console.error('Error in addToCart db call', err)
       }
@@ -386,16 +404,27 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     if (user && dbAvailable.cart_items) {
       try {
-        const { error } = await supabase
+        // Delete existing items to clear duplicate rows and re-insert the single updated item
+        await supabase
           .from('cart_items')
-          .update({ quantity })
+          .delete()
           .match({
             user_id: user.id,
             product_id: itemToUpdate.productHandle,
             size: itemToUpdate.size || null,
             color: itemToUpdate.color || null
           })
-        if (error) console.error('Error updating cart item quantity in Supabase', error)
+
+        const { error } = await supabase
+          .from('cart_items')
+          .insert({
+            user_id: user.id,
+            product_id: itemToUpdate.productHandle,
+            quantity,
+            size: itemToUpdate.size || null,
+            color: itemToUpdate.color || null
+          })
+        if (error) console.error('Error inserting updated cart item to Supabase', error)
       } catch (err) {
         console.error('Error in updateCartQuantity db call', err)
       }
