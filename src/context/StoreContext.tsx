@@ -267,15 +267,25 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       try {
         // Delete and re-insert to avoid Postgres unique index NULL issues and prevent duplicate rows
         for (const item of finalMergedCart) {
-          await supabase
+          let deleteQuery = supabase
             .from('cart_items')
             .delete()
-            .match({
-              user_id: currUser.id,
-              product_id: item.productHandle,
-              size: item.size || null,
-              color: item.color || null
-            })
+            .eq('user_id', currUser.id)
+            .eq('product_id', item.productHandle)
+
+          if (item.size) {
+            deleteQuery = deleteQuery.eq('size', item.size)
+          } else {
+            deleteQuery = deleteQuery.is('size', null)
+          }
+
+          if (item.color) {
+            deleteQuery = deleteQuery.eq('color', item.color)
+          } else {
+            deleteQuery = deleteQuery.is('color', null)
+          }
+
+          await deleteQuery
 
           await supabase.from('cart_items').insert({
             user_id: currUser.id,
@@ -336,16 +346,26 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Sync database outside state update
     if (user && dbAvailable.cart_items) {
       try {
-        // Delete all matching records first to avoid Postgres unique index NULL limitations
-        await supabase
+        // Delete all matching records first using dynamic query for NULL safety
+        let deleteQuery = supabase
           .from('cart_items')
           .delete()
-          .match({
-            user_id: user.id,
-            product_id: productHandle,
-            size: sizeVal || null,
-            color: colorVal || null
-          })
+          .eq('user_id', user.id)
+          .eq('product_id', productHandle)
+
+        if (sizeVal) {
+          deleteQuery = deleteQuery.eq('size', sizeVal)
+        } else {
+          deleteQuery = deleteQuery.is('size', null)
+        }
+
+        if (colorVal) {
+          deleteQuery = deleteQuery.eq('color', colorVal)
+        } else {
+          deleteQuery = deleteQuery.is('color', null)
+        }
+
+        await deleteQuery
 
         const { error } = await supabase
           .from('cart_items')
@@ -374,15 +394,25 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     if (user && dbAvailable.cart_items) {
       try {
-        const { error } = await supabase
+        let deleteQuery = supabase
           .from('cart_items')
           .delete()
-          .match({
-            user_id: user.id,
-            product_id: itemToRemove.productHandle,
-            size: itemToRemove.size || null,
-            color: itemToRemove.color || null
-          })
+          .eq('user_id', user.id)
+          .eq('product_id', itemToRemove.productHandle)
+
+        if (itemToRemove.size) {
+          deleteQuery = deleteQuery.eq('size', itemToRemove.size)
+        } else {
+          deleteQuery = deleteQuery.is('size', null)
+        }
+
+        if (itemToRemove.color) {
+          deleteQuery = deleteQuery.eq('color', itemToRemove.color)
+        } else {
+          deleteQuery = deleteQuery.is('color', null)
+        }
+
+        const { error } = await deleteQuery
         if (error) console.error('Error deleting cart item from Supabase', error)
       } catch (err) {
         console.error('Error in removeFromCart db call', err)
@@ -408,16 +438,26 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     if (user && dbAvailable.cart_items) {
       try {
-        // Delete existing items to clear duplicate rows and re-insert the single updated item
-        await supabase
+        // Delete existing items to clear duplicate rows and re-insert the single updated item (NULL safe query)
+        let deleteQuery = supabase
           .from('cart_items')
           .delete()
-          .match({
-            user_id: user.id,
-            product_id: itemToUpdate.productHandle,
-            size: itemToUpdate.size || null,
-            color: itemToUpdate.color || null
-          })
+          .eq('user_id', user.id)
+          .eq('product_id', itemToUpdate.productHandle)
+
+        if (itemToUpdate.size) {
+          deleteQuery = deleteQuery.eq('size', itemToUpdate.size)
+        } else {
+          deleteQuery = deleteQuery.is('size', null)
+        }
+
+        if (itemToUpdate.color) {
+          deleteQuery = deleteQuery.eq('color', itemToUpdate.color)
+        } else {
+          deleteQuery = deleteQuery.is('color', null)
+        }
+
+        await deleteQuery
 
         const { error } = await supabase
           .from('cart_items')
