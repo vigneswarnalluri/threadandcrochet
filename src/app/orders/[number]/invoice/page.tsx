@@ -7,7 +7,7 @@ import InvoiceButtons from '@/components/InvoiceButtons'
 export async function generateMetadata({ params }: { params: Promise<{ number: string }> }): Promise<Metadata> {
   const { number } = await params
   return {
-    title: `Invoice #${number} - Thread & Love`,
+    title: `Invoice #${number} - Thread & Crochet`,
     description: `Invoice for order #${number}`,
   }
 }
@@ -76,14 +76,14 @@ export default async function InvoicePage({ params }: { params: Promise<{ number
             <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between border-b border-neutral-100 pb-8 dark:border-neutral-800">
               <div>
                 <span className="font-serif text-3xl font-bold tracking-wide text-neutral-900 dark:text-white">
-                  Thread & Love
+                  Thread & Crochet
                 </span>
                 <p className="mt-1 text-xs tracking-widest text-neutral-500 uppercase dark:text-neutral-400">
                   Handcrafted with ❤️
                 </p>
                 <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
-                  <p>threadandlove.in</p>
-                  <p>orders@threadandlove.in</p>
+                  <p>threadandcrochet.in</p>
+                  <p>orders@threadandcrochet.in</p>
                 </div>
               </div>
               <div className="text-left sm:text-right">
@@ -226,7 +226,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ number
                 Thank you for supporting our handmade business! ❤️
               </p>
               <p className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
-                For queries regarding this invoice, contact support at orders@threadandlove.in
+                For queries regarding this invoice, contact support at orders@threadandcrochet.in
               </p>
             </div>
 

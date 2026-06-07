@@ -16,7 +16,7 @@ const SectionPromo1: FC<SectionPromo1Props> = ({ className = '' }) => {
       <div className="relative mb-16 shrink-0 lg:mr-10 lg:mb-0 lg:w-2/5">
         <Logo className="w-28" />
         <h2 className="mt-6 text-3xl leading-[1.2]! font-semibold tracking-tight sm:mt-10 sm:text-4xl xl:text-5xl 2xl:text-6xl font-serif">
-          Earn loyalty points <br /> with Thread & Love
+          Earn loyalty points <br /> with Thread & Crochet
         </h2>
         <span className="mt-6 block text-neutral-500 dark:text-neutral-400">
           Join our crafting community to get free shipping & exclusive member savings combo.

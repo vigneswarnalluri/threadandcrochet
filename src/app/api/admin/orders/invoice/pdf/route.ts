@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     // Header Title
     doc.setFont("helvetica", "bold")
     doc.setFontSize(22)
-    doc.text("THREAD & LOVE", 20, 25)
+    doc.text("THREAD & CROCHET", 20, 25)
 
     doc.setFont("helvetica", "normal")
     doc.setFontSize(9)
@@ -112,8 +112,8 @@ export async function GET(request: NextRequest) {
     doc.setFont("helvetica", "normal")
     doc.setFontSize(9)
     doc.setTextColor(60, 60, 60)
-    doc.text("Thread & Love Customer Support", 20, 62)
-    doc.text("Email: support@threadandlove.com", 20, 67)
+    doc.text("Thread & Crochet Customer Support", 20, 62)
+    doc.text("Email: support@threadandcrochet.com", 20, 67)
     doc.text("Phone: +91 98765 43210", 20, 72)
 
     doc.setFont("helvetica", "bold")
@@ -197,8 +197,8 @@ export async function GET(request: NextRequest) {
     doc.setFont("helvetica", "italic")
     doc.setFontSize(8)
     doc.setTextColor(150, 140, 130)
-    doc.text("This receipt serves as an official proof of payment. For inquiries, reach support@threadandlove.com.", 105, y, { align: "center" })
-    doc.text("Thank you for choosing handmade boutique products from Thread & Love!", 105, y + 5, { align: "center" })
+    doc.text("This receipt serves as an official proof of payment. For inquiries, reach support@threadandcrochet.com.", 105, y, { align: "center" })
+    doc.text("Thank you for choosing handmade boutique products from Thread & Crochet!", 105, y + 5, { align: "center" })
 
     // Export PDF as ArrayBuffer
     const pdfArrayBuffer = doc.output('arraybuffer')

@@ -1,5 +1,5 @@
 -- ================================================================
--- Thread & Love — Supabase Database Schema
+-- Thread & Crochet — Supabase Database Schema
 -- Run this in: Supabase Dashboard → SQL Editor → New query
 -- ================================================================
 
@@ -278,7 +278,7 @@ CREATE POLICY "Admins can manage store settings" ON public.store_settings FOR AL
 -- Seed initial settings
 INSERT INTO public.store_settings (key, value) VALUES
   ('announcement', '"Free shipping on all prepaid orders over ₹999!"'::jsonb),
-  ('contact', '{"phone": "+91 98765 43210", "email": "support@threadandlove.com"}'::jsonb),
+  ('contact', '{"phone": "+91 98765 43210", "email": "support@threadandcrochet.com"}'::jsonb),
   ('rates', '{"tax": 5, "shipping": 99}'::jsonb),
   ('banners', '[
     {

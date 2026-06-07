@@ -110,7 +110,7 @@ export default function RazorpayButton({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
         amount: orderAmount,
         currency: orderCurrency,
-        name: 'Thread & Love',
+        name: 'Thread & Crochet',
         description: 'Handcrafted Crochet Products',
         order_id,
         prefill: { name, email, contact, method: prefillMethod },

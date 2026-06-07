@@ -28,12 +28,12 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    template: '%s - Thread & Love',
-    default: 'Thread & Love - Handmade Crochet Boutique',
+    template: '%s - Thread & Crochet',
+    default: 'Thread & Crochet - Handmade Crochet Boutique',
   },
   description:
-    'Thread & Love offers premium, beautifully handcrafted crochet wearables, cozy toys, home goods, and DIY kits made with organic cotton and love.',
-  keywords: ['Crochet', 'Handmade', 'Amigurumi', 'DIY Kits', 'Wearables', 'Cozy Home Decor', 'Thread & Love'],
+    'Thread & Crochet offers premium, beautifully handcrafted crochet wearables, cozy toys, home goods, and DIY kits made with organic cotton and love.',
+  keywords: ['Crochet', 'Handmade', 'Amigurumi', 'DIY Kits', 'Wearables', 'Cozy Home Decor', 'Thread & Crochet'],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

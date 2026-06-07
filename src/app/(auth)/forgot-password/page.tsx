@@ -6,8 +6,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: 'Forgot Password — Thread & Love',
-  description: 'Reset your Thread & Love account password',
+  title: 'Forgot Password — Thread & Crochet',
+  description: 'Reset your Thread & Crochet account password',
 }
 
 interface PageProps {

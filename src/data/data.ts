@@ -420,7 +420,7 @@ export async function getBlogPosts() {
           height: avatarImage1.height,
         },
         description:
-          'Clara Lovelace is the founder of Thread & Love and has been crocheting cozy creations for over 15 years. She loves teaching and sharing stitches with beginners.',
+          'Clara Lovelace is the founder of Thread & Crochet and has been crocheting cozy creations for over 15 years. She loves teaching and sharing stitches with beginners.',
       },
     },
     {
@@ -812,7 +812,7 @@ export async function getCollections() {
     },
     {
       id: 'gid://11',
-      title: 'Thread & Love Gift Cards',
+      title: 'Thread & Crochet Gift Cards',
       handle: 'digital-gift-cards',
       sortDescription: 'Give the gift <br /> of handcrafted choice',
       description: 'Can’t decide which plush friend or cardigan they’ll love most? Share the joy of handmade with our beautiful digital gift cards.',
@@ -822,7 +822,7 @@ export async function getCollections() {
         src: '/Crochet/IMG_20260605_154046_274.jpg',
         width: 1000,
         height: 1000,
-        alt: 'Thread & Love Gift Cards',
+        alt: 'Thread & Crochet Gift Cards',
       },
     },
   
@@ -1013,7 +1013,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
     handle: 'crochet-drawstring-pouch',
     collectionHandles: ['jeans', 'bags'],
     createdAt: '2026-06-05T12:00:00Z',
-    vendor: 'Thread & Love',
+    vendor: 'Thread & Crochet',
     price: 16,
     featuredImage: {
       src: '/Crochet/IMG_20260605_154246_117.jpg',
@@ -1129,7 +1129,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
     handle: 'crochet-chunky-shoulder-bag',
     collectionHandles: ['jeans', 'bags'],
     createdAt: '2026-06-05T12:00:00Z',
-    vendor: 'Thread & Love',
+    vendor: 'Thread & Crochet',
     price: 38,
     featuredImage: {
       src: '/Crochet/IMG_20260605_154047_393.jpg',
@@ -1182,7 +1182,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
     handle: 'crochet-daisy-coaster-set',
     collectionHandles: ['coats'],
     createdAt: '2026-06-05T12:00:00Z',
-    vendor: 'Thread & Love',
+    vendor: 'Thread & Crochet',
     price: 18,
     featuredImage: {
       src: '/Crochet/IMG_20260605_154025_177.jpg',
@@ -1259,7 +1259,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
     handle: 'crochet-amigurumi-keychain',
     collectionHandles: ['t-shirts', 'accessories'],
     createdAt: '2026-06-05T12:00:00Z',
-    vendor: 'Thread & Love',
+    vendor: 'Thread & Crochet',
     price: 14,
     featuredImage: {
       src: '/Crochet/IMG_20260605_154015_438.jpg',
@@ -1352,7 +1352,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
     handle: 'crochet-evil-eye-charm',
     collectionHandles: ['coats', 'accessories'],
     createdAt: '2026-06-05T12:00:00Z',
-    vendor: 'Thread & Love',
+    vendor: 'Thread & Crochet',
     price: 15,
     featuredImage: {
       src: '/Crochet/IMG_20260605_154051_384.jpg',
@@ -1421,7 +1421,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
     handle: 'crochet-greeting-card',
     collectionHandles: ['accessories', 'coats'],
     createdAt: '2026-06-05T12:00:00Z',
-    vendor: 'Thread & Love',
+    vendor: 'Thread & Crochet',
     price: 8,
     featuredImage: {
       src: '/Crochet/IMG_20260605_154006_048.jpg',
@@ -1522,7 +1522,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
     handle: 'crochet-hair-accessory-set',
     collectionHandles: ['accessories'],
     createdAt: '2026-06-05T12:00:00Z',
-    vendor: 'Thread & Love',
+    vendor: 'Thread & Crochet',
     price: 12,
     featuredImage: {
       src: '/Crochet/IMG_20260605_154008_671.jpg',
@@ -1607,7 +1607,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
     handle: 'crochet-specialty-holders',
     collectionHandles: ['accessories'],
     createdAt: '2026-06-05T12:00:00Z',
-    vendor: 'Thread & Love',
+    vendor: 'Thread & Crochet',
     price: 10,
     featuredImage: {
       src: '/Crochet/IMG_20260605_154039_796.jpg',
@@ -1668,7 +1668,7 @@ export const LOCAL_CROCHET_PRODUCTS: TProductItem[] = [
     handle: 'crochet-flower-bouquet',
     collectionHandles: ['coats'],
     createdAt: '2026-06-05T12:00:00Z',
-    vendor: 'Thread & Love',
+    vendor: 'Thread & Crochet',
     price: 28,
     featuredImage: {
       src: '/Crochet/IMG_20260605_154009_634.jpg',
@@ -1808,7 +1808,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
         title: p.title,
         handle: p.handle,
         createdAt: p.created_at,
-        vendor: p.vendor || 'Thread & Love',
+        vendor: p.vendor || 'Thread & Crochet',
         price: Number(p.price || 0),
         featuredImage: p.featured_image || {
           src: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=736',
@@ -1858,7 +1858,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
       handle: 'aura-crochet-halter-top',
       collectionHandles: ['jackets', 'accessories'],
       createdAt: '2025-05-06T10:00:00-04:00',
-      vendor: 'Thread & Love',
+      vendor: 'Thread & Crochet',
       price: 48,
       featuredImage: {
         src: productImage1.src,
@@ -1957,7 +1957,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
       handle: 'amigurumi-oliver-the-owl',
       collectionHandles: ['t-shirts'],
       createdAt: '2025-05-07T09:30:00-04:00',
-      vendor: 'Thread & Love',
+      vendor: 'Thread & Crochet',
       price: 35,
       featuredImage: {
         src: productImage2.src,
@@ -2052,7 +2052,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
       handle: 'sunburst-granny-square-tote',
       collectionHandles: ['jeans', 'bags'],
       createdAt: '2025-05-08T11:15:00-04:00',
-      vendor: 'Thread & Love',
+      vendor: 'Thread & Crochet',
       price: 55,
       featuredImage: {
         src: productImage3.src,
@@ -2143,7 +2143,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
       handle: 'aura-pastel-crochet-beanie',
       collectionHandles: ['jackets', 'accessories'],
       createdAt: '2025-05-09T14:20:00-04:00',
-      vendor: 'Thread & Love',
+      vendor: 'Thread & Crochet',
       price: 28,
       featuredImage: {
         src: productImage4.src,
@@ -2234,7 +2234,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
       handle: 'boho-plant-hanger',
       collectionHandles: ['coats'],
       createdAt: '2025-05-10T08:45:00-04:00',
-      vendor: 'Thread & Love',
+      vendor: 'Thread & Crochet',
       price: 32,
       featuredImage: {
         src: productImage5.src,
@@ -2329,7 +2329,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
       handle: 'blossom-crochet-coaster-set',
       collectionHandles: ['coats'],
       createdAt: '2025-05-11T12:10:00-04:00',
-      vendor: 'Thread & Love',
+      vendor: 'Thread & Crochet',
       price: 18,
       featuredImage: {
         src: productImage6.src,
@@ -2424,7 +2424,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
       handle: 'daisy-chain-crossbody-purse',
       collectionHandles: ['jeans', 'bags'],
       createdAt: '2025-05-12T10:25:00-04:00',
-      vendor: 'Thread & Love',
+      vendor: 'Thread & Crochet',
       price: 45,
       featuredImage: {
         src: productImage7.src,
@@ -2515,7 +2515,7 @@ const _getProductsUncached = async (): Promise<TProductItem[]> => {
       handle: 'artisanal-crochet-starter-kit',
       collectionHandles: ['shoes'],
       createdAt: '2025-05-13T09:00:00-04:00',
-      vendor: 'Thread & Love',
+      vendor: 'Thread & Crochet',
       price: 65,
       featuredImage: {
         src: productImage8.src,

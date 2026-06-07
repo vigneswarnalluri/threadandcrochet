@@ -433,7 +433,7 @@ export default function AdminDashboardClient({
 
   // Global settings parsed states
   const initialAnnouncement = settings?.find((s: any) => s.key === 'announcement')?.value || 'Free shipping on all prepaid orders over ₹999!'
-  const initialContact = settings?.find((s: any) => s.key === 'contact')?.value || { phone: '+91 98765 43210', email: 'support@threadandlove.com' }
+  const initialContact = settings?.find((s: any) => s.key === 'contact')?.value || { phone: '+91 98765 43210', email: 'support@threadandcrochet.com' }
   const initialRates = settings?.find((s: any) => s.key === 'rates')?.value || { tax: 5, shipping: 99 }
   const initialBanners = settings?.find((s: any) => s.key === 'banners')?.value || []
 
@@ -1190,7 +1190,7 @@ export default function AdminDashboardClient({
           </button>
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-amber-600">
-              Thread &amp; Love
+              Thread &amp; Crochet
             </h1>
             <p className="text-2xs text-neutral-450 dark:text-neutral-555 font-bold mt-1 uppercase tracking-wider">
               Admin Enterprise Control Center
@@ -2393,7 +2393,7 @@ export default function AdminDashboardClient({
                       </span>
                       <textarea
                         rows={3}
-                        placeholder={`Dear ${ticket.name}, thank you for reaching out to Thread & Love. Regarding your query...`}
+                        placeholder={`Dear ${ticket.name}, thank you for reaching out to Thread & Crochet. Regarding your query...`}
                         value={currentReply}
                         onChange={(e) => setTicketReplyText(prev => ({ ...prev, [ticket.id]: e.target.value }))}
                         className="w-full rounded-2xl border border-neutral-300 bg-neutral-50 px-4 py-3 text-xs outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 text-neutral-900 dark:text-white"
@@ -4071,7 +4071,7 @@ export default function AdminDashboardClient({
         <div className="hidden print:block absolute inset-0 bg-white text-black p-8 font-sans z-50 text-xs space-y-6">
           <div className="flex justify-between items-start border-b pb-4">
             <div>
-              <h1 className="text-xl font-bold tracking-tight">THREAD & LOVE</h1>
+              <h1 className="text-xl font-bold tracking-tight">THREAD & CROCHET</h1>
               <p className="text-[10px] text-gray-500 mt-1">Artisanal Crochet & Knitting Boutique</p>
             </div>
             <div className="text-right">
@@ -4083,7 +4083,7 @@ export default function AdminDashboardClient({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h3 className="font-bold uppercase tracking-wider text-gray-500 text-[10px] mb-1">Store details:</h3>
-              <p className="font-semibold">Thread & Love Customer Support</p>
+              <p className="font-semibold">Thread & Crochet Customer Support</p>
               <p>Email: {contactEmail}</p>
               <p>Phone: {contactPhone}</p>
             </div>
@@ -4138,7 +4138,7 @@ export default function AdminDashboardClient({
           </div>
 
           <div className="border-t pt-6 text-center text-gray-400 text-[10px]">
-            Thank you for supporting hand-knitted artisanal products from Thread & Love!
+            Thank you for supporting hand-knitted artisanal products from Thread & Crochet!
           </div>
         </div>
       )}

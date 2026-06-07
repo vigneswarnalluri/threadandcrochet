@@ -93,7 +93,7 @@ function AdminLoginFormClient() {
               <Input
                 type="email"
                 name="email"
-                placeholder="admin@threadandlove.com"
+                placeholder="admin@threadandcrochet.com"
                 required
                 className="w-full bg-white dark:bg-neutral-800"
               />

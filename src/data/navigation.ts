@@ -120,7 +120,7 @@ export async function getNavigation(): Promise<TNavigationItem[]> {
         {
           id: '9',
           href: '/about',
-          name: 'Thread & Love',
+          name: 'Thread & Crochet',
           type: 'dropdown',
           children: [
             {

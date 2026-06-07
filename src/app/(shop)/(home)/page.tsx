@@ -22,8 +22,8 @@ import { createClient } from '@/utils/supabase/server'
 export const metadata: Metadata = {
   title: 'Home',
   description:
-    'Welcome to Thread & Love, your premium boutique storefront for beautiful handcrafted amigurumi plushies, cozy wearables, and custom home crochet decor.',
-  keywords: ['Crochet', 'Handmade', 'Amigurumi', 'DIY Kits', 'Wearables', 'Thread & Love'],
+    'Welcome to Thread & Crochet, your premium boutique storefront for beautiful handcrafted amigurumi plushies, cozy wearables, and custom home crochet decor.',
+  keywords: ['Crochet', 'Handmade', 'Amigurumi', 'DIY Kits', 'Wearables', 'Thread & Crochet'],
 }
 
 async function PageHome() {

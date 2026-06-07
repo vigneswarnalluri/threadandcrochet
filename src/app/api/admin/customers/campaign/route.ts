@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     const resend = new Resend(process.env.RESEND_API_KEY)
-    const from = 'Thread & Love <onboarding@resend.dev>'
+    const from = 'Thread & Crochet <onboarding@resend.dev>'
     const isSandbox = from.includes('resend.dev')
     const testEmail = process.env.RESEND_TEST_EMAIL || 'r.crochet18@gmail.com'
 
@@ -51,15 +51,15 @@ export async function POST(request: NextRequest) {
       const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; rounded: 8px;">
           <div style="text-align: center; border-bottom: 2px solid #b5836e; padding-bottom: 20px; margin-bottom: 20px;">
-            <h1 style="color: #b5836e; margin: 0;">Thread & Love</h1>
+            <h1 style="color: #b5836e; margin: 0;">Thread & Crochet</h1>
             <p style="font-size: 14px; color: #777; margin: 5px 0 0 0;">Handmade Crochet Boutique</p>
           </div>
           <div style="line-height: 1.6; color: #333;">
             ${emailBody.replace(/\n/g, '<br />')}
           </div>
           <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; text-align: center; font-size: 12px; color: #999;">
-            <p>You are receiving this email because you registered on Thread & Love.</p>
-            <p>&copy; ${new Date().getFullYear()} Thread & Love. All rights reserved.</p>
+            <p>You are receiving this email because you registered on Thread & Crochet.</p>
+            <p>&copy; ${new Date().getFullYear()} Thread & Crochet. All rights reserved.</p>
           </div>
         </div>
       `

@@ -93,7 +93,7 @@ export function buildOrderConfirmationEmail(data: OrderEmailData): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Order Confirmation — Thread &amp; Love</title>
+  <title>Order Confirmation — Thread &amp; Crochet</title>
 </head>
 <body style="margin:0; padding:0; background-color:#faf7f4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f4; padding: 40px 20px;">
@@ -105,7 +105,7 @@ export function buildOrderConfirmationEmail(data: OrderEmailData): string {
           <tr>
             <td align="center" style="padding-bottom: 32px;">
               <a href="${siteUrl}" style="text-decoration:none;">
-                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Love</p>
+                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Crochet</p>
                 <p style="margin:4px 0 0 0; font-size:12px; color:#888; letter-spacing:2px; text-transform:uppercase;">Handcrafted with ❤️</p>
               </a>
             </td>
@@ -209,7 +209,7 @@ export function buildOrderConfirmationEmail(data: OrderEmailData): string {
           <tr>
             <td style="padding: 28px 40px; text-align:center;">
               <p style="margin:0 0 6px 0; font-size:12px; color:#aaa;">Questions? Reply to this email or visit our store.</p>
-              <p style="margin:0; font-size:12px; color:#ccc;">© 2025 Thread &amp; Love. All rights reserved.</p>
+              <p style="margin:0; font-size:12px; color:#ccc;">© 2025 Thread &amp; Crochet. All rights reserved.</p>
             </td>
           </tr>
 
@@ -348,7 +348,7 @@ export function buildOrderStatusUpdateEmail(data: StatusUpdateEmailData): string
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Order Status Update — Thread &amp; Love</title>
+  <title>Order Status Update — Thread &amp; Crochet</title>
 </head>
 <body style="margin:0; padding:0; background-color:#faf7f4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f4; padding: 40px 20px;">
@@ -360,7 +360,7 @@ export function buildOrderStatusUpdateEmail(data: StatusUpdateEmailData): string
           <tr>
             <td align="center" style="padding-bottom: 32px;">
               <a href="${siteUrl}" style="text-decoration:none;">
-                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Love</p>
+                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Crochet</p>
                 <p style="margin:4px 0 0 0; font-size:12px; color:#888; letter-spacing:2px; text-transform:uppercase;">Handcrafted with ❤️</p>
               </a>
             </td>
@@ -467,7 +467,7 @@ export function buildOrderStatusUpdateEmail(data: StatusUpdateEmailData): string
           <tr>
             <td style="padding: 28px 40px; text-align:center;">
               <p style="margin:0 0 6px 0; font-size:12px; color:#aaa;">Questions? Reply to this email or visit our store support.</p>
-              <p style="margin:0; font-size:12px; color:#ccc;">© 2026 Thread &amp; Love. All rights reserved.</p>
+              <p style="margin:0; font-size:12px; color:#ccc;">© 2026 Thread &amp; Crochet. All rights reserved.</p>
             </td>
           </tr>
 
@@ -491,7 +491,7 @@ export function buildSupportReplyEmail(data: {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Support Ticket Reply — Thread &amp; Love</title>
+  <title>Support Ticket Reply — Thread &amp; Crochet</title>
 </head>
 <body style="margin:0; padding:0; background-color:#faf7f4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f4; padding: 40px 20px;">
@@ -503,7 +503,7 @@ export function buildSupportReplyEmail(data: {
           <tr>
             <td align="center" style="padding-bottom: 32px;">
               <a href="${siteUrl}" style="text-decoration:none;">
-                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Love</p>
+                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Crochet</p>
                 <p style="margin:4px 0 0 0; font-size:12px; color:#888; letter-spacing:2px; text-transform:uppercase;">Handcrafted with ❤️</p>
               </a>
             </td>
@@ -514,7 +514,7 @@ export function buildSupportReplyEmail(data: {
             <td style="background:#1a1a1a; border-radius:20px 20px 0 0; padding: 36px 40px; text-align:center;">
               <p style="margin:0 0 12px 0; font-size:40px;">✉️</p>
               <h1 style="margin:0 0 8px 0; font-size:24px; font-weight:700; color:#ffffff;">Response to Your Inquiry</h1>
-              <p style="margin:0; font-size:15px; color:#bbbbbb;">Hi ${customerName}, here is the response to the inquiry you submitted to Thread &amp; Love.</p>
+              <p style="margin:0; font-size:15px; color:#bbbbbb;">Hi ${customerName}, here is the response to the inquiry you submitted to Thread &amp; Crochet.</p>
             </td>
           </tr>
 
@@ -539,7 +539,7 @@ export function buildSupportReplyEmail(data: {
           <tr>
             <td style="padding: 28px 40px; text-align:center;">
               <p style="margin:0 0 6px 0; font-size:12px; color:#aaa;">Questions? Reply to this email or visit our store support.</p>
-              <p style="margin:0; font-size:12px; color:#ccc;">© 2026 Thread &amp; Love. All rights reserved.</p>
+              <p style="margin:0; font-size:12px; color:#ccc;">© 2026 Thread &amp; Crochet. All rights reserved.</p>
             </td>
           </tr>
 
@@ -588,7 +588,7 @@ export function buildOrderRefundEmail(data: OrderEmailData): string {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Refund Confirmation — Thread &amp; Love</title>
+  <title>Refund Confirmation — Thread &amp; Crochet</title>
 </head>
 <body style="margin:0; padding:0; background-color:#faf7f4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f4; padding: 40px 20px;">
@@ -598,7 +598,7 @@ export function buildOrderRefundEmail(data: OrderEmailData): string {
           <tr>
             <td align="center" style="padding-bottom: 32px;">
               <a href="${siteUrl}" style="text-decoration:none;">
-                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Love</p>
+                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Crochet</p>
                 <p style="margin:4px 0 0 0; font-size:12px; color:#888; letter-spacing:2px; text-transform:uppercase;">Handcrafted with ❤️</p>
               </a>
             </td>
@@ -665,7 +665,7 @@ export function buildOrderRefundEmail(data: OrderEmailData): string {
           <tr>
             <td style="padding: 28px 40px; text-align:center;">
               <p style="margin:0 0 6px 0; font-size:12px; color:#aaa;">Questions? Reply to this email or visit our store support.</p>
-              <p style="margin:0; font-size:12px; color:#ccc;">© 2026 Thread &amp; Love. All rights reserved.</p>
+              <p style="margin:0; font-size:12px; color:#ccc;">© 2026 Thread &amp; Crochet. All rights reserved.</p>
             </td>
           </tr>
         </table>
@@ -744,7 +744,7 @@ export function buildCartRecoveryEmail(data: CartRecoveryEmailData): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Complete Your Order — Thread &amp; Love</title>
+  <title>Complete Your Order — Thread &amp; Crochet</title>
 </head>
 <body style="margin:0; padding:0; background-color:#faf7f4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f4; padding: 40px 20px;">
@@ -754,7 +754,7 @@ export function buildCartRecoveryEmail(data: CartRecoveryEmailData): string {
           <tr>
             <td style="padding: 32px 40px; text-align:center;">
               <a href="${siteUrl}" style="text-decoration:none;">
-                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Love</p>
+                <p style="margin:0; font-size:26px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">Thread &amp; Crochet</p>
                 <p style="margin:4px 0 0 0; font-size:12px; color:#888; letter-spacing:2px; text-transform:uppercase;">Handcrafted with ❤️</p>
               </a>
             </td>
@@ -785,7 +785,7 @@ export function buildCartRecoveryEmail(data: CartRecoveryEmailData): string {
           <tr>
             <td style="padding: 28px 40px; text-align:center;">
               <p style="margin:0 0 6px 0; font-size:12px; color:#aaa;">Questions? Reply to this email or visit our store support.</p>
-              <p style="margin:0; font-size:12px; color:#ccc;">© 2026 Thread &amp; Love. All rights reserved.</p>
+              <p style="margin:0; font-size:12px; color:#ccc;">© 2026 Thread &amp; Crochet. All rights reserved.</p>
             </td>
           </tr>
         </table>

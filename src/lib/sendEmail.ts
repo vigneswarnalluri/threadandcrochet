@@ -20,14 +20,14 @@ interface SendOrderEmailParams {
 }
 
 export async function sendOrderConfirmationEmail(params: SendOrderEmailParams) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandlove.netlify.app'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandcrochet.netlify.app'
 
   const html = buildOrderConfirmationEmail({ ...params, siteUrl })
 
   // Sandbox: onboarding@resend.dev only delivers to the Resend account owner's email.
-  // Production: switch to your verified domain email (e.g. orders@threadandlove.in).
-  const from = 'Thread & Love <onboarding@resend.dev>'
-  // const from = 'Thread & Love <orders@threadandlove.in>'  // ← uncomment after domain verification
+  // Production: switch to your verified domain email (e.g. orders@threadandcrochet.in).
+  const from = 'Thread & Crochet <onboarding@resend.dev>'
+  // const from = 'Thread & Crochet <orders@threadandcrochet.in>'  // ← uncomment after domain verification
 
   const isSandbox = from.includes('resend.dev')
   const testEmail = process.env.RESEND_TEST_EMAIL || 'r.crochet18@gmail.com'
@@ -67,11 +67,11 @@ interface SendOrderStatusUpdateEmailParams {
 }
 
 export async function sendOrderStatusUpdateEmail(params: SendOrderStatusUpdateEmailParams) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandlove.netlify.app'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandcrochet.netlify.app'
 
   const html = buildOrderStatusUpdateEmail({ ...params, siteUrl })
 
-  const from = 'Thread & Love <onboarding@resend.dev>'
+  const from = 'Thread & Crochet <onboarding@resend.dev>'
   const isSandbox = from.includes('resend.dev')
   const testEmail = process.env.RESEND_TEST_EMAIL || 'r.crochet18@gmail.com'
   const recipient = isSandbox ? testEmail : params.customerEmail
@@ -98,16 +98,16 @@ interface SendSupportReplyEmailParams {
 }
 
 export async function sendSupportReplyEmail(params: SendSupportReplyEmailParams) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandlove.netlify.app'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandcrochet.netlify.app'
   const html = buildSupportReplyEmail({ ...params, siteUrl })
 
-  const from = 'Thread & Love Support <onboarding@resend.dev>'
+  const from = 'Thread & Crochet Support <onboarding@resend.dev>'
   const isSandbox = from.includes('resend.dev')
   const testEmail = process.env.RESEND_TEST_EMAIL || 'r.crochet18@gmail.com'
   const recipient = isSandbox ? testEmail : params.customerEmail
   const subject = isSandbox
     ? `[TEST] ✉️ Support Ticket Response (→ ${params.customerEmail})`
-    : `✉️ Support Ticket Response — Thread & Love`
+    : `✉️ Support Ticket Response — Thread & Crochet`
 
   const { data, error } = await resend.emails.send({ from, to: [recipient], subject, html })
 
@@ -121,9 +121,9 @@ export async function sendSupportReplyEmail(params: SendSupportReplyEmailParams)
 }
 
 export async function sendOrderRefundEmail(params: SendOrderEmailParams) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandlove.netlify.app'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandcrochet.netlify.app'
   const html = buildOrderRefundEmail({ ...params, siteUrl })
-  const from = 'Thread & Love <onboarding@resend.dev>'
+  const from = 'Thread & Crochet <onboarding@resend.dev>'
   
   const isSandbox = from.includes('resend.dev')
   const testEmail = process.env.RESEND_TEST_EMAIL || 'r.crochet18@gmail.com'
@@ -152,16 +152,16 @@ interface SendCartRecoveryEmailParams {
 }
 
 export async function sendCartRecoveryEmail(params: SendCartRecoveryEmailParams) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandlove.netlify.app'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://threadandcrochet.netlify.app'
   const html = buildCartRecoveryEmail({ ...params, siteUrl })
-  const from = 'Thread & Love <onboarding@resend.dev>'
+  const from = 'Thread & Crochet <onboarding@resend.dev>'
 
   const isSandbox = from.includes('resend.dev')
   const testEmail = process.env.RESEND_TEST_EMAIL || 'r.crochet18@gmail.com'
   const recipient = isSandbox ? testEmail : params.customerEmail
   const subject = isSandbox
-    ? `[TEST] 🛒 Complete your purchase at Thread & Love (→ ${params.customerEmail})`
-    : `🛒 Complete your purchase at Thread & Love`
+    ? `[TEST] 🛒 Complete your purchase at Thread & Crochet (→ ${params.customerEmail})`
+    : `🛒 Complete your purchase at Thread & Crochet`
 
   const { data, error } = await resend.emails.send({ from, to: [recipient], subject, html })
 

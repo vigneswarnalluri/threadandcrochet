@@ -19,8 +19,8 @@ import AvatarUploadSection, { SubmitButton } from './AvatarUploadSection'
 import AccountSuccessToast from './AccountSuccessToast'
 
 export const metadata: Metadata = {
-  title: 'Account — Thread & Love',
-  description: 'Manage your Thread & Love account',
+  title: 'Account — Thread & Crochet',
+  description: 'Manage your Thread & Crochet account',
 }
 
 const Page = async () => {
