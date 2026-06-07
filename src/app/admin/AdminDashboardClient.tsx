@@ -31,6 +31,7 @@ import {
   BellIcon,
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/outline'
 
 interface OrderItem {
@@ -191,7 +192,7 @@ function parseCSV(text: string) {
 
 
 export default function AdminDashboardClient({
-  orders,
+  orders = [],
   metrics,
   initialSearch,
   initialStatus,
@@ -208,6 +209,23 @@ export default function AdminDashboardClient({
 }: AdminDashboardClientProps) {
   const router = useRouter()
   const pathname = usePathname()
+
+  const handleLogout = async () => {
+    if (!confirm('Are you sure you want to log out from the Admin Portal?')) return
+    try {
+      sessionStorage.removeItem('__tl_profile')
+      const res = await fetch('/api/logout', { method: 'POST' })
+      if (res.ok) {
+        toast.success('Logged out successfully')
+        window.location.href = '/admin/login'
+      } else {
+        toast.error('Failed to log out')
+      }
+    } catch (err) {
+      console.error('Logout error:', err)
+      toast.error('An error occurred during logout')
+    }
+  }
   const searchParams = useSearchParams()
 
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'products' | 'customers' | 'reviews' | 'coupons' | 'analytics' | 'settings' | 'carts' | 'support' | 'audit'>('overview')
@@ -1175,7 +1193,7 @@ export default function AdminDashboardClient({
   return (
     <div className="space-y-10">
       {/* Top Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-neutral-150 dark:border-neutral-850 pb-5 print:hidden">
+      <div className="flex items-center justify-between gap-4 border-b border-neutral-150 dark:border-neutral-850 pb-5 print:hidden">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -1189,76 +1207,88 @@ export default function AdminDashboardClient({
             )}
           </button>
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-amber-600">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-amber-600">
               Thread &amp; Crochet
             </h1>
-            <p className="text-2xs text-neutral-450 dark:text-neutral-555 font-bold mt-1 uppercase tracking-wider">
+            <p className="text-[10px] sm:text-2xs text-neutral-450 dark:text-neutral-555 font-bold mt-1 uppercase tracking-wider">
               Admin Enterprise Control Center
             </p>
           </div>
         </div>
         
         {/* Notifications Center Bell & Dropdown */}
-        <div className="relative self-end sm:self-center">
-          <button
-            onClick={() => setShowNotifDropdown(!showNotifDropdown)}
-            className="relative p-2.5 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/50 hover:bg-neutral-50 dark:hover:bg-neutral-850 text-neutral-600 dark:text-neutral-300 transition shadow-sm"
-          >
-            <BellIcon className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-[9px] font-bold text-white animate-pulse">
-                {unreadCount}
-              </span>
-            )}
-          </button>
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+              className="relative p-2.5 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/50 hover:bg-neutral-50 dark:hover:bg-neutral-850 text-neutral-600 dark:text-neutral-300 transition shadow-sm"
+            >
+              <BellIcon className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-[9px] font-bold text-white animate-pulse">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
 
-          {showNotifDropdown && (
-            <div className="absolute right-0 mt-3.5 w-80 sm:w-96 rounded-3xl border border-neutral-200 dark:border-neutral-850 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md shadow-2xl p-5 z-50 animate-fadeIn space-y-4">
-              <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-2">
-                <h3 className="font-bold text-xs uppercase tracking-wider text-neutral-400">Live Notifications</h3>
-                {unreadCount > 0 && (
-                  <button
-                    onClick={handleMarkAllNotificationsRead}
-                    className="text-[10px] font-bold text-primary-600 hover:underline"
-                  >
-                    Mark all as read
-                  </button>
-                )}
-              </div>
-              <div className="max-h-64 overflow-y-auto divide-y divide-neutral-100 dark:divide-neutral-850">
-                {notifications.length === 0 ? (
-                  <div className="py-6 text-center text-xs text-neutral-450">
-                    No active notifications
-                  </div>
-                ) : (
-                  notifications.map(notif => (
-                    <div
-                      key={notif.id}
-                      onClick={() => handleMarkNotificationRead(notif.id, notif.read)}
-                      className={`py-3 flex gap-3 cursor-pointer items-start text-xs transition ${
-                        notif.read ? 'opacity-65 hover:opacity-100' : 'font-semibold bg-neutral-50/50 dark:bg-neutral-800/10 px-2.5 py-2 rounded-2xl'
-                      }`}
+            {showNotifDropdown && (
+              <div className="absolute right-0 mt-3.5 w-80 sm:w-96 rounded-3xl border border-neutral-200 dark:border-neutral-850 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md shadow-2xl p-5 z-50 animate-fadeIn space-y-4">
+                <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-2">
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-neutral-450">Live Notifications</h3>
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={handleMarkAllNotificationsRead}
+                      className="text-[10px] font-bold text-primary-600 hover:underline"
                     >
-                      <span className="text-base leading-none">
-                        {notif.type === 'new_order' ? '📦' : notif.type === 'new_review' ? '⭐' : notif.type === 'low_stock' ? '⚠️' : '✉️'}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-neutral-800 dark:text-neutral-200 leading-relaxed text-[11px]">
-                          {notif.message}
-                        </p>
-                        <span className="text-[9px] text-neutral-400 block mt-1">
-                          {new Date(notif.created_at).toLocaleString()}
-                        </span>
-                      </div>
-                      {!notif.read && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary-600 self-center shrink-0"></span>
-                      )}
+                      Mark all as read
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-64 overflow-y-auto divide-y divide-neutral-100 dark:divide-neutral-850">
+                  {notifications.length === 0 ? (
+                    <div className="py-6 text-center text-xs text-neutral-450">
+                      No active notifications
                     </div>
-                  ))
-                )}
+                  ) : (
+                    notifications.map(notif => (
+                      <div
+                        key={notif.id}
+                        onClick={() => handleMarkNotificationRead(notif.id, notif.read)}
+                        className={`py-3 flex gap-3 cursor-pointer items-start text-xs transition ${
+                          notif.read ? 'opacity-65 hover:opacity-100' : 'font-semibold bg-neutral-50/50 dark:bg-neutral-800/10 px-2.5 py-2 rounded-2xl'
+                        }`}
+                      >
+                        <span className="text-base leading-none">
+                          {notif.type === 'new_order' ? '📦' : notif.type === 'new_review' ? '⭐' : notif.type === 'low_stock' ? '⚠️' : '✉️'}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-neutral-800 dark:text-neutral-200 leading-relaxed text-[11px]">
+                            {notif.message}
+                          </p>
+                          <span className="text-[9px] text-neutral-400 block mt-1">
+                            {new Date(notif.created_at).toLocaleString()}
+                          </span>
+                        </div>
+                        {!notif.read && (
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary-600 self-center shrink-0"></span>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Quick Log Out Button */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-rose-200 dark:border-rose-950 bg-white dark:bg-neutral-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/20 text-rose-600 dark:text-rose-400 transition shadow-sm shrink-0 text-xs font-bold"
+            title="Log Out"
+          >
+            <ArrowRightOnRectangleIcon className="h-4 w-4 text-rose-500 dark:text-rose-400" />
+            <span>Log Out</span>
+          </button>
         </div>
       </div>
 
@@ -1308,6 +1338,16 @@ export default function AdminDashboardClient({
                   </button>
                 )
               })}
+              
+              <div className="lg:border-t lg:border-neutral-200 lg:dark:border-neutral-800 lg:pt-2 lg:mt-2 shrink-0">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2.5 py-3 px-4 text-xs font-bold rounded-xl lg:rounded-2xl transition whitespace-nowrap text-rose-600 hover:bg-rose-500/10 dark:text-rose-400 w-full"
+                >
+                  <ArrowRightOnRectangleIcon className="h-4 w-4" />
+                  Log Out
+                </button>
+              </div>
             </nav>
           </div>
         )}
