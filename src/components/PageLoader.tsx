@@ -9,114 +9,257 @@ interface PageLoaderProps {
 const PageLoader: React.FC<PageLoaderProps> = ({ isVisible }) => {
   const [shouldRender, setShouldRender] = useState(isVisible)
   const [opacityClass, setOpacityClass] = useState('opacity-0')
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
+    let interval: NodeJS.Timeout
+
     if (isVisible) {
       setShouldRender(true)
-      // Small timeout to allow element to mount before animating opacity
-      const timeout = setTimeout(() => {
+      setProgress(0)
+      
+      // Delay opacity transition slightly to trigger CSS transition on mount
+      const fadeTimeout = setTimeout(() => {
         setOpacityClass('opacity-100')
       }, 20)
-      return () => clearTimeout(timeout)
+
+      // Animate progress up to 90%
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev < 50) return prev + 4 // quick start
+          if (prev < 80) return prev + 2
+          if (prev < 90) return prev + 0.8 // slow down towards 90%
+          return prev
+        })
+      }, 40)
+
+      return () => {
+        clearTimeout(fadeTimeout)
+        clearInterval(interval)
+      }
     } else {
-      setOpacityClass('opacity-0')
-      // Wait for transition duration (300ms) to complete before unmounting
-      const timeout = setTimeout(() => {
-        setShouldRender(false)
-      }, 300)
-      return () => clearTimeout(timeout)
+      // When isVisible goes false, accelerate progress to 100% extremely fast
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev < 100) {
+            const next = prev + 20
+            return next > 100 ? 100 : next
+          }
+          return 100
+        })
+      }, 10)
+
+      return () => clearInterval(interval)
     }
   }, [isVisible])
 
+  // Fade out and unmount when progress is 100% and isVisible is false
+  useEffect(() => {
+    if (progress === 100 && !isVisible) {
+      const fadeOutTimeout = setTimeout(() => {
+        setOpacityClass('opacity-0')
+        const unmountTimeout = setTimeout(() => {
+          setShouldRender(false)
+        }, 250) // matches transition duration
+        return () => clearTimeout(unmountTimeout)
+      }, 30) // minor hold for final ring completion render
+      return () => clearTimeout(fadeOutTimeout)
+    }
+  }, [progress, isVisible])
+
   if (!shouldRender) return null
+
+  // SVG progress path details:
+  // Circumference of R=50 is 2 * Math.PI * 50 = 314.159
+  const radius = 50
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (progress / 100) * circumference
+
+  // Progress-driven wrapping thread length (approx 120px)
+  const wrappingCircumference = 120
+  const wrappingDashoffset = wrappingCircumference - (progress / 100) * wrappingCircumference
+
+  // Detect completion to trigger target transitions
+  const isComplete = progress === 100 && !isVisible
 
   return (
     <div
-      className={`fixed inset-0 z-max flex flex-col items-center justify-center bg-[#FAF6F1] transition-opacity duration-300 ease-in-out ${opacityClass}`}
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#F7F3EE] transition-opacity duration-250 ease-in-out ${opacityClass} ${
+        !isVisible ? 'pointer-events-none' : ''
+      }`}
     >
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes spin-slow {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
         @keyframes yarn-bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
+          0% {
+            transform: translateY(0) scaleY(0.85) scaleX(1.15);
+            animation-timing-function: ease-out;
+          }
+          12% {
+            transform: translateY(0) scaleY(1.05) scaleX(0.95);
+            animation-timing-function: ease-out;
+          }
+          50% {
+            transform: translateY(-26px) scaleY(1) scaleX(1);
+            animation-timing-function: ease-in;
+          }
+          88% {
+            transform: translateY(0) scaleY(1.05) scaleX(0.95);
+            animation-timing-function: ease-in;
+          }
+          94% {
+            transform: translateY(0) scaleY(0.85) scaleX(1.15);
+            animation-timing-function: ease-out;
+          }
+          100% {
+            transform: translateY(0) scaleY(1) scaleX(1);
+          }
         }
-        @keyframes hook-wiggle {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          50% { transform: translate(-4px, 4px) rotate(-15deg); }
+        @keyframes needle-left-sway {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(-5deg); }
+          90% { transform: rotate(4deg); }
         }
-        @keyframes stroke-draw {
-          0% { stroke-dasharray: 1 300; stroke-dashoffset: 0; }
-          50% { stroke-dasharray: 120 300; stroke-dashoffset: -40; }
-          100% { stroke-dasharray: 1 300; stroke-dashoffset: -264; }
+        @keyframes needle-right-sway {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(5deg); }
+          90% { transform: rotate(-4deg); }
         }
-        .animate-spin-slow {
-          animation: spin-slow 8s linear infinite;
+        @keyframes sparkle-show {
+          0%, 82%, 100% { opacity: 0; transform: scale(0.3); }
+          90% { opacity: 1; transform: scale(1.1); }
+          95% { opacity: 0.2; transform: scale(1); }
         }
         .animate-yarn-bounce {
-          animation: yarn-bounce 2s ease-in-out infinite;
+          animation: yarn-bounce 1.4s infinite;
         }
-        .animate-hook-wiggle {
-          animation: hook-wiggle 2s ease-in-out infinite;
+        .animate-needle-left {
+          animation: needle-left-sway 1.4s infinite;
         }
-        .animate-stroke-draw {
-          animation: stroke-draw 2.5s ease-in-out infinite;
+        .animate-needle-right {
+          animation: needle-right-sway 1.4s infinite;
+        }
+        .animate-sparkle {
+          animation: sparkle-show 1.4s infinite;
         }
       `}} />
 
-      <div className="relative flex flex-col items-center">
+      {/* Composition Wrapper moved upward by 6% with subtle scale/fade transition on completion */}
+      <div
+        className={`relative flex flex-col items-center justify-center -translate-y-[6%] transition-all duration-300 ease-in-out ${
+          isComplete ? 'opacity-0 scale-95 blur-[2px]' : 'opacity-100 scale-100 blur-0'
+        }`}
+      >
         {/* Crochet Yarn Ball Loading Graphic */}
-        <div className="relative size-32 select-none">
-          <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Outer Circular Loader Path representing running thread */}
+        <div className="relative w-44 h-44 select-none flex items-center justify-center">
+          <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 120 120"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="overflow-visible"
+          >
+            {/* 1. Circular Progress Path (Thread) */}
+            {/* Faint track background (disappears when complete) */}
             <circle
-              cx="50"
-              cy="50"
-              r="43"
-              stroke="#D8A7B1"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              className="animate-stroke-draw"
+              cx="60"
+              cy="60"
+              r={radius}
+              stroke="#6E5648"
+              strokeWidth="1.1"
+              strokeOpacity="0.08"
+              fill="none"
+              className={`transition-opacity duration-300 ${isComplete ? 'opacity-0' : 'opacity-100'}`}
             />
-            
-            {/* Inner Yarn Ball */}
-            <g className="animate-yarn-bounce" style={{ transformOrigin: '50% 50%' }}>
-              {/* Ball backing shadow */}
-              <circle cx="50" cy="50" r="28" fill="#D8A7B1" opacity="0.15" />
-              {/* Ball border */}
-              <circle cx="50" cy="50" r="28" stroke="#6B4E3D" strokeWidth="2.5" />
-              
-              {/* Weaving thread loops */}
-              <path d="M30 40 C 40 25, 60 25, 70 40" stroke="#6B4E3D" strokeWidth="1.8" />
-              <path d="M25 50 C 35 32, 65 32, 75 50" stroke="#6B4E3D" strokeWidth="1.8" />
-              <path d="M30 60 C 40 75, 60 75, 70 60" stroke="#6B4E3D" strokeWidth="1.8" />
-              <path d="M40 30 C 25 40, 25 60, 40 70" stroke="#6B4E3D" strokeWidth="1.8" />
-              <path d="M50 24 C 34 34, 34 66, 50 76" stroke="#6B4E3D" strokeWidth="1.8" />
-              <path d="M60 30 C 75 40, 75 60, 60 70" stroke="#6B4E3D" strokeWidth="1.8" />
+            {/* Glowing progress trace (disappears when complete) */}
+            <circle
+              cx="60"
+              cy="60"
+              r={radius}
+              stroke="#E8C2CA"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              className={`fill-none transition-all duration-300 ease-out ${
+                isComplete ? 'opacity-0' : 'opacity-100'
+              }`}
+            />
+
+            {/* 2. Sparkle Impact Lines (stationary, outside the bounce group) */}
+            <g className="animate-sparkle" style={{ transformOrigin: '60px 28px', stroke: '#6E5648', strokeWidth: '2.2', strokeLinecap: 'round' }}>
+              <path d="M 60 27 L 60 20" />
+              <path d="M 52 30 L 46 25" />
+              <path d="M 68 30 L 74 25" />
             </g>
 
-            {/* Crochet Hook detail wiggling */}
-            <g className="animate-hook-wiggle" style={{ transformOrigin: '68% 40%' }}>
-              {/* Hook shaft */}
-              <path d="M78 22 L56 54" stroke="#6B4E3D" strokeWidth="3" strokeLinecap="round" />
-              {/* Hook head */}
+            {/* 3. Bouncing Yarn Ball & Needles group */}
+            <g className="animate-yarn-bounce" style={{ transformOrigin: '60px 86px' }}>
+              
+              {/* Crossed Knitting Needles (drawn behind the ball body) */}
+              <g>
+                {/* Left Needle (shaft & head) */}
+                <g className="animate-needle-left" style={{ transformOrigin: '27px 29px' }}>
+                  <line x1="27" y1="29" x2="93" y2="95" stroke="#6E5648" strokeWidth="2.5" strokeLinecap="round" />
+                  <circle cx="27" cy="29" r="4.5" fill="#F7F3EE" stroke="#6E5648" strokeWidth="2.2" />
+                </g>
+                
+                {/* Right Needle (shaft & head) */}
+                <g className="animate-needle-right" style={{ transformOrigin: '93px 29px' }}>
+                  <line x1="93" y1="29" x2="27" y2="95" stroke="#6E5648" strokeWidth="2.5" strokeLinecap="round" />
+                  <circle cx="93" cy="29" r="4.5" fill="#F7F3EE" stroke="#6E5648" strokeWidth="2.2" />
+                </g>
+              </g>
+
+              {/* Yarn Ball Body (circular contour with solid fill to hide needle intersection) */}
+              <circle cx="60" cy="62" r="23" fill="#E8C2CA" stroke="#6E5648" strokeWidth="2.5" />
+
+              {/* Decorative Loops / Arcs (representing the wound strands) */}
+              <g stroke="#6E5648" strokeWidth="2.2" strokeLinecap="round" fill="none">
+                {/* Slanted loops (from top-left towards bottom-right) */}
+                <path d="M 46 45 C 50 49, 68 67, 75 69" />
+                <path d="M 52 40 C 58 46, 72 60, 77 58" opacity="0.85" />
+                
+                {/* Horizontal loops on the right side */}
+                <path d="M 68 47 C 75 49, 81 55, 81 63" />
+                <path d="M 62 55 C 69 57, 77 63, 75 70" opacity="0.85" />
+                <path d="M 58 62 C 64 64, 69 69, 69 75" opacity="0.75" />
+                
+                {/* Short curves at the bottom left */}
+                <path d="M 45 68 C 43 72, 40 76, 38 76" />
+                <path d="M 50 65 C 48 70, 45 75, 43 76" />
+                <path d="M 55 63 C 53 69, 50 74, 48 75" />
+                <path d="M 60 63 C 58 69, 55 74, 53 75" />
+              </g>
+
+              {/* Progress-driven winding thread (drawn in front, visually fills as progress increases) */}
               <path
-                d="M56 54 C 54.5 56, 52.5 54.5, 53.5 52.5 C 54.5 50.5, 57 52.5, 55.5 54.5"
-                stroke="#6B4E3D"
-                strokeWidth="2.2"
+                d="M 46 45 C 55 38, 72 52, 60 66 C 48 80, 68 88, 77 80"
+                stroke="#F7F3EE"
+                strokeWidth="2.4"
                 strokeLinecap="round"
+                strokeDasharray={wrappingCircumference}
+                strokeDashoffset={wrappingDashoffset}
+                className="transition-all duration-150 ease-out"
                 fill="none"
               />
             </g>
           </svg>
         </div>
 
-        {/* Brand/Loading text */}
-        <div className="mt-8 flex flex-col items-center text-center">
-          <p className="font-sans text-lg font-medium tracking-widest text-[#6B4E3D] uppercase select-none animate-pulse">
-            Loading...
+        {/* Typography */}
+        <div className="mt-8 flex flex-col items-center text-center px-4">
+          <h1
+            style={{ fontFamily: 'var(--font-playfair), Georgia, serif' }}
+            className="text-[26px] md:text-3xl font-normal text-[#6E5648] tracking-[0.06em] leading-tight select-none"
+          >
+            Thread and Crochet
+          </h1>
+          <p
+            style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+            className="text-[10px] md:text-[11px] font-light text-[#6E5648]/75 tracking-[0.18em] mt-2.5 uppercase select-none"
+          >
+            Loading handmade beauty...
           </p>
         </div>
       </div>
@@ -125,3 +268,5 @@ const PageLoader: React.FC<PageLoaderProps> = ({ isVisible }) => {
 }
 
 export default PageLoader
+
+

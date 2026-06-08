@@ -12,8 +12,8 @@ interface Props {
 
 export default function CategoriesDropdown({ className, categories }: Props) {
   return (
-    <div className={className}>
-      <Popover className="group">
+    <div className={className} suppressHydrationWarning>
+      <Popover className="group" suppressHydrationWarning>
         <PopoverButton className="-m-2.5 flex items-center rounded-md p-2.5 text-sm font-medium focus:outline-hidden sm:text-base">
           <span>Shops</span>
           <ChevronDownIcon className="ms-2 size-5 text-neutral-700 group-data-open:-rotate-180" aria-hidden="true" />

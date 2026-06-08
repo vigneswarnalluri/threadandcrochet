@@ -15,7 +15,7 @@ const Logo: React.FC<LogoProps> = ({ className = 'shrink-0' }) => {
         width={420}
         height={112}
         className="h-[88px] lg:h-28 w-auto object-contain"
-        style={{ width: 'auto' }}
+        style={{ width: 'auto', height: 'auto' }}
         priority
       />
     </Link>

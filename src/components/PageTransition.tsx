@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState, useRef } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import PageLoader from './PageLoader'
 
@@ -11,6 +11,7 @@ const PageTransitionContent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [lastPathname, setLastPathname] = useState(pathname)
   const [lastSearch, setLastSearch] = useState(searchParams.toString())
+  const showLoaderTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Hide loader when path or search query changes
   useEffect(() => {
@@ -18,6 +19,12 @@ const PageTransitionContent: React.FC = () => {
     if (pathname !== lastPathname || currentSearch !== lastSearch) {
       setLastPathname(pathname)
       setLastSearch(currentSearch)
+      
+      // Clear pending show-loader timeout immediately
+      if (showLoaderTimeoutRef.current) {
+        clearTimeout(showLoaderTimeoutRef.current)
+        showLoaderTimeoutRef.current = null
+      }
       setIsLoading(false)
     }
   }, [pathname, searchParams, lastPathname, lastSearch])
@@ -36,9 +43,15 @@ const PageTransitionContent: React.FC = () => {
           !targetHref.startsWith('#') &&
           !url.hash
         ) {
-          setTimeout(() => {
+          // Clear any existing scheduled timeout
+          if (showLoaderTimeoutRef.current) {
+            clearTimeout(showLoaderTimeoutRef.current)
+          }
+
+          // Delay showing the loader by 180ms to keep fast navigations instant
+          showLoaderTimeoutRef.current = setTimeout(() => {
             setIsLoading(true)
-          }, 0)
+          }, 180)
         }
       } catch (err) {
         // Safe fallback
@@ -83,6 +96,9 @@ const PageTransitionContent: React.FC = () => {
     return () => {
       document.removeEventListener('click', handleAnchorClick)
       window.history.pushState = originalPushState
+      if (showLoaderTimeoutRef.current) {
+        clearTimeout(showLoaderTimeoutRef.current)
+      }
     }
   }, [])
 

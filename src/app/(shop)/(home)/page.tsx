@@ -20,7 +20,9 @@ import { Metadata } from 'next'
 import { createClient } from '@/utils/supabase/server'
 
 export const metadata: Metadata = {
-  title: 'Home',
+  title: {
+    absolute: 'Thread & Crochet',
+  },
   description:
     'Welcome to Thread & Crochet, your premium boutique storefront for beautiful handcrafted amigurumi plushies, cozy wearables, and custom home crochet decor.',
   keywords: ['Crochet', 'Handmade', 'Amigurumi', 'DIY Kits', 'Wearables', 'Thread & Crochet'],

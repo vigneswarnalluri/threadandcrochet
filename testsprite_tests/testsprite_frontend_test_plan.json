@@ -1,0 +1,613 @@
+[
+  {
+    "id": "TC001",
+    "title": "Complete a checkout submission",
+    "description": "A customer can fill the required checkout information and submit the order form to continue the purchase flow.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the required checkout information fields with valid details"
+      },
+      {
+        "type": "action",
+        "description": "Submit the checkout form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a checkout confirmation is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the order submission result is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Submit the checkout form",
+    "description": "This verifies that a customer can complete the checkout form and submit an order from the checkout page.",
+    "category": "Cart and Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid shipping address"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid contact email"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the checkout form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an order confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Send a contact inquiry",
+    "description": "A visitor can open the contact page, complete the inquiry form, and see confirmation that the message was sent.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the contact form with valid inquiry details"
+      },
+      {
+        "type": "action",
+        "description": "Submit the contact form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a message sent confirmation is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the contact submission result is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Submit a contact inquiry",
+    "description": "This verifies that a visitor can complete and submit the contact form and see a confirmation that the message was sent.",
+    "category": "Contact Form Submission",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid email address"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid message"
+      },
+      {
+        "type": "action",
+        "description": "Submit the contact form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a message sent confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Proceed from cart to checkout",
+    "description": "A customer with cart intent can open the cart and continue into the checkout page for purchase entry.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open the cart"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to proceed to checkout"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the checkout page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the checkout information form is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Browse homepage featured storefront content",
+    "description": "This verifies that a shopper can land on the homepage and see the key featured shopping and brand content that the storefront is meant to showcase.",
+    "category": "Premium Storefront Landing Page",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify featured product promotions are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify best sellers and customer reviews are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Open cart from the homepage",
+    "description": "A shopper can move from the homepage to the cart page and view the cart area through normal browsing.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart contents area is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Open the contact page from public navigation",
+    "description": "This verifies that a visitor can navigate to the contact page and reach the inquiry form through normal browsing.",
+    "category": "Contact Form Submission",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to view the contact page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the contact form is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Open a public page from the homepage",
+    "description": "This verifies that a visitor can move from the homepage to another public page through normal browsing and reach the destination successfully.",
+    "category": "Premium Storefront Landing Page",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to view the about page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the about page is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Browse the homepage and open About",
+    "description": "A shopper can land on the homepage, explore the boutique landing content, and navigate to the About page through the client-side transition.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open the About page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the About page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the brand story content is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "See the boutique transition overlay during navigation",
+    "description": "This verifies that client-side navigation shows the custom loading overlay before the destination page appears.",
+    "category": "Page Transitions & Loading Screen",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to view the blog page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a boutique-themed loading overlay is displayed during the transition"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the blog page is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Return to the top of a long page",
+    "description": "This verifies that a visitor can use the floating control to return smoothly to the top after scrolling down a long page.",
+    "category": "Scroll to Top Navigation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll down the page past the scroll threshold"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the scroll to top control is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click the scroll to top control"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the page returns to the top"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Discover a blog article from the listing",
+    "description": "This verifies that a reader can open the blog listing, choose an article, and reach the article detail view to read it.",
+    "category": "Blog Discovery",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /blog"
+      },
+      {
+        "type": "action",
+        "description": "Click an article from the listing"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the article detail page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify article content is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "Explore blog posts and return to the top",
+    "description": "A site visitor can open the blog, read an article, and use the scroll-to-top control to return to the top of the page.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open the blog"
+      },
+      {
+        "type": "action",
+        "description": "Open a blog article"
+      },
+      {
+        "type": "action",
+        "description": "Scroll down the article page"
+      },
+      {
+        "type": "action",
+        "description": "Click the scroll-to-top control"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the blog article page is displayed at the top"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the blog content remains visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC015",
+    "title": "Read the blog and use scroll to top",
+    "description": "This verifies that a reader can browse a blog article and then use the floating control to quickly return to the top of the page.",
+    "category": "Scroll to Top Navigation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /blog"
+      },
+      {
+        "type": "action",
+        "description": "Click an article from the listing"
+      },
+      {
+        "type": "action",
+        "description": "Scroll down the article page past the scroll threshold"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the scroll to top control is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click the scroll to top control"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the page returns to the top"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC016",
+    "title": "Read the About page brand story",
+    "description": "A visitor can open the About page and read the boutique brand story and craft-focused identity information.",
+    "category": "About Brand Information",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /about"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the About page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the brand story content is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC017",
+    "title": "Access the admin dashboard after sign in",
+    "description": "This verifies that a signed-in admin can submit valid credentials on the login page and reach the protected admin dashboard.",
+    "category": "Admin Access",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin/login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin dashboard is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC018",
+    "title": "Access the protected admin area after login",
+    "description": "An authenticated admin can sign in through the admin login page and reach the protected admin dashboard.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin/login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the username field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin dashboard is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify protected admin content is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC019",
+    "title": "Show the admin login page on protected access attempt",
+    "description": "A visitor attempting to open the protected admin area is routed to the admin login page rather than the dashboard.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin login page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the protected admin dashboard is not visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC020",
+    "title": "Reach the admin login page",
+    "description": "This verifies that a potential admin can open the admin sign-in entry point from the public site.",
+    "category": "Admin Access",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin/login"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin login form is displayed"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC021",
+    "title": "Access the admin login entry point",
+    "description": "A potential admin can open the admin login page from the public site and view the login entry form.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin/login"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin login page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin login form is displayed"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC022",
+    "title": "Reject empty checkout submission",
+    "description": "A customer cannot submit the checkout form without required information and sees validation feedback instead of a successful submission.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Submit the checkout form without entering required information"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify checkout validation errors are visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no confirmation is shown"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC023",
+    "title": "Reject empty contact submission",
+    "description": "A visitor cannot submit the contact form without required information and sees validation feedback instead of a sent confirmation.",
+    "category": "Product Browsing & Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Submit the contact form without entering required information"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify contact validation errors are visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no message sent confirmation is shown"
+      }
+    ],
+    "priority": "Low"
+  }
+]

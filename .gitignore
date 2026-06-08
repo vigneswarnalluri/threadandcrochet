@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+testsprite_tests/tmp/
+yarn-ball-animation-gif-download-9143731.mp4
