@@ -54,15 +54,21 @@ async function PageHome() {
   }
 
   const heroBanners = dbBanners.length > 0
-    ? dbBanners.map((b: any, idx: number) => ({
-        id: idx + 1,
-        imageUrl: b.image || '/Crochet/IMG_20260605_154246_117.jpg',
-        heading: b.title || 'Artisan Crochet Masterpieces',
-        subHeading: b.subtitle || 'Lovingly hand-knitted & crafted',
-        btnText: 'Shop Collection',
-        btnHref: b.link || '#',
-        bgColor: idx % 3 === 0 ? 'bg-[#FAEEE2]' : idx % 3 === 1 ? 'bg-[#F7ECE1]' : 'bg-[#EAE5DB]',
-      }))
+    ? dbBanners.map((b: any, idx: number) => {
+        let link = b.link || '#'
+        if (link.startsWith('/collection/')) {
+          link = link.replace('/collection/', '/collections/')
+        }
+        return {
+          id: idx + 1,
+          imageUrl: b.image || '/Crochet/IMG_20260605_154246_117.jpg',
+          heading: b.title || 'Artisan Crochet Masterpieces',
+          subHeading: b.subtitle || 'Lovingly hand-knitted & crafted',
+          btnText: 'Shop Collection',
+          btnHref: link,
+          bgColor: idx % 3 === 0 ? 'bg-[#FAEEE2]' : idx % 3 === 1 ? 'bg-[#F7ECE1]' : 'bg-[#EAE5DB]',
+        }
+      })
     : undefined
 
   // Load layout from store_settings

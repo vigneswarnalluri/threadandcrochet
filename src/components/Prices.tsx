@@ -32,8 +32,8 @@ const Prices: FC<PricesProps> = ({
 
   return (
     <div className={clsx(className)}>
-      <div className={`flex items-center rounded-lg border-2 border-green-500 ${contentClass}`}>
-        <span className="leading-none! text-green-500">{formatPrice(price)}</span>
+      <div className={`flex items-center rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/40 ${contentClass}`}>
+        <span className="leading-none text-neutral-900 dark:text-neutral-100 font-semibold">{formatPrice(price)}</span>
       </div>
     </div>
   )

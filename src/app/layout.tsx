@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${playfair.variable} ${montserrat.variable} ${montserrat.className}`} suppressHydrationWarning>
-      <body className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200" suppressHydrationWarning>
+      <head>
         {process.env.NODE_ENV === 'development' && (
           <script
             dangerouslySetInnerHTML={{
@@ -72,6 +72,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
         )}
+      </head>
+      <body className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200" suppressHydrationWarning>
         <NextTopLoader
           color="#c07c65"
           initialPosition={0.08}

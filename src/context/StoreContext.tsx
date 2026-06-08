@@ -116,11 +116,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (currentUser) {
         await syncDataWithDb(currentUser)
       } else {
-        // Logged out: reset to local storage only
-        const localCart = localStorage.getItem('__tl_cart')
-        const localWishlist = localStorage.getItem('__tl_wishlist')
-        setCart(localCart ? deduplicateCart(JSON.parse(localCart)) : [])
-        setWishlist(localWishlist ? JSON.parse(localWishlist) : [])
+        if (event === 'SIGNED_OUT') {
+          // Logged out: clear cart and wishlist from state and local storage to prevent session leakage and contamination
+          setCart([])
+          setWishlist([])
+          localStorage.removeItem('__tl_cart')
+          localStorage.removeItem('__tl_wishlist')
+        } else {
+          // Stays guest: load from local storage
+          const localCart = localStorage.getItem('__tl_cart')
+          const localWishlist = localStorage.getItem('__tl_wishlist')
+          setCart(localCart ? deduplicateCart(JSON.parse(localCart)) : [])
+          setWishlist(localWishlist ? JSON.parse(localWishlist) : [])
+        }
         setLoading(false)
       }
     })
