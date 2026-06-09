@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useTransition } from 'react'
+import React, { useState, useEffect, useTransition, useMemo } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { Link } from '@/components/Link'
 import Prices from '@/components/Prices'
@@ -421,6 +421,16 @@ export default function AdminDashboardClient({
 
   // Product Form states
   const [editingProduct, setEditingProduct] = useState<CustomProduct | null>(null)
+  const [colorsList, setColorsList] = useState<{ name: string; hex: string; image: string }[]>([])
+  const [newColorName, setNewColorName] = useState('')
+  const [newColorHex, setNewColorHex] = useState('#ebd9be')
+  const [newColorImage, setNewColorImage] = useState('')
+
+  // Sizes & Stock Builder states
+  const [sizesList, setSizesList] = useState<{ name: string; stock: number }[]>([])
+  const [newSizeName, setNewSizeName] = useState('')
+  const [newSizeStock, setNewSizeStock] = useState('10')
+
   const [productForm, setProductForm] = useState({
     title: '',
     price: '',
@@ -440,6 +450,21 @@ export default function AdminDashboardClient({
     metaKeywords: '',
     ogImage: '',
   })
+
+  // Dynamically extract all unique image options for mapping
+  const availableImages = useMemo(() => {
+    const list = []
+    if (productForm.imageUrl && productForm.imageUrl.trim()) {
+      list.push({ label: 'Featured Image', src: productForm.imageUrl.trim() })
+    }
+    if (productForm.galleryUrlsText) {
+      const urls = productForm.galleryUrlsText.split(/[\n,]/).map(url => url.trim()).filter(Boolean)
+      urls.forEach((url, index) => {
+        list.push({ label: `Gallery Image #${index + 1}`, src: url })
+      })
+    }
+    return list
+  }, [productForm.imageUrl, productForm.galleryUrlsText])
   const [uploadingImage, setUploadingImage] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
 
@@ -721,8 +746,40 @@ export default function AdminDashboardClient({
     setActionLoading(true)
     const features = productForm.featuresText.split('\n').map(f => f.trim()).filter(Boolean)
     const galleryUrls = productForm.galleryUrlsText.split(/[\n,]/).map(url => url.trim()).filter(Boolean)
-    const colors = productForm.colorsText.split(',').map(c => c.trim()).filter(Boolean)
-    const sizes = productForm.sizesText.split(',').map(s => s.trim()).filter(Boolean)
+    const sizes = sizesList.length > 0 ? sizesList.map(s => s.name) : productForm.sizesText.split(',').map(s => s.trim()).filter(Boolean)
+    const colors = colorsList.map(c => c.name)
+
+    // Build options structure
+    const colorOptionValues = colorsList.map(c => ({
+      name: c.name,
+      swatch: {
+        color: c.hex,
+        image: c.image || null
+      }
+    }))
+    const sizeOptionValues = sizesList.length > 0
+      ? sizesList.map(s => ({
+          name: s.name,
+          swatch: null,
+          stock: s.stock
+        }))
+      : sizes.map(s => ({
+          name: s,
+          swatch: null
+        }))
+
+    const options = [
+      { name: 'Color', optionValues: colorOptionValues.length > 0 ? colorOptionValues : [{ name: 'Original', swatch: { color: '#ebd9be', image: null } }] },
+      { name: 'Size', optionValues: sizeOptionValues.length > 0 ? sizeOptionValues : [{ name: 'Standard', swatch: null }] }
+    ]
+    const selected_options = [
+      { name: 'Color', value: colorOptionValues.length > 0 ? colorOptionValues[0].name : 'Original' },
+      { name: 'Size', value: sizeOptionValues.length > 0 ? sizeOptionValues[0].name : 'Standard' }
+    ]
+
+    const totalStock = sizesList.length > 0 
+      ? sizesList.reduce((sum, s) => sum + s.stock, 0)
+      : Number(productForm.stock || 10)
 
     const payload = {
       id: editingProduct?.id,
@@ -736,9 +793,11 @@ export default function AdminDashboardClient({
       careInstruction: productForm.careInstruction,
       shippingAndReturn: productForm.shippingAndReturn,
       features,
-      stock: Number(productForm.stock || 10),
+      stock: totalStock,
       colors,
       sizes,
+      options,
+      selected_options,
       metaTitle: productForm.metaTitle,
       metaDescription: productForm.metaDescription,
       metaKeywords: productForm.metaKeywords,
@@ -756,6 +815,13 @@ export default function AdminDashboardClient({
       if (!res.ok) throw new Error(data.error || 'Failed to save product')
 
       toast.success(editingProduct ? 'Product edited successfully!' : 'Product added successfully!')
+      setColorsList([])
+      setNewColorName('')
+      setNewColorHex('#ebd9be')
+      setNewColorImage('')
+      setSizesList([])
+      setNewSizeName('')
+      setNewSizeStock('10')
       setProductForm({
         title: '',
         price: '',
@@ -967,6 +1033,19 @@ export default function AdminDashboardClient({
     const galleryUrls = (prod.images || []).slice(1).map((img: any) => typeof img === 'string' ? img : img.src || '')
     const colorOpts = (prod.options || []).find((o: any) => o.name === 'Color')?.optionValues || []
     const sizeOpts = (prod.options || []).find((o: any) => o.name === 'Size')?.optionValues || []
+
+    const mappedColors = colorOpts.map((c: any) => ({
+      name: c.name,
+      hex: c.swatch?.color || '#ffffff',
+      image: c.swatch?.image || ''
+    }))
+    setColorsList(mappedColors)
+
+    const mappedSizes = sizeOpts.map((s: any) => ({
+      name: s.name,
+      stock: s.stock !== undefined ? s.stock : (prod.stock || 10)
+    }))
+    setSizesList(mappedSizes)
 
     setProductForm({
       title: prod.title,
@@ -1811,39 +1890,211 @@ export default function AdminDashboardClient({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-2xs font-semibold text-neutral-500 uppercase tracking-wider mb-1.5">Colors (Comma-separated)</label>
-                  <input
-                    type="text"
-                    placeholder="Beige, Pink, White"
-                    value={productForm.colorsText}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, colorsText: e.target.value }))}
-                    className="w-full rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2 text-xs outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-800"
-                  />
+              {/* Color Options & Image Mapping */}
+              <div className="border border-neutral-200 dark:border-neutral-850 p-4 rounded-2xl space-y-4 bg-neutral-50/50 dark:bg-neutral-900/20">
+                <span className="block text-2xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                  Color Options &amp; Image Mapping
+                </span>
+                
+                {/* Colors List */}
+                {colorsList.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {colorsList.map((c, idx) => (
+                      <div 
+                        key={idx} 
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 shadow-sm"
+                      >
+                        <span 
+                          className="w-3 h-3 rounded-full border border-neutral-300 shadow-sm shrink-0"
+                          style={{ backgroundColor: c.hex }}
+                        />
+                        <span className="truncate max-w-[80px]">{c.name}</span>
+                        {c.image && (
+                          <span className="text-[9px] text-neutral-450 dark:text-neutral-500 font-bold max-w-[60px] truncate" title={c.image}>
+                            (Mapped)
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setColorsList(prev => prev.filter((_, i) => i !== idx))}
+                          className="ml-1 text-rose-500 hover:text-rose-700 font-extrabold text-xs"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-neutral-450 dark:text-neutral-500 italic">No custom colors configured yet.</p>
+                )}
+
+                {/* Add Color Form */}
+                <div className="flex flex-col gap-2.5 border-t border-dashed border-neutral-200 dark:border-neutral-800 pt-3.5">
+                  <div className="flex gap-2 items-center">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Color Name (e.g. Lavender)"
+                        value={newColorName}
+                        onChange={(e) => setNewColorName(e.target.value)}
+                        className="w-full rounded-xl border border-neutral-300 bg-white dark:bg-neutral-900 px-3 py-2 text-xs outline-none focus:border-neutral-500 dark:border-neutral-700 dark:text-white"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <input
+                        type="color"
+                        value={newColorHex}
+                        onChange={(e) => setNewColorHex(e.target.value)}
+                        className="w-8 h-8 rounded-lg cursor-pointer border border-neutral-300 dark:border-neutral-700 p-0 overflow-hidden bg-transparent"
+                        title="Pick HEX Color"
+                      />
+                      <input
+                        type="text"
+                        value={newColorHex}
+                        onChange={(e) => setNewColorHex(e.target.value)}
+                        className="w-16 rounded-xl border border-neutral-300 bg-white dark:bg-neutral-900 px-2 py-1.5 text-2xs text-center font-mono outline-none focus:border-neutral-500 dark:border-neutral-700 dark:text-white"
+                        placeholder="#ffffff"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Dropdown to pick image mapped to this color */}
+                  <div>
+                    <select
+                      value={newColorImage}
+                      onChange={(e) => setNewColorImage(e.target.value)}
+                      className="w-full rounded-xl border border-neutral-300 bg-white dark:bg-neutral-900 px-3 py-2 text-xs outline-none dark:border-neutral-700 dark:text-white"
+                    >
+                      <option value="">-- Associate Image (Optional) --</option>
+                      {availableImages.map((img, idx) => (
+                        <option key={idx} value={img.src}>
+                          {img.label} ({img.src.slice(-25)})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newColorName.trim()) {
+                        toast.error('Please enter a color name')
+                        return
+                      }
+                      if (colorsList.some(c => c.name.toLowerCase() === newColorName.trim().toLowerCase())) {
+                        toast.error('Color name already exists')
+                        return
+                      }
+                      setColorsList(prev => [
+                        ...prev,
+                        { name: newColorName.trim(), hex: newColorHex, image: newColorImage }
+                      ])
+                      setNewColorName('')
+                      setNewColorImage('')
+                    }}
+                    className="w-full py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-750 text-neutral-800 dark:text-neutral-200 rounded-xl text-2xs font-bold transition border border-neutral-200 dark:border-neutral-700"
+                  >
+                    + Add Color Option
+                  </button>
                 </div>
-                <div>
-                  <label className="block text-2xs font-semibold text-neutral-500 uppercase tracking-wider mb-1.5">Sizes (Comma-separated)</label>
-                  <input
-                    type="text"
-                    placeholder="Small, Medium, Large"
-                    value={productForm.sizesText}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, sizesText: e.target.value }))}
-                    className="w-full rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2 text-xs outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-800"
-                  />
+              </div>
+
+              {/* Size Options & Stock Builder */}
+              <div className="border border-neutral-200 dark:border-neutral-850 p-4 rounded-2xl space-y-4 bg-neutral-50/50 dark:bg-neutral-900/20">
+                <span className="block text-2xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                  Size Options &amp; Stock Levels
+                </span>
+                
+                {/* Sizes List */}
+                {sizesList.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {sizesList.map((s, idx) => (
+                      <div 
+                        key={idx} 
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 shadow-sm"
+                      >
+                        <span className="font-bold uppercase">{s.name}</span>
+                        <span className="text-[10px] text-neutral-455 dark:text-neutral-500 font-extrabold bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded">
+                          Qty: {s.stock}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setSizesList(prev => prev.filter((_, i) => i !== idx))}
+                          className="ml-1 text-rose-500 hover:text-rose-700 font-extrabold text-xs"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-neutral-450 dark:text-neutral-500 italic">No custom sizes configured yet. General stock level will apply.</p>
+                )}
+
+                {/* Add Size Form */}
+                <div className="flex gap-2 items-center border-t border-dashed border-neutral-200 dark:border-neutral-800 pt-3.5">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Size Name (e.g. Medium, XL)"
+                      value={newSizeName}
+                      onChange={(e) => setNewSizeName(e.target.value)}
+                      className="w-full rounded-xl border border-neutral-300 bg-white dark:bg-neutral-900 px-3 py-2 text-xs outline-none focus:border-neutral-500 dark:border-neutral-700 dark:text-white"
+                    />
+                  </div>
+                  <div className="w-24">
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="Stock"
+                      value={newSizeStock}
+                      onChange={(e) => setNewSizeStock(e.target.value)}
+                      className="w-full rounded-xl border border-neutral-300 bg-white dark:bg-neutral-900 px-3 py-2 text-xs outline-none focus:border-neutral-550 dark:border-neutral-700 dark:text-white text-center"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newSizeName.trim()) {
+                        toast.error('Please enter a size name')
+                        return
+                      }
+                      if (sizesList.some(s => s.name.toLowerCase() === newSizeName.trim().toLowerCase())) {
+                        toast.error('Size name already exists')
+                        return
+                      }
+                      const stockVal = Number(newSizeStock);
+                      if (isNaN(stockVal) || stockVal < 0) {
+                        toast.error('Please enter a valid stock level')
+                        return
+                      }
+                      setSizesList(prev => [
+                        ...prev,
+                        { name: newSizeName.trim(), stock: stockVal }
+                      ])
+                      setNewSizeName('')
+                      setNewSizeStock('10')
+                    }}
+                    className="px-4 py-2 bg-neutral-950 text-white dark:bg-primary-600 rounded-xl text-2xs font-bold transition hover:opacity-90 cursor-pointer"
+                  >
+                    + Add Size Option
+                  </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-2xs font-semibold text-neutral-500 uppercase tracking-wider mb-1.5">Stock Level</label>
+                <label className="block text-2xs font-semibold text-neutral-500 uppercase tracking-wider mb-1.5">
+                  {sizesList.length > 0 ? 'Total Stock (Sum of all sizes)' : 'Stock Level'}
+                </label>
                 <input
                   type="number"
                   required
                   min="0"
                   placeholder="10"
-                  value={productForm.stock}
+                  disabled={sizesList.length > 0}
+                  value={sizesList.length > 0 ? sizesList.reduce((sum, s) => sum + s.stock, 0) : productForm.stock}
                   onChange={(e) => setProductForm(prev => ({ ...prev, stock: e.target.value }))}
-                  className="w-full rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2 text-xs outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-800"
+                  className="w-full rounded-xl border border-neutral-300 bg-neutral-50 disabled:opacity-75 px-3 py-2 text-xs outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 text-neutral-900 dark:text-white"
                 />
               </div>
 
@@ -1908,6 +2159,13 @@ export default function AdminDashboardClient({
                     type="button"
                     onClick={() => {
                       setEditingProduct(null)
+                      setColorsList([])
+                      setNewColorName('')
+                      setNewColorHex('#ebd9be')
+                      setNewColorImage('')
+                      setSizesList([])
+                      setNewSizeName('')
+                      setNewSizeStock('10')
                       setProductForm({
                         title: '',
                         price: '',

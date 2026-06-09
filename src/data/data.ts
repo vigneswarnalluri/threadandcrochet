@@ -2811,6 +2811,7 @@ export interface TProductItem {
     name: string
     optionValues: Array<{
       name: string
+      stock?: number
       swatch?: {
         color: string
         image: string | null

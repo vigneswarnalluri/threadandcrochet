@@ -7,6 +7,8 @@ interface ProductColorContextType {
   setSelectedColor: (color: string) => void
   /** colorName → featured image URL for that variant */
   colorImageMap: Record<string, string>
+  selectedSize: string
+  setSelectedSize: (size: string) => void
 }
 
 const ProductColorContext = createContext<ProductColorContextType | null>(null)
@@ -15,16 +17,19 @@ export function ProductColorProvider({
   children,
   defaultColor,
   colorImageMap,
+  defaultSize,
 }: {
   children: React.ReactNode
   defaultColor: string
   colorImageMap: Record<string, string>
+  defaultSize?: string
 }) {
   const [selectedColor, setSelectedColor] = useState(defaultColor)
+  const [selectedSize, setSelectedSize] = useState(defaultSize || '')
 
   const value = useMemo(
-    () => ({ selectedColor, setSelectedColor, colorImageMap }),
-    [selectedColor, colorImageMap]
+    () => ({ selectedColor, setSelectedColor, colorImageMap, selectedSize, setSelectedSize }),
+    [selectedColor, colorImageMap, selectedSize]
   )
 
   return <ProductColorContext.Provider value={value}>{children}</ProductColorContext.Provider>

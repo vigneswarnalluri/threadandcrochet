@@ -8,6 +8,7 @@ import * as Headless from '@headlessui/react'
 
 import clsx from 'clsx'
 import { useState } from 'react'
+import { useProductColor } from './ProductColorContext'
 
 const demoSizeChart = [
   {
@@ -41,7 +42,19 @@ const ProductSizeOptions = ({
   className?: string
   defaultSize: string
 }) => {
-  const [sizeSelected, setSizeSelected] = useState(defaultSize)
+  // Try to use shared context.
+  // Falls back to local state when context is not available.
+  let contextValue: { selectedSize: string; setSelectedSize: (s: string) => void } | null = null
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    contextValue = useProductColor()
+  } catch {
+    contextValue = null
+  }
+
+  const [localSize, setLocalSize] = useState(defaultSize)
+  const sizeSelected = contextValue?.selectedSize ?? localSize
+  const setSizeSelected = contextValue?.setSelectedSize ?? setLocalSize
   const [isOpen, setIsOpen] = useState(false)
 
   if (!options?.length) {
@@ -52,6 +65,10 @@ const ProductSizeOptions = ({
   if (!sizeOptionValues?.length || sizeOptionValues.length <= 1) {
     return null
   }
+
+  // Find stock for currently selected size
+  const currentSizeOption = sizeOptionValues.find((v) => v.name === sizeSelected)
+  const sizeStock = currentSizeOption && currentSizeOption.stock !== undefined ? currentSizeOption.stock : null
 
   return (
     <>
@@ -88,6 +105,24 @@ const ProductSizeOptions = ({
             })}
           </div>
         </Headless.RadioGroup>
+
+        {sizeStock !== null && (
+          sizeStock === 0 ? (
+            <div className="mt-3 flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-2.5 dark:bg-red-950/30 dark:border-red-800">
+              <span className="inline-block h-2 w-2 rounded-full bg-red-500 shrink-0"></span>
+              <span className="text-xs font-semibold text-red-700 dark:text-red-400">
+                Size {sizeSelected} is Out of Stock — currently unavailable
+              </span>
+            </div>
+          ) : sizeStock <= 4 ? (
+            <div className="mt-3 flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-2.5 dark:bg-amber-950/30 dark:border-amber-800">
+              <span className="inline-block h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+              <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">
+                Only {sizeStock} left in size {sizeSelected} — order soon!
+              </span>
+            </div>
+          ) : null
+        )}
       </Headless.Field>
 
       <Dialog size="4xl" open={isOpen} onClose={setIsOpen}>

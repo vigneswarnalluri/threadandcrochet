@@ -61,6 +61,8 @@ export async function POST(request: NextRequest) {
       stock,
       colors,
       sizes,
+      options,
+      selected_options,
       metaTitle,
       metaDescription,
       metaKeywords,
@@ -104,15 +106,15 @@ export async function POST(request: NextRequest) {
       : [{ name: 'Original', swatch: { color: '#ebd9be', image: null } }]
 
     const sizeValues = sizes && Array.isArray(sizes) && sizes.length > 0
-      ? sizes.map((s: string) => ({ name: s.trim(), swatch: null }))
-      : [{ name: 'Standard', swatch: null }]
+      ? sizes.map((s: string) => ({ name: s.trim(), swatch: null, stock: Number(stock !== undefined ? stock : 10) }))
+      : [{ name: 'Standard', swatch: null, stock: Number(stock !== undefined ? stock : 10) }]
 
-    const options = [
+    const defaultOptions = [
       { name: 'Color', optionValues: colorValues },
       { name: 'Size', optionValues: sizeValues }
     ]
 
-    const selected_options = [
+    const defaultSelectedOptions = [
       { name: 'Color', value: colorValues[0].name },
       { name: 'Size', value: sizeValues[0].name }
     ]
@@ -133,8 +135,8 @@ export async function POST(request: NextRequest) {
       rating: 5.0,
       review_number: 0,
       stock: stock !== undefined ? Number(stock) : 10,
-      options,
-      selected_options,
+      options: options || defaultOptions,
+      selected_options: selected_options || defaultSelectedOptions,
       meta_title: metaTitle || null,
       meta_description: metaDescription || null,
       meta_keywords: metaKeywords || null,
@@ -200,6 +202,8 @@ export async function PUT(request: NextRequest) {
       stock,
       colors,
       sizes,
+      options,
+      selected_options,
       metaTitle,
       metaDescription,
       metaKeywords,
@@ -293,7 +297,10 @@ export async function PUT(request: NextRequest) {
     }
 
     // Handle options/variants updates
-    if (colors || sizes) {
+    if (options && selected_options) {
+      updateData.options = options
+      updateData.selected_options = selected_options
+    } else if (colors || sizes) {
       // Fetch current options as fallback if one of them is missing
       let activeColors = colors
       let activeSizes = sizes
@@ -322,8 +329,8 @@ export async function PUT(request: NextRequest) {
         : [{ name: 'Original', swatch: { color: '#ebd9be', image: null } }]
 
       const sizeValues = activeSizes && activeSizes.length > 0
-        ? activeSizes.map((s: string) => ({ name: s.trim(), swatch: null }))
-        : [{ name: 'Standard', swatch: null }]
+        ? activeSizes.map((s: string) => ({ name: s.trim(), swatch: null, stock: Number(stock !== undefined ? stock : 10) }))
+        : [{ name: 'Standard', swatch: null, stock: Number(stock !== undefined ? stock : 10) }]
 
       updateData.options = [
         { name: 'Color', optionValues: colorValues },

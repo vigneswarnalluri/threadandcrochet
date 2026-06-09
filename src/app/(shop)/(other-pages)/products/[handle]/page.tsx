@@ -104,8 +104,12 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
     )
   }
 
+  // Check if product has size options with multiple entries
+  const sizeOpts = options?.find((o) => o.name === 'Size')?.optionValues || []
+  const hasMultipleSizes = sizeOpts.length > 1
+
   return (
-    <ProductColorProvider defaultColor={colorSelected} colorImageMap={colorImageMap}>
+    <ProductColorProvider defaultColor={colorSelected} colorImageMap={colorImageMap} defaultSize={sizeSelected}>
       <main className="container mt-5 lg:mt-11">
         <div className="lg:flex">
           {/* ── LEFT – Gallery (reacts to context color) ── */}
@@ -142,7 +146,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
               </div>
 
               {/* Low Stock / Out of Stock Warning */}
-              {product.stock != null && (
+              {!hasMultipleSizes && product.stock != null && (
                 product.stock === 0 ? (
                   <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-3 dark:bg-red-950/30 dark:border-red-800">
                     <span className="inline-block h-2 w-2 rounded-full bg-red-500 shrink-0"></span>

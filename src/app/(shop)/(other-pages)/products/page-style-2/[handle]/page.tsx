@@ -76,6 +76,10 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
 
   const allGalleryImages = [featuredImage, ...(images || [])].filter(Boolean)
 
+  // Check if product has size options with multiple entries
+  const sizeOpts = options?.find((o) => o.name === 'Size')?.optionValues || []
+  const hasMultipleSizes = sizeOpts.length > 1
+
   const renderSectionSidebar = () => {
     return (
       <div className="listingSectionSidebar__wrap lg:shadow-lg">
@@ -100,7 +104,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
           </div>
 
           {/* Low Stock / Out of Stock Warning */}
-          {product.stock != null && (
+          {!hasMultipleSizes && product.stock != null && (
             product.stock === 0 ? (
               <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-3 mt-4 dark:bg-red-950/30 dark:border-red-800">
                 <span className="inline-block h-2 w-2 rounded-full bg-red-500 shrink-0"></span>
@@ -232,7 +236,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
 
 
   return (
-    <ProductColorProvider defaultColor={colorSelected} colorImageMap={colorImageMap}>
+    <ProductColorProvider defaultColor={colorSelected} colorImageMap={colorImageMap} defaultSize={sizeSelected}>
       <div>
         <div className="container mt-8 sm:mt-10">
           <div className="relative">
