@@ -57,7 +57,7 @@ const Layout = async ({ children }: Props) => {
             </div>
 
             <Divider className="mt-10" />
-            <PageTab />
+            <PageTab isLoggedIn={!!user} />
             <Divider />
           </div>
         </div>

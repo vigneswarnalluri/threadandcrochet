@@ -42,8 +42,47 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${playfair.variable} ${montserrat.variable} ${montserrat.className}`} suppressHydrationWarning>
       <head>
+        {/* Dummy script to absorb extension script hijacking */}
+        <script id="bis-dummy" suppressHydrationWarning />
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                // Actively strip 'bis_skin_checked' attributes to prevent hydration mismatches
+                var observer = new MutationObserver(function(mutations) {
+                  for (var i = 0; i < mutations.length; i++) {
+                    var mutation = mutations[i];
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'bis_skin_checked') {
+                      mutation.target.removeAttribute('bis_skin_checked');
+                    } else if (mutation.type === 'childList') {
+                      mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === 1) {
+                          if (node.hasAttribute('bis_skin_checked')) {
+                            node.removeAttribute('bis_skin_checked');
+                          }
+                          var children = node.querySelectorAll('[bis_skin_checked]');
+                          for (var j = 0; j < children.length; j++) {
+                            children[j].removeAttribute('bis_skin_checked');
+                          }
+                        }
+                      });
+                    }
+                  }
+                });
+                observer.observe(document.documentElement, {
+                  attributes: true,
+                  childList: true,
+                  subtree: true,
+                  attributeFilter: ['bis_skin_checked']
+                });
+              })();
+            `
+          }}
+        />
         {process.env.NODE_ENV === 'development' && (
           <script
+            suppressHydrationWarning
             dangerouslySetInnerHTML={{
               __html: `
                 (function() {

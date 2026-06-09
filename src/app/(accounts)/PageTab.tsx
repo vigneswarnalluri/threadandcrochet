@@ -11,13 +11,21 @@ const pages = [
   { name: 'Billing',          link: '/account-billing' },
 ]
 
-const PageTab = () => {
+interface PageTabProps {
+  isLoggedIn?: boolean
+}
+
+const PageTab = ({ isLoggedIn = false }: PageTabProps) => {
   const pathname = usePathname()
+
+  const visiblePages = isLoggedIn
+    ? pages
+    : pages.filter((item) => item.link === '/account-wishlists')
 
   return (
     <div>
       <div className="hidden-scrollbar flex gap-x-8 overflow-x-auto md:gap-x-14">
-        {pages.map((item) => {
+        {visiblePages.map((item) => {
           let isActive = pathname === item.link
           if (item.link === '/orders' && pathname.includes('/orders/')) {
             isActive = true
