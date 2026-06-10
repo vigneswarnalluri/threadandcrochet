@@ -40,7 +40,7 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
     }
 
     return (
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {optionColorValues.map((colorVal) => {
           const isSelected = activeColor === colorVal.name
           return (
